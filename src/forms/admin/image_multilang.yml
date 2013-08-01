@@ -1,0 +1,11 @@
+elements:
+    - name: title
+      label: Titolo
+      attributes:
+        class: span5
+    - name: description
+      type: Textarea
+      label: Descrizione
+      attributes:
+        class: span5
+        rows: 2

@@ -1,0 +1,8 @@
+<div class="well">
+    <div class="row">
+        <p class="text-center">[% message %]</p>
+    </div>
+    <div class="row">
+        <a class="span2 offset5 btn" href="[% backlink %]">Torna indietro</a>
+    </div>
+</div>

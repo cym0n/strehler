@@ -1,0 +1,16 @@
+<div class="span12">
+    <h1>Administrator panel - image upload</h1>
+</div>
+[% IF img_source %]
+<div class="span6">
+    <div class="preview">
+        <img src="[% img_source %]" />
+    </div>
+</div>
+[% END %]
+<div class="content image span6">
+    <div>
+    [% form %]
+    </div>
+</div>
+

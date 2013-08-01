@@ -1,0 +1,30 @@
+attributes:
+    class: well
+elements:
+    - name : user
+      label: user
+      attributes:
+        class: span4
+      constraints:
+        type: Required
+        message: 'Insert a username<br />'
+    - name : password
+      type : Password
+      label: password
+      attributes:
+        class: span4
+      constraints:
+        type: Required
+        message: 'Insert a password<br />'
+    - type: Block
+      tag: div
+      attributes:
+        class: divider
+    - type: Block
+      tag: button
+      content: Submit
+      attributes:
+        type: submit
+        class: btn btn-primary
+
+

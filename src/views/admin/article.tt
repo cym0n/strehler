@@ -1,0 +1,53 @@
+<div class="span12">
+    <h1>Administrator panel - article</h1>
+</div>
+<div class="content article span9">
+    <div>
+    [% form %]
+    </div>
+</div>
+<div  class="thumbnail span3">
+    <img id="image_preview" src="/images/no-image.png" />
+</div>
+<script>
+    function manage_preview() { 
+           var image = $("#image_selector").val(); 
+           if(image)
+           {
+                var request = $.ajax({
+                    url: "/admin/image/src/"+image,
+                    dataType: 'text',
+                });
+                request.done(function(msg) {
+                    $('#image_preview').attr('src', msg);
+                });
+           }   
+           else
+           {
+                $('#image_preview').attr('src', '/images/no-image.png');
+           }
+    }
+    function get_last_chapter() {
+        var category = $("#category_selector").val();
+        if(category)
+        {
+            var request = $.ajax({
+                    url: "/admin/category/last/"+category,
+                    dataType: 'text',
+                });
+                request.done(function(msg) {
+                    $('#order').val(msg);
+                });    
+        }
+        else
+        {
+            $('#order').val(null); 
+        }
+    }
+    $(document).ready(function() {
+        manage_preview();
+        $("#image_selector").on("change", manage_preview);
+        $("#last").on("click", get_last_chapter);
+    });
+</script>
+

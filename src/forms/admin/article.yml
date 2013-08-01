@@ -1,0 +1,38 @@
+attributes:
+    class: well
+elements:
+    - name: image
+      label: Immagine
+      type: Select
+      attributes: 
+        id: image_selector
+        class: span8
+    - type: Select
+      id: category_selector
+      name: category
+      label: categoria
+      constraints:
+        type: Required
+        message: 'Categoria necessaria<br />'
+    - type: Fieldset
+      elements: 
+          - name: order
+            id: order
+            label: capitolo
+          - type: Block
+            id: last
+            name: last
+            tag: button
+            content: Prossimo!
+            attributes:
+              type: button
+              class: btn btn-warning
+    - type: Block
+      name: save
+      tag: button
+      content: Submit
+      attributes:
+        type: submit
+        class: btn btn-primary
+
+   

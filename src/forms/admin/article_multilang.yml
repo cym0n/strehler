@@ -1,0 +1,14 @@
+elements:
+    - name: title
+      label: Titolo
+      attributes: 
+        class: span8
+    - name: slug
+      label: slug
+      attributes: 
+        class: span8
+    - name: text
+      label: Testo
+      type: Textarea
+      attributes: 
+        class: span8
