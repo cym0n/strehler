@@ -21,10 +21,9 @@ charset: "UTF-8"
 #template: "simple"
 
 template: "template_toolkit"
-# engines:
-#   template_toolkit:
-#     start_tag: '[%'
-#     end_tag:   '%]'
+engines:
+    template_toolkit:
+        ENCODING: utf8
 
 
 plugins:
@@ -37,4 +36,5 @@ plugins:
       options:
         RaiseError: 1
         PrintError: 1
+        mysql_enable_utf8: 1
 
