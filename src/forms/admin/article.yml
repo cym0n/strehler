@@ -29,7 +29,14 @@ elements:
               class: btn btn-warning
     - id: date_of_pub
       name: publish_date
-      label: 'Data:'
+      label: data
+      inflators:
+         - type: DateTime
+           parser:
+              strptime: "%d/%m/%Y"
+      deflator:
+         - type: Strftime
+           strftime: "%d/%m/%Y"
     - type: Block
       name: save
       tag: button

@@ -241,6 +241,7 @@ get '/article/edit/:id' => sub {
     $data->{'category'} = $article_row->category->id;
     $data->{'image'} = $article_row->image;
     $data->{'order'} = $article_row->display_order;
+    $data->{'publish_date'} = $article_row->publish_date;
     for(@contents)
     {
         my $d = $_;
@@ -478,16 +479,16 @@ sub save_article
     {
         $order = undef;
     }
-
+    my $article_data ={ image => $form->param_value('image'), category => $form->param_value('category'), display_order => $order, publish_date => $form->param_value('publish_date') };
     if($id)
     {
         $article_row = schema->resultset('Article')->find($id);
-        $article_row->update({ image => $form->param_value('image'), category => $form->param_value('category'), display_order => $order });
+        $article_row->update($article_data);
         $article_row->contents->delete_all();
     }
     else
     {
-        $article_row = schema->resultset('Article')->create({ image => $form->param_value('image'), category => $form->param_value('category'), display_order => $order });
+        $article_row = schema->resultset('Article')->create($article_data);
     }
     for(@languages)
     {
