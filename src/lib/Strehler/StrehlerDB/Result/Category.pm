@@ -69,8 +69,8 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07036 @ 2013-07-24 21:48:01
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:YtmV84sLneFqgaTMFtFcYw
+# Created by DBIx::Class::Schema::Loader v0.07036 @ 2013-08-03 13:59:35
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:JCVzjytkn57AnvWo+TaGtQ
 
 __PACKAGE__->has_many(
   "images",

@@ -57,6 +57,13 @@ __PACKAGE__->table("ARTICLES");
   data_type: 'integer'
   is_nullable: 1
 
+=head2 publish_date
+
+  data_type: 'timestamp'
+  datetime_undef_if_invalid: 1
+  default_value: current_timestamp
+  is_nullable: 0
+
 =head2 published
 
   data_type: 'tinyint'
@@ -73,6 +80,13 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_nullable => 1 },
   "display_order",
   { data_type => "integer", is_nullable => 1 },
+  "publish_date",
+  {
+    data_type => "timestamp",
+    datetime_undef_if_invalid => 1,
+    default_value => \"current_timestamp",
+    is_nullable => 0,
+  },
   "published",
   { data_type => "tinyint", is_nullable => 1 },
 );
@@ -90,8 +104,8 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07036 @ 2013-08-01 21:47:37
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Pe7NC3np44dIei3LqVdvOw
+# Created by DBIx::Class::Schema::Loader v0.07036 @ 2013-08-03 13:59:35
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:RERghpr2G60oAMpohiWWIg
 
 __PACKAGE__->has_many(
   "contents",

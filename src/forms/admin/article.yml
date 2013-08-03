@@ -27,6 +27,9 @@ elements:
             attributes:
               type: button
               class: btn btn-warning
+    - id: date_of_pub
+      name: publish_date
+      label: 'Data:'
     - type: Block
       name: save
       tag: button

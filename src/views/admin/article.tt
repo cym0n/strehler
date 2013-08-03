@@ -46,6 +46,7 @@
     }
     $(document).ready(function() {
         manage_preview();
+        $("#date_of_pub").datepicker();
         $("#image_selector").on("change", manage_preview);
         $("#last").on("click", get_last_chapter);
     });

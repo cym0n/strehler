@@ -99,8 +99,8 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07036 @ 2013-08-01 19:28:39
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:QqKDVRlHHPA2nspjSEYhqA
+# Created by DBIx::Class::Schema::Loader v0.07036 @ 2013-08-03 13:59:35
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:3r/Ox1zfVmt1CVncHEUmTQ
 
 __PACKAGE__->belongs_to(
   "article",
