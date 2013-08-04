@@ -1,5 +1,5 @@
 # configuration file for production environment
-session: Storable
+session: YAML
 
 # only log warning and error messsages
 log: "warning"
