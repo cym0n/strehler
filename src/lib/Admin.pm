@@ -12,7 +12,7 @@ prefix '/admin';
 set layout => 'admin';
 
 hook before => sub {
-    return;
+    return if(! config->{admin_secured});
     if((! session 'user') && request->path_info ne dancer_app->prefix . '/login')
     {
         session redir_url => request->path_info;
@@ -39,7 +39,7 @@ hook before_template_render => sub {
         $tokens->{'navbar'} = \%navbar;
     };
 
-my @languages = ('it', 'en');
+my @languages = @{config->{languages}};
 
 
 ##### Homepage #####

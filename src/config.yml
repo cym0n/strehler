@@ -38,3 +38,5 @@ plugins:
         PrintError: 1
         mysql_enable_utf8: 1
 
+admin_secured: true
+languages: ['it', 'en'] 
