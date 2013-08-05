@@ -9,7 +9,7 @@ find . -type f | while read line; do
     eval $command
 done
 cd src/lib
-mv Strehler $project
-cd $project
-eval "mv StrehlerDB "$project"DB"
-eval "mv StrehlerDB.pm "$project"DB.pm"
+mkdir $project
+cd Strehler
+eval "mv StrehlerDB ../"$project"/"$project"DB"
+eval "mv StrehlerDB.pm ../"$project"/"$project"DB.pm"

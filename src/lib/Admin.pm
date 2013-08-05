@@ -7,6 +7,7 @@ use Dancer2::Plugin::Ajax;
 use HTML::FormFu;
 use HTML::FormFu::Element::Block;
 use Data::Dumper;
+use Strehler::Helpers;
 
 prefix '/admin';
 set layout => 'admin';
@@ -247,7 +248,6 @@ get '/article/edit/:id' => sub {
         my $d = $_;
         my $lan = $d->language;
         $data->{'title_' . $lan} = $d->title;
-        $data->{'slug_' . $lan} = $d->slug;
         $data->{'text_' . $lan} = $d->text;
     }
     $form->default_values($data);
@@ -456,7 +456,6 @@ sub form_article
     $form = add_multilang_fields($form, \@languages, 'forms/admin/article_multilang.yml'); 
     my $default_language = config->{default_language};
     $form->constraint({ name => 'title_' . $default_language, type => 'Required' }); 
-    $form->constraint({ name => 'slug_' . $default_language, type => 'Required' }); 
     $form->constraint({ name => 'text_' . $default_language, type => 'Required' }); 
     my $image = $form->get_element({ name => 'image'});
     $image->options(schema->resultset('Image')->make_select());
@@ -494,7 +493,11 @@ sub save_article
     for(@languages)
     {
         my $lan = $_;
-        $article_row->contents->create( { title => $form->param_value('title_' . $lan), text => $form->param_value('text_' . $lan), slug => $form->param_value('slug_' . $lan), language => $lan }) if($form->param_value('title_' . $lan) || $form->param_value('text_' . $lan));
+        if($form->param_value('title_' . $lan) && $form->param_value('text_' . $lan))
+        {
+            my $slug = $article_row->id . '-' . Strehler::Helpers::slugify($form->param_value('title_' . $lan));
+            $article_row->contents->create( { title => $form->param_value('title_' . $lan), text => $form->param_value('text_' . $lan), slug => $slug, language => $lan }) 
+        }
     }
     return $article_row->id;     
 }

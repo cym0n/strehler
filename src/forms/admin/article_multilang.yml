@@ -3,10 +3,6 @@ elements:
       label: Titolo
       attributes: 
         class: span8
-    - name: slug
-      label: slug
-      attributes: 
-        class: span8
     - name: text
       label: Testo
       type: Textarea
