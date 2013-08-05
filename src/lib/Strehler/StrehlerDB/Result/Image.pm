@@ -98,12 +98,12 @@ __PACKAGE__->belongs_to(
   },
 );
 
-
+use Dancer2 ":syntax";
 
 sub main_title
 {
     my $self = shift;
-    my @desc = $self->descriptions->search({ language => 'it' });
+    my @desc = $self->descriptions->search({ language => config->{default_language } });
     if($desc[0])
     {
         return $desc[0]->title;

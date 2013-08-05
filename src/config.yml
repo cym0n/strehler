@@ -40,3 +40,4 @@ plugins:
 
 admin_secured: true
 languages: ['it', 'en'] 
+default_language: 'it'
