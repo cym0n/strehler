@@ -454,9 +454,10 @@ sub form_article
     my $form = HTML::FormFu->new;
     $form->load_config_file( 'forms/admin/article.yml' );
     $form = add_multilang_fields($form, \@languages, 'forms/admin/article_multilang.yml'); 
-    $form->constraint({ name => 'title_it', type => 'Required' }); 
-    $form->constraint({ name => 'slug_it', type => 'Required' }); 
-    $form->constraint({ name => 'text_it', type => 'Required' }); 
+    my $default_language = config->{default_language};
+    $form->constraint({ name => 'title_' . $default_language, type => 'Required' }); 
+    $form->constraint({ name => 'slug_' . $default_language, type => 'Required' }); 
+    $form->constraint({ name => 'text_' . $default_language, type => 'Required' }); 
     my $image = $form->get_element({ name => 'image'});
     $image->options(schema->resultset('Image')->make_select());
     my $category = $form->get_element({ name => 'category'});
