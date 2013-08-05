@@ -1,4 +1,4 @@
-package Admin;
+package Strehler::Admin;
 
 use Digest::MD5 "md5_hex";
 use Dancer2;

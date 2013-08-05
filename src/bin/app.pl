@@ -3,6 +3,6 @@ use Dancer2;
 #use slimtest;
 #use dagolden;
 
-use Admin;
+use Strehler::Admin;
 
 dance;
