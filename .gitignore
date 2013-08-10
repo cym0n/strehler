@@ -1,2 +1,8 @@
 perl_sandbox
 src/public/upload
+bin/
+environments/
+src/lib/Strehler/StrehlerDB*
+rename_dbix.sh
+src/config.yml
+src/lib/regenerate_dbix.sh
