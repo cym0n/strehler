@@ -8,6 +8,8 @@ use HTML::FormFu;
 use HTML::FormFu::Element::Block;
 use Data::Dumper;
 use Strehler::Helpers;
+use Strehler::Element::Image;
+use Strehler::Element::Article;
 
 prefix '/admin';
 set layout => 'admin';
@@ -92,21 +94,8 @@ get '/image/list' => sub
 {
     my $page = params->{'page'} || 1;
     my $entries_per_page = 20;
-    my @to_view;
-    my $rs = schema->resultset('Image')->search(undef, { page => 1, rows => $entries_per_page});
-    my $pager = $rs->pager();
-    my $elements = $rs->page($page);
-    for($elements->all())
-    {
-        my $row = $_;
-        my %el;
-        $el{'id'} = $row->id;
-        $el{'source'} = $row->image;
-        $el{'title'} = $row->main_title();
-        $el{'category'} = $row->category->category;
-        push @to_view, \%el;
-    }
-    template "admin/image_list", { images => \@to_view, page => $page, last_page => $pager->last_page() };
+    my $elements = Strehler::Element::Image::get_list({ page => $page, entries_per_page => 20});
+    template "admin/image_list", { images => $elements->{'to_view'}, page => $page, last_page => $elements->{'last_page'} };
 };
 
 any '/image/add' => sub
@@ -114,32 +103,28 @@ any '/image/add' => sub
     my $form = form_image('add');
     my $params_hashref = params;
     $form->process($params_hashref);
-    my $message;
     if($form->submitted_and_valid)
     {
         my $img = request->upload('photo');
-        my $id = save_image(undef, $img, $form);
+        my $id = Strehler::Element::Image::save_form(undef, $img, $form);
         redirect dancer_app->prefix . '/image/edit/' . $id;
     }
     $form = bootstrap_divider($form);
-    template "admin/image", { form => $form->render(), message => $message }
+    template "admin/image", { form => $form->render() }
 };
 
 get '/image/delete/:id' => sub
 {
     my $id = params->{id};
-    my $img_row = schema->resultset('Image')->find($id);
-    my %image;
-    $image{'id'} = $id;
-    $image{'title'} = $img_row->main_title;
+    my $img = Strehler::Element::Image->new($id);
+    my %image = $img->get_basic_data();
     template "admin/delete", { what => "l'immagine", el => \%image, , backlink => dancer_app->prefix . '/image' };
 };
 post '/image/delete/:id' => sub
 {
     my $id = params->{id};
-    my $img_row = schema->resultset('Image')->find($id);
-    $img_row->delete();
-    $img_row->descriptions->delete_all();
+    my $image = Strehler::Element::Image->new($id);
+    $image->delete();
     redirect dancer_app->prefix . '/image/list';
 };
 
@@ -147,20 +132,10 @@ post '/image/delete/:id' => sub
 get '/image/edit/:id' => sub {
     my $form = form_image('edit');
     my $id = params->{id};
-    my $img_row = schema->resultset('Image')->find($id);
-    my @descriptions = $img_row->descriptions;
-    my $data;
-    $data->{'category'} = $img_row->category->id;
-    for(@descriptions)
-    {
-        my $d = $_;
-        my $lan = $d->language;
-        $data->{'title_' . $lan} = $d->title;
-        $data->{'description_' . $lan} = $d->description;
-    }
-    $form->default_values($data);
+    my $image = Strehler::Element::Image->new($id);
+    $form->default_values($image->get_form_data());
     $form = bootstrap_divider($form);
-    template "admin/image", { form => $form->render(), img_source => $img_row->image }
+    template "admin/image", { form => $form->render(), img_source => $image->get_attr('image') }
 };
 
 post '/image/edit/:id' => sub
@@ -173,19 +148,19 @@ post '/image/edit/:id' => sub
     if($form->submitted_and_valid)
     {
         my $img = request->upload('photo');
-        save_image($id, $img, $form);
+        Strehler::Element::Image::save_form($id, $img, $form);
         redirect dancer_app->prefix . '/image/list';
     }
-    my $img_row = schema->resultset('Image')->find($id);
+    my $img = Strehler::Element::Image->new($id);
     $form = bootstrap_divider($form);
-    template "admin/image", { form => $form->render(),img_source => $img_row->image }
+    template "admin/image", { form => $form->render(),img_source => $img->get_attr('image') }
 };
 
 ajax '/image/src/:id' => sub
 {
     my $id = params->{id};
-    my $img_row = schema->resultset('Image')->find($id);
-    return $img_row->image;
+    my $img = Strehler::Element::Image->new($id);
+    return $img->get_attr('image');
 };
 
 
@@ -200,22 +175,8 @@ get '/article/list' => sub
 {
     my $page = params->{'page'} || 1;
     my $entries_per_page = 20;
-    my @to_view;
-    my $rs = schema->resultset('Article')->search(undef, { page => 1, rows => $entries_per_page});
-    my $pager = $rs->pager();
-    my $elements = $rs->page($page);
-    for($elements->all())
-    {
-        my $row = $_;
-        my %el;
-        $el{'id'} = $row->id;
-        $el{'title'} = $row->main_title();
-        $el{'category'} = $row->category->category;
-        $el{'display_order'} = $row->display_order;
-        $el{'published'} = $row->published;
-        push @to_view, \%el;
-    }
-    template "admin/article_list", { articles => \@to_view, page => $page, last_page => $pager->last_page() };
+    my $elements = Strehler::Element::Article::get_list({ page => $page, entries_per_page => 20});
+    template "admin/article_list", { articles => $elements->{'to_view'}, page => $page, last_page => $elements->{'last_page'} };
 };
 
 
@@ -224,33 +185,19 @@ any '/article/add' => sub
     my $form = form_article(); 
     my $params_hashref = params;
     $form->process($params_hashref);
-    my $message;
     if($form->submitted_and_valid)
     {
-        my $id = save_article(undef, $form);
+        Strehler::Element::Article::save_form(undef, $form);
         redirect dancer_app->prefix . '/article/list';
     }
-    template "admin/article", { form => $form->render(), message => $message }
+    template "admin/article", { form => $form->render() }
 };
 
 get '/article/edit/:id' => sub {
     my $form = form_article();
     my $id = params->{id};
-    my $article_row = schema->resultset('Article')->find($id);
-    my @contents = $article_row->contents;
-    my $data;
-    $data->{'category'} = $article_row->category->id;
-    $data->{'image'} = $article_row->image;
-    $data->{'order'} = $article_row->display_order;
-    $data->{'publish_date'} = $article_row->publish_date;
-    for(@contents)
-    {
-        my $d = $_;
-        my $lan = $d->language;
-        $data->{'title_' . $lan} = $d->title;
-        $data->{'text_' . $lan} = $d->text;
-    }
-    $form->default_values($data);
+    my $article = Strehler::Element::Article->new($id);
+    $form->default_values($article->get_form_data());
     template "admin/article", { form => $form->render() }
 };
 
@@ -262,7 +209,7 @@ post '/article/edit/:id' => sub
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
-        save_article($id, $form);
+        Strehler::Element::Article::save_form($id, $form);
         redirect dancer_app->prefix . '/article/list';
     }
     template "admin/article", { form => $form->render() }
@@ -271,34 +218,29 @@ post '/article/edit/:id' => sub
 get '/article/delete/:id' => sub
 {
     my $id = params->{id};
-    my $article_row = schema->resultset('Article')->find($id);
-    my %article;
-    $article{'id'} = $id;
-    $article{'title'} = $article_row->main_title;
-    template "admin/delete", { what => "l'articolo", el => \%article, backlink => dancer_app->prefix . '/article' };
+    my $art = Strehler::Element::Article->new($id);
+    my %article = $art->get_basic_data();
+    template "admin/delete", { what => "l'articolo", el => \%article, , backlink => dancer_app->prefix . '/article' };
 };
 post '/article/delete/:id' => sub
 {
     my $id = params->{id};
-    my $article_row = schema->resultset('Article')->find($id);
-    $article_row->delete();
-    $article_row->contents->delete_all();
+    my $article = Strehler::Element::Article->new($id);
+    $article->delete();
     redirect dancer_app->prefix . '/article/list';
 };
 get '/article/turnon/:id' => sub
 {
     my $id = params->{id};
-    my $article_row = schema->resultset('Article')->find($id);
-    $article_row->published(1);
-    $article_row->update();
+    my $article = Strehler::Element::Article->new($id);
+    $article->publish();
     redirect dancer_app->prefix . '/article/list';
 };
 get '/article/turnoff/:id' => sub
 {
     my $id = params->{id};
-    my $article_row = schema->resultset('Article')->find($id);
-    $article_row->published(0);
-    $article_row->update();
+    my $article = Strehler::Element::Article->new($id);
+    $article->unpublish();
     redirect dancer_app->prefix . '/article/list';
 };
 
@@ -374,9 +316,8 @@ get '/category/last/:id' => sub
     return $max+1;
 };
 
-
-
 ##### Helpers #####
+# They only manipulate forms rendering and manage login
 
 sub login_valid
 {
@@ -407,48 +348,6 @@ sub form_image
     return $form;
 }
 
-sub save_image
-{
-    my $id = shift;
-    my $img = shift;
-    my $form = shift;
-    
-    
-    my $ref; 
-    my $path;
-    if($img)
-    {
-        $ref = '/upload/' . $img->filename;
-        $path = 'public' . $ref;
-        $img->copy_to($path);
-    }
-    my $img_row;
-
-    if($id)
-    {
-        $img_row = schema->resultset('Image')->find($id);
-        if($img)
-        {
-            $img_row->update({ image => $ref, category => $form->param_value('category') });
-        }
-        else
-        {
-            $img_row->update({ category => $form->param_value('category') });
-        }
-        $img_row->descriptions->delete_all();
-    }
-    else
-    {
-        $img_row = schema->resultset('Image')->create({ image => $ref, category => $form->param_value('category') });
-    }
-    for(@languages)
-    {
-        my $lan = $_;
-        $img_row->descriptions->create( { title => $form->param_value('title_' . $lan), description => $form->param_value('description_' . $lan), language => $lan }) if($form->param_value('title_' . $lan) || $form->param_value('description_' . $lan));;
-    }
-    return $img_row->id;     
-}
-
 sub form_article
 {
     my $form = HTML::FormFu->new;
@@ -458,52 +357,11 @@ sub form_article
     $form->constraint({ name => 'title_' . $default_language, type => 'Required' }); 
     $form->constraint({ name => 'text_' . $default_language, type => 'Required' }); 
     my $image = $form->get_element({ name => 'image'});
-    $image->options(schema->resultset('Image')->make_select());
+    $image->options(Strehler::Element::Image::make_select());
     my $category = $form->get_element({ name => 'category'});
     $category->options(schema->resultset('Category')->make_select());
     return $form;
 }
-
-sub save_article
-{
-    my $id = shift;
-    my $form = shift;
-    
-    my $article_row;
-    my $order;
-    if($form->param_value('category'))
-    {
-        $order = $form->param_value('order');
-    }
-    else
-    {
-        $order = undef;
-    }
-    my $article_data ={ image => $form->param_value('image'), category => $form->param_value('category'), display_order => $order, publish_date => $form->param_value('publish_date') };
-    if($id)
-    {
-        $article_row = schema->resultset('Article')->find($id);
-        $article_row->update($article_data);
-        $article_row->contents->delete_all();
-    }
-    else
-    {
-        $article_row = schema->resultset('Article')->create($article_data);
-    }
-    for(@languages)
-    {
-        my $lan = $_;
-        if($form->param_value('title_' . $lan) && $form->param_value('text_' . $lan))
-        {
-            my $slug = $article_row->id . '-' . Strehler::Helpers::slugify($form->param_value('title_' . $lan));
-            $article_row->contents->create( { title => $form->param_value('title_' . $lan), text => $form->param_value('text_' . $lan), slug => $slug, language => $lan }) 
-        }
-    }
-    return $article_row->id;     
-}
-
-
-
 
 sub bootstrap_divider
 {

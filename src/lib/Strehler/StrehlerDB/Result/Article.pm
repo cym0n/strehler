@@ -125,22 +125,4 @@ __PACKAGE__->belongs_to(
   },
 );
 
-use Dancer2 ":syntax";
-
-sub main_title
-{
-    my $self = shift;
-    my @contents = $self->contents->search({ language => config->{default_language} });
-    if($contents[0])
-    {
-        return $contents[0]->title;
-    }
-    else
-    {
-        #Should not be possible
-        return "*** no title ***";
-    }
-
-}
-
 1;
