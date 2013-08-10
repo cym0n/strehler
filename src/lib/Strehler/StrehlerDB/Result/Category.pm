@@ -86,27 +86,4 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-__PACKAGE__->resultset_class('Strehler::StrehlerDB::Category::ResultSet');
-
-package Strehler::StrehlerDB::Category::ResultSet;
-use base 'DBIx::Class::ResultSet';
-
-
-
-sub make_select
-{
-    my $self = shift;
-    my @category_values = $self->all();
-    my @category_values_for_select;
-    push @category_values_for_select, { value => undef, label => "-- seleziona --" }; 
-    for(@category_values)
-    {
-        push @category_values_for_select, { value => $_->id, label => $_->category }
-    }
-    return \@category_values_for_select;
-  
-}
-
-
-
 1;

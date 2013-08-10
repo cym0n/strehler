@@ -10,6 +10,7 @@ use Data::Dumper;
 use Strehler::Helpers;
 use Strehler::Element::Image;
 use Strehler::Element::Article;
+use Strehler::Element::Category;
 
 prefix '/admin';
 set layout => 'admin';
@@ -254,16 +255,7 @@ get '/category' => sub
 any '/category/list' => sub
 {
     #THE TABLE
-    my @to_view;
-    my @categories = schema->resultset('Category')->all();
-    for(@categories)
-    {
-        my $row = $_;
-        my %el;
-        $el{'id'} = $row->id;
-        $el{'name'} = $row->category;
-        push @to_view, \%el;
-    }
+    my $to_view = Strehler::Element::Category::get_list();
 
     #THE FORM
     my $form = HTML::FormFu->new;
@@ -272,48 +264,42 @@ any '/category/list' => sub
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
-        my $new_category = schema->resultset('Category')->create({category => $form->param_value('category') });
-        my %new_el;
-        $new_el{'id'} = $new_category->id;
-        $new_el{'name'} = $new_category->category;
-        push @to_view, \%new_el;
+        my $new_category = Strehler::Element::Category::save_form($form);
+        my %new_el = $new_category->get_basic_data();
+        push @{$to_view}, \%new_el;
     }
-    template "admin/category", { categories => \@to_view, form => $form };
+    template "admin/category", { categories => $to_view, form => $form };
 };
 
 get '/category/delete/:id' => sub
 {
     my $id = params->{id};
-    my %category;
-    my $category_row = schema->resultset('Category')->find($id);
-    if($category_row->images->count() > 0 || $category_row->articles->count() > 0)
+    my $category = Strehler::Element::Category->new($id);
+    if($category->has_elements())
     {
-        my $message = "La categoria " . $category_row->category . " non &egrave; vuota! Non &egrave; possibile cancellarla";    
+        my $message = "La categoria " . $category->get_attr('category') . " non &egrave; vuota! Non &egrave; possibile cancellarla";    
         my $return = dancer_app->prefix . "/category/list";
         template "admin/message", { message => $message, backlink => $return };
     }
     else
     {
-        $category{'id'} = $id;
-        $category{'title'} = $category_row->category;
-        template "admin/delete", { what => "la categoria", el => \%category, backlink => dancer_app->prefix . '/category' };
+        my %data = $category->get_basic_data();
+        template "admin/delete", { what => "la categoria", el => \%data, backlink => dancer_app->prefix . '/category' };
     }
 };
 post '/category/delete/:id' => sub
 {
     my $id = params->{id};
-    my $category_row = schema->resultset('Category')->find($id);
-    $category_row->images->update( { category => undef } );
-    $category_row->articles->update( { category => undef } );
-    $category_row->delete();
+    my $category = Strehler::Element::Category->new($id);
+    $category->delete();
     redirect dancer_app->prefix . '/category/list';
 };
 
 get '/category/last/:id' => sub
 {
     my $id = params->{id};
-    my $max = schema->resultset('Article')->search( { category => $id } )->get_column('display_order')->max();
-    return $max+1;
+    my $category = Strehler::Element::Category->new($id);
+    return $category->max_article_order() + 1;
 };
 
 ##### Helpers #####
@@ -344,7 +330,7 @@ sub form_image
     $form = add_multilang_fields($form, \@languages, 'forms/admin/image_multilang.yml'); 
     $form->constraint({ name => 'photo', type => 'Required' }) if $action eq 'add';
     my $category = $form->get_element({ name => 'category'});
-    $category->options(schema->resultset('Category')->make_select());
+    $category->options(Strehler::Element::Category::make_select());
     return $form;
 }
 
@@ -359,7 +345,7 @@ sub form_article
     my $image = $form->get_element({ name => 'image'});
     $image->options(Strehler::Element::Image::make_select());
     my $category = $form->get_element({ name => 'category'});
-    $category->options(schema->resultset('Category')->make_select());
+    $category->options(Strehler::Element::Category::make_select());
     return $form;
 }
 
