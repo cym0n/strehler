@@ -86,7 +86,7 @@ sub get_list
     my $search_criteria = undef;
 
     my @to_view;
-    my $rs = schema->resultset('Image')->search(undef, { order_by => { '-' . $args{'order'} => $args{'order_by'} }});
+    my $rs = schema->resultset('Category')->search(undef, { order_by => { '-' . $args{'order'} => $args{'order_by'} }});
     for($rs->all())
     {
         my $cat = Strehler::Element::Category->new($_->id);
