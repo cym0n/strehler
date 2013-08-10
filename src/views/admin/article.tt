@@ -24,7 +24,7 @@
            }   
            else
            {
-                $('#image_preview').attr('src', '/images/no-image.png');
+                $('#image_preview').attr('src', '/strehler/images/no-image.png');
            }
     }
     function get_last_chapter() {
