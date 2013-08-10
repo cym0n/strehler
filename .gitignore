@@ -6,3 +6,9 @@ src/lib/Strehler/StrehlerDB*
 rename_dbix.sh
 src/config.yml
 src/lib/regenerate_dbix.sh
+src/public/404.html
+src/public/500.html
+src/public/css/
+src/public/javascripts/
+src/public/dispatch*
+src/public/favicon.ico
