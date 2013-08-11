@@ -104,6 +104,11 @@ sub publish_date
     my $self = shift;
     return $self->row->publish_date;
 }
+sub category
+{
+    my $self = shift;
+    return $self->row->category->category;
+}
 
 sub get_attr_multilang
 {
@@ -150,6 +155,13 @@ sub get_first_by_date
     my $category_novel = schema->resultset('Category')->find( { category => $cat } );
     my @chapters = $category_novel->articles->search( { published => 1 }, { order_by => { -asc => 'publish_date' } });
     return Strehler::Element::Article->new($chapters[0]->id);
+}
+sub get_by_slug
+{
+    my $slug = shift;
+    my $language = shift;
+    my $chapter = schema->resultset('Content')->find({ slug => $slug, language => $language })->article;
+    return Strehler::Element::Article->new($chapter->id);
 }
 
 
