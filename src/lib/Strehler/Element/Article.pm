@@ -118,6 +118,36 @@ sub get_attr_multilang
 
 #Static helpers
 
+sub get_last_by_order
+{
+    my $cat = shift;
+    my $category_novel = schema->resultset('Category')->find( { category => $cat } );
+    my @chapters = $category_novel->articles->search( { published => 1 }, { order_by => { -desc => 'display_order' } });
+    return Strehler::Element::Article->new($chapters[0]->id);
+}
+sub get_last_by_date
+{
+    my $cat = shift;
+    my $category_novel = schema->resultset('Category')->find( { category => $cat } );
+    my @chapters = $category_novel->articles->search( { published => 1 }, { order_by => { -desc => 'publish_date' } });
+    return Strehler::Element::Article->new($chapters[0]->id);
+}
+sub get_first_by_order
+{
+    my $cat = shift;
+    my $category_novel = schema->resultset('Category')->find( { category => $cat } );
+    my @chapters = $category_novel->articles->search( { published => 1 }, { order_by => { -asc => 'display_order' } });
+    return Strehler::Element::Article->new($chapters[0]->id);
+}
+sub get_first_by_date
+{
+    my $cat = shift;
+    my $category_novel = schema->resultset('Category')->find( { category => $cat } );
+    my @chapters = $category_novel->articles->search( { published => 1 }, { order_by => { -asc => 'publish_date' } });
+    return Strehler::Element::Article->new($chapters[0]->id);
+}
+
+
 sub get_list
 {
     my $params = shift;
