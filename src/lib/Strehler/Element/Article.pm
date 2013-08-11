@@ -109,6 +109,18 @@ sub category
     my $self = shift;
     return $self->row->category->category;
 }
+sub exists
+{
+    my $self = shift;
+    if($self->row)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
 
 sub get_attr_multilang
 {
