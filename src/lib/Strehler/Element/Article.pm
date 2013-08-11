@@ -70,7 +70,7 @@ sub get_ext_data
     $data{'title'} = $self->get_attr_multilang('title', $language);
     $data{'slug'} = $self->get_attr_multilang('slug', $language);
     $data{'text'} = $self->get_attr_multilang('text', $language);
-    $data{'number'} = $self->get_attr('display_order');
+    $data{'display_order'} = $self->get_attr('display_order');
     $data{'publish_date'} = $self->get_attr('publish_date');
     return %data;
 }
