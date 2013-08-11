@@ -71,7 +71,7 @@ sub get_ext_data
     $data{'slug'} = $self->get_attr_multilang('slug', $language);
     $data{'text'} = $self->get_attr_multilang('text', $language);
     $data{'display_order'} = $self->get_attr('display_order');
-    $data{'publish_date'} = $self->get_attr('publish_date');
+    $data{'publish_date'} = $self->publish_date();
     return %data;
 }
 sub delete
@@ -92,14 +92,19 @@ sub unpublish
     $self->row->published(0);
     $self->row->update();
 }
-
-
 sub get_attr
 {
     my $self = shift;
     my $attr = shift;
     return $self->row->get_column($attr);
 }
+#Ad hoc accessor to return the DateTime object
+sub publish_date
+{
+    my $self = shift;
+    return $self->row->publish_date;
+}
+
 sub get_attr_multilang
 {
     my $self = shift;
