@@ -11,9 +11,20 @@ has row => (
 
 sub BUILDARGS {
    my ( $class, @args ) = @_;
-   my $id = shift @args; 
-   my $img_row = schema->resultset('Category')->find($id);
-   return { row => $img_row };
+   my $category = undef;
+   if($#args == 0)
+   {
+        my $id = shift @args; 
+        $category = schema->resultset('Category')->find($id);
+   }
+   else
+   {
+       if($args[0] eq 'name')
+       {
+            $category = schema->resultset('Category')->find({ category => $args[1] });
+       }
+   }
+   return { row => $category };
 };
 
 sub get_basic_data
