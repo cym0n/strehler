@@ -12,8 +12,12 @@ has row => (
 sub BUILDARGS {
    my ( $class, @args ) = @_;
    my $id = shift @args; 
-   my $img_row = schema->resultset('Article')->find($id);
-   return { row => $img_row };
+   if(! $id)
+   {
+    return { row => undef };
+   }
+   my $article = schema->resultset('Article')->find($id);
+   return { row => $article };
 };
 
 sub get_form_data
@@ -74,6 +78,86 @@ sub get_ext_data
     $data{'publish_date'} = $self->publish_date();
     return %data;
 }
+sub next_in_category_by_order
+{
+    my $self = shift;
+    my $language = shift;
+    my $category = schema->resultset('Category')->find( { category => $self->category() } );
+    my @nexts = $category->articles->search({ published => 1, display_order => { '>', $self->get_attr('display_order') }}, { order_by => {-asc => 'display_order' }});
+    my $next_slug = undef;
+    if($#nexts >= 0)
+    {
+        for(@nexts)
+        {
+            my $el = Strehler::Element::Article->new($_->id);
+            if($el->has_language($language))
+            {
+                return $el;
+            }
+        }
+    }
+    return Strehler::Element::Article->new(undef);
+}
+sub prev_in_category_by_order
+{
+    my $self = shift;
+    my $language = shift;
+    my $category = schema->resultset('Category')->find( { category => $self->category() } );
+    my @nexts = $category->articles->search({ published => 1, display_order => { '<', $self->get_attr('display_order') }}, { order_by => {-asc => 'display_order' }});
+    my $next_slug = undef;
+    if($#nexts >= 0)
+    {
+        for(@nexts)
+        {
+            my $el = Strehler::Element::Article->new($_->id);
+            if($el->has_language($language))
+            {
+                return $el;
+            }
+        }
+    }
+    return Strehler::Element::Article->new(undef);
+}
+sub next_in_category_by_date
+{
+    my $self = shift;
+    my $language = shift;
+    my $category = schema->resultset('Category')->find( { category => $self->category() } );
+    my @nexts = $category->articles->search({ published => 1, publish_date => { '>', $self->get_attr('publish_date') }}, { order_by => {-asc => 'publish_date' }});
+    my $next_slug = undef;
+    if($#nexts >= 0)
+    {
+        for(@nexts)
+        {
+            my $el = Strehler::Element::Article->new($_->id);
+            if($el->has_language($language))
+            {
+                return $el;
+            }
+        }
+    }
+    return Strehler::Element::Article->new(undef);
+}
+sub prev_in_category_by_date
+{
+    my $self = shift;
+    my $language = shift;
+    my $category = schema->resultset('Category')->find( { category => $self->category() } );
+    my @nexts = $category->articles->search({ published => 1, publish_date => { '<', $self->get_attr('publish_date') }}, { order_by => {-asc => 'publish_date' }});
+    my $next_slug = undef;
+    if($#nexts >= 0)
+    {
+        for(@nexts)
+        {
+            my $el = Strehler::Element::Article->new($_->id);
+            if($el->has_language($language))
+            {
+                return $el;
+            }
+        }
+    }
+    return Strehler::Element::Article->new(undef);
+}
 sub delete
 {
     my $self = shift;
@@ -121,6 +205,20 @@ sub exists
         return 0;
     }
 }
+sub has_language
+{
+    my $self = shift;
+    my $language = shift;
+    my $content = $self->row->contents->find({language => $language});
+    if($content)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
 
 sub get_attr_multilang
 {
@@ -157,8 +255,8 @@ sub get_last_by_date
 sub get_first_by_order
 {
     my $cat = shift;
-    my $category_novel = schema->resultset('Category')->find( { category => $cat } );
-    my @chapters = $category_novel->articles->search( { published => 1 }, { order_by => { -asc => 'display_order' } });
+    my $category = schema->resultset('Category')->find( { category => $cat } );
+    my @chapters = $category->articles->search( { published => 1 }, { order_by => { -asc => 'display_order' } });
     return Strehler::Element::Article->new($chapters[0]->id);
 }
 sub get_first_by_date
