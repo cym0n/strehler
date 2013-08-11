@@ -103,7 +103,7 @@ sub prev_in_category_by_order
     my $self = shift;
     my $language = shift;
     my $category = schema->resultset('Category')->find( { category => $self->category() } );
-    my @nexts = $category->articles->search({ published => 1, display_order => { '<', $self->get_attr('display_order') }}, { order_by => {-asc => 'display_order' }});
+    my @nexts = $category->articles->search({ published => 1, display_order => { '<', $self->get_attr('display_order') }}, { order_by => {-desc => 'display_order' }});
     my $next_slug = undef;
     if($#nexts >= 0)
     {
@@ -143,7 +143,7 @@ sub prev_in_category_by_date
     my $self = shift;
     my $language = shift;
     my $category = schema->resultset('Category')->find( { category => $self->category() } );
-    my @nexts = $category->articles->search({ published => 1, publish_date => { '<', $self->get_attr('publish_date') }}, { order_by => {-asc => 'publish_date' }});
+    my @nexts = $category->articles->search({ published => 1, publish_date => { '<', $self->get_attr('publish_date') }}, { order_by => {-desc => 'publish_date' }});
     my $next_slug = undef;
     if($#nexts >= 0)
     {
