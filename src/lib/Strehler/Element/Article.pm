@@ -56,10 +56,22 @@ sub get_basic_data
     my %data;
     $data{'id'} = $self->get_attr('id');
     $data{'title'} = $self->main_title;
-    $data{'source'} = $self->get_attr('image');
     $data{'category'} = $self->row->category->category;
     $data{'display_order'} = $self->get_attr('display_order');
     $data{'published'} = $self->get_attr('published');
+    return %data;
+}
+sub get_ext_data
+{
+    my $self = shift;
+    my $language = shift;
+    my %data;
+    %data = $self->get_basic_data();
+    $data{'title'} = $self->get_attr_multilang('title', $language);
+    $data{'slug'} = $self->get_attr_multilang('slug', $language);
+    $data{'text'} = $self->get_attr_multilang('text', $language);
+    $data{'number'} = $self->get_attr('display_order');
+    $data{'publish_date'} = $self->get_attr('publish_date');
     return %data;
 }
 sub delete
@@ -88,6 +100,21 @@ sub get_attr
     my $attr = shift;
     return $self->row->get_column($attr);
 }
+sub get_attr_multilang
+{
+    my $self = shift;
+    my $attr = shift;
+    my $lang = shift;
+    my $content = $self->row->contents->find({'language' => $lang});
+    if($content)
+    {
+        return $content->get_column($attr);
+    }
+    else
+    {
+        return undef;
+    }
+}
 
 #Static helpers
 
@@ -99,6 +126,7 @@ sub get_list
     $args{'order_by'} ||= 'id';
     $args{'entries_per_page'} ||= 20;
     $args{'page'} ||= 1;
+    $args{'language'} ||= config->{default_language};
     my $search_criteria = undef;
     if(exists $args{'published'})
     {
@@ -120,7 +148,15 @@ sub get_list
     for($elements->all())
     {
         my $img = Strehler::Element::Article->new($_->id);
-        my %el = $img->get_basic_data();
+        my %el;
+        if(exists $args{'ext'})
+        {
+            %el = $img->get_ext_data($args{'language'});
+        }
+        else
+        {
+            %el = $img->get_basic_data();
+        }
         push @to_view, \%el;
     }
     return {'to_view' => \@to_view, 'last_page' => $pager->last_page()};
