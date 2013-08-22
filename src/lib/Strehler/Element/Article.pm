@@ -241,37 +241,76 @@ sub get_attr_multilang
 sub get_last_by_order
 {
     my $cat = shift;
-    my $category_novel = schema->resultset('Category')->find( { category => $cat } );
-    my @chapters = $category_novel->articles->search( { published => 1 }, { order_by => { -desc => 'display_order' } });
-    return Strehler::Element::Article->new($chapters[0]->id);
+    my $category = schema->resultset('Category')->find( { category => $cat } );
+    return undef if(! $category);
+    my @chapters = $category->articles->search( { published => 1 }, { order_by => { -desc => 'display_order' } });
+    if($chapters[0])
+    {
+        return Strehler::Element::Article->new($chapters[0]->id);
+    }
+    else
+    {
+        return undef;
+    }
 }
 sub get_last_by_date
 {
     my $cat = shift;
-    my $category_novel = schema->resultset('Category')->find( { category => $cat } );
-    my @chapters = $category_novel->articles->search( { published => 1 }, { order_by => { -desc => 'publish_date' } });
-    return Strehler::Element::Article->new($chapters[0]->id);
+    my $category = schema->resultset('Category')->find( { category => $cat } );
+    return undef if(! $category);
+    my @chapters = $category->articles->search( { published => 1 }, { order_by => { -desc => 'publish_date' } });
+    if($chapters[0])
+    {
+        return Strehler::Element::Article->new($chapters[0]->id);
+    }
+    else
+    {
+        return undef;
+    }
 }
 sub get_first_by_order
 {
     my $cat = shift;
     my $category = schema->resultset('Category')->find( { category => $cat } );
+    return undef if(! $category);
     my @chapters = $category->articles->search( { published => 1 }, { order_by => { -asc => 'display_order' } });
-    return Strehler::Element::Article->new($chapters[0]->id);
+    if($chapters[0])
+    {
+        return Strehler::Element::Article->new($chapters[0]->id);
+    }
+    else
+    {
+        return undef;
+    }
 }
 sub get_first_by_date
 {
     my $cat = shift;
-    my $category_novel = schema->resultset('Category')->find( { category => $cat } );
-    my @chapters = $category_novel->articles->search( { published => 1 }, { order_by => { -asc => 'publish_date' } });
-    return Strehler::Element::Article->new($chapters[0]->id);
+    my $category = schema->resultset('Category')->find( { category => $cat } );
+    return undef if(! $category);
+    my @chapters = $category->articles->search( { published => 1 }, { order_by => { -asc => 'publish_date' } });
+    if($chapters[0])
+    {
+        return Strehler::Element::Article->new($chapters[0]->id);
+    }
+    else
+    {
+        return undef;
+    }
 }
 sub get_by_slug
 {
     my $slug = shift;
     my $language = shift;
-    my $chapter = schema->resultset('Content')->find({ slug => $slug, language => $language })->article;
-    return Strehler::Element::Article->new($chapter->id);
+    my $chapter = schema->resultset('Content')->find({ slug => $slug, language => $language });
+    if($chapter)
+    {
+        return Strehler::Element::Article->new($chapter->article->id);
+    }
+    else
+    {
+        return undef;
+    }
 }
 
 
