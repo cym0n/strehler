@@ -1,7 +1,7 @@
 package Strehler::Element::Image;
 
 use Moo;
-use Dancer2 ":syntax";
+use Dancer2;
 use Dancer2::Plugin::DBIC;
 use Data::Dumper;
 
