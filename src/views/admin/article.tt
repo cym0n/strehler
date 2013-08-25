@@ -84,7 +84,14 @@
         $("#last").on("click", get_last_chapter);
         if(! $('#subcat').val())
         {
-            subcategories();
+            if($('#category_selector').val())
+            {
+                subcategories();
+            }
+            else
+            {
+                $("#subcat").parent(".select").hide();
+            }
         }
         $("#category_selector").on("change", subcategories);
     });

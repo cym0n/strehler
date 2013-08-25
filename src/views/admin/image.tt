@@ -42,7 +42,14 @@
   $(document).ready(function() {
         if(! $('#subcat').val())
         {
-            subcategories();
+            if($('#cat').val())
+            {
+                subcategories();
+            }
+            else
+            {
+                $("#subcat").parent(".select").hide();
+            }
         }
         $("#cat").on("change", subcategories);
   });

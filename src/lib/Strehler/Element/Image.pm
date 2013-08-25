@@ -154,12 +154,10 @@ sub save_form
     if($form->param_value('subcategory'))
     {
         $category = $form->param_value('subcategory');
-        debug "Subcategory detected: $category"
     }
     elsif($form->param_value('category'))
     {
         $category = $form->param_value('category');
-        debug "Category detected: $category"
     }
     my $img_row;
 
