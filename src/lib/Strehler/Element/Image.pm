@@ -109,7 +109,12 @@ sub get_list
     #}
 
     my $rs;
-    if(exists $args{'category'})
+    if(exists $args{'category_id'})
+    {
+        my $category = schema->resultset('Category')->find( { id => $args{'category_id'} } );
+        $rs = $category->images->search($search_criteria, { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => 1, rows => $args{'entries_per_page'} });
+    }
+    elsif(exists $args{'category'})
     {
         my $category = schema->resultset('Category')->find( { category => $args{'category'} } );
         $rs = $category->images->search($search_criteria, { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => 1, rows => $args{'entries_per_page'} });
