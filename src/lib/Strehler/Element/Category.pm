@@ -23,9 +23,26 @@ sub BUILDARGS {
        {
             $category = schema->resultset('Category')->find({ category => $args[1] });
        }
+       if($args[0] eq 'row')
+       {
+            $category = $args[1];
+       }
+
    }
    return { row => $category };
 };
+
+sub subcategories
+{
+    my $self = shift;
+    my @subs;
+    for($self->row->subcategories)
+    {
+        push @subs, Strehler::Element::Category->new('row', $_);
+    }
+    return @subs;
+}
+
 
 sub get_basic_data
 {
@@ -34,6 +51,19 @@ sub get_basic_data
     $data{'id'} = $self->get_attr('id');
     $data{'title'} = $self->get_attr('category'); #For compatibility with the views shared with images and articles
     $data{'name'} = $self->get_attr('category');
+    if(! $self->get_attr('parent'))
+    {
+        my @subs = $self->subcategories();
+        if($#subs != -1)
+        {
+            $data{'subcategories'} = [];
+            for(@subs)
+            {
+                my %subdata = $_->get_basic_data();
+                push @{$data{'subcategories'}}, \%subdata;
+            }
+        }
+    }
     return %data;
 }
 
@@ -94,10 +124,11 @@ sub get_list
     }
     $args{'order'} ||= 'desc';
     $args{'order_by'} ||= 'id';
+    $args{'parent'} ||= undef;
     my $search_criteria = undef;
 
     my @to_view;
-    my $rs = schema->resultset('Category')->search(undef, { order_by => { '-' . $args{'order'} => $args{'order_by'} }});
+    my $rs = schema->resultset('Category')->search({parent => $args{'parent'}}, { order_by => { '-' . $args{'order'} => $args{'order_by'} }});
     for($rs->all())
     {
         my $cat = Strehler::Element::Category->new($_->id);

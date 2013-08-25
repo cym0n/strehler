@@ -2,7 +2,7 @@
     <h1>Administrator panel - Categories</h1>
 </div>
 <div class="content categorylist span12">
-        <table class="table table-striped">
+        <table class="table">
         <thead>
             <tr>
                 <th>ID</th>
@@ -11,7 +11,7 @@
         </thead>
         <tbody>
             [% FOREACH el IN categories %]
-            <tr>
+            <tr class="parent_category">
                 <td>[% el.id %]</td>
                 <td>[% el.name %]</td>
                 <td>
@@ -20,6 +20,17 @@
                     </div>
                 </td>
             </tr>
+            [% FOREACH subel IN el.subcategories %]
+            <tr>
+                <td>[% subel.id %]</td>
+                <td>[% subel.name %]</td>
+                <td>
+                    <div class="btn-group span2 offset1">
+                        <a href="/admin/category/delete/[% subel.id %]" class="btn">Delete</a>
+                    </div>
+                </td>
+            </tr>
+            [% END %]
             [% END %]
         </tbody>
         </table>
