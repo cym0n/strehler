@@ -40,7 +40,10 @@
     }
   }
   $(document).ready(function() {
-        $("#subcat").parent(".select").hide();
+        if(! $('#subcat').val())
+        {
+            subcategories();
+        }
         $("#cat").on("change", subcategories);
   });
 </script>

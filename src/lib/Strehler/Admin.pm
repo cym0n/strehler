@@ -131,10 +131,11 @@ post '/image/delete/:id' => sub
 
 
 get '/image/edit/:id' => sub {
-    my $form = form_image('edit');
     my $id = params->{id};
     my $image = Strehler::Element::Image->new($id);
-    $form->default_values($image->get_form_data());
+    my $form_data = $image->get_form_data();
+    my $form = form_image('edit', $form_data->{'category'});
+    $form->default_values($form_data);
     $form = bootstrap_divider($form);
     template "admin/image", { form => $form->render(), img_source => $image->get_attr('image') }
 };
@@ -195,10 +196,11 @@ any '/article/add' => sub
 };
 
 get '/article/edit/:id' => sub {
-    my $form = form_article();
     my $id = params->{id};
     my $article = Strehler::Element::Article->new($id);
-    $form->default_values($article->get_form_data());
+    my $form_data = $article->get_form_data();
+    my $form = form_article($form_data->{'category'});
+    $form->default_values($form_data);
     template "admin/article", { form => $form->render() }
 };
 
@@ -339,17 +341,21 @@ sub login_valid
 sub form_image
 {
     my $action = shift;
+    my $has_sub = shift;
     my $form = HTML::FormFu->new;
     $form->load_config_file( 'forms/admin/image.yml' );
     $form = add_multilang_fields($form, \@languages, 'forms/admin/image_multilang.yml'); 
     $form->constraint({ name => 'photo', type => 'Required' }) if $action eq 'add';
     my $category = $form->get_element({ name => 'category'});
     $category->options(Strehler::Element::Category::make_select());
+    my $subcategory = $form->get_element({ name => 'subcategory'});
+    $subcategory->options(Strehler::Element::Category::make_select($has_sub));
     return $form;
 }
 
 sub form_article
 {
+    my $has_sub = shift;
     my $form = HTML::FormFu->new;
     $form->load_config_file( 'forms/admin/article.yml' );
     $form = add_multilang_fields($form, \@languages, 'forms/admin/article_multilang.yml'); 
@@ -360,6 +366,8 @@ sub form_article
     $image->options(Strehler::Element::Image::make_select());
     my $category = $form->get_element({ name => 'category'});
     $category->options(Strehler::Element::Category::make_select());
+    my $subcategory = $form->get_element({ name => 'subcategory'});
+    $subcategory->options(Strehler::Element::Category::make_select($has_sub));
     return $form;
 }
 

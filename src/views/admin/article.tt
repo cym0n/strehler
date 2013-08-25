@@ -74,7 +74,10 @@
         $("#date_of_pub").datepicker({ format: "dd/mm/yyyy" });
         $("#image_selector").on("change", manage_preview);
         $("#last").on("click", get_last_chapter);
-        $("#subcat").parent(".select").hide();
+        if(! $('#subcat').val())
+        {
+            subcategories();
+        }
         $("#category_selector").on("change", subcategories);
     });
 </script>

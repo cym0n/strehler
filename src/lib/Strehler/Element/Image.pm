@@ -22,7 +22,15 @@ sub get_form_data
     my $img_row = $self->row;
     my @descriptions = $img_row->descriptions;
     my $data;
-    $data->{'category'} = $img_row->category->id;
+    if($img_row->category->parent_category)
+    {
+        $data->{'category'} = $img_row->category->parent_category->id;
+        $data->{'subcategory'} = $img_row->category->id;
+    }
+    else
+    {
+       $data->{'category'} = $img_row->category->id;
+    }
     for(@descriptions)
     {
         my $d = $_;

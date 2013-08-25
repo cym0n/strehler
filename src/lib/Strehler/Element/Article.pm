@@ -26,7 +26,15 @@ sub get_form_data
     my $article_row = $self->row;
     my @contents = $article_row->contents;
     my $data;
-    $data->{'category'} = $article_row->category->id;
+    if($article_row->category->parent_category)
+    {
+        $data->{'category'} = $article_row->category->parent_category->id;
+        $data->{'subcategory'} = $article_row->category->id;
+    }
+    else
+    {
+       $data->{'category'} = $article_row->category->id;
+    }
     $data->{'image'} = $article_row->image;
     $data->{'order'} = $article_row->display_order;
     $data->{'publish_date'} = $article_row->publish_date;
