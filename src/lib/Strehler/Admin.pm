@@ -296,11 +296,24 @@ post '/category/delete/:id' => sub
     redirect dancer_app->prefix . '/category/list';
 };
 
-get '/category/last/:id' => sub
+ajax '/category/last/:id' => sub
 {
     my $id = params->{id};
     my $category = Strehler::Element::Category->new($id);
     return $category->max_article_order() + 1;
+};
+get '/category/select/:id' => sub
+{
+    my $id = params->{id};
+    my $data = Strehler::Element::Category::make_select($id);
+    if($data->[1])
+    {
+        template 'admin/category_select', { categories => $data }, { layout => undef };
+    }
+    else
+    {
+        return 0;
+    }
 };
 
 ##### Helpers #####

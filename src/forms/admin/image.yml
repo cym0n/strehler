@@ -7,8 +7,13 @@ elements:
       attributes: 
         class: span5
     - type: Select
+      id: cat
       name: category
       label: categoria
+    - type: Select
+      name: subcategory
+      label: sottocategoria
+      id: subcat
     - name: save
       type: Block
       tag: button

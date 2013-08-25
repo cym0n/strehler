@@ -14,6 +14,10 @@ elements:
       constraints:
         type: Required
         message: 'Categoria necessaria<br />'
+    - type: Select
+      name: subcategory
+      label: sottocategoria
+      id: subcat
     - type: Fieldset
       elements: 
           - name: order

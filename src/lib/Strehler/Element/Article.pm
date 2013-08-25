@@ -366,7 +366,16 @@ sub save_form
     
     my $article_row;
     my $order;
-    if($form->param_value('category'))
+    my $category = undef;
+    if($form->param_value('subcategory'))
+    {
+        $category = $form->param_value('subcategory');
+    }
+    elsif($form->param_value('category'))
+    {
+        $category = $form->param_value('category');
+    }
+    if($category)
     {
         $order = $form->param_value('order');
     }
@@ -374,7 +383,7 @@ sub save_form
     {
         $order = undef;
     }
-    my $article_data ={ image => $form->param_value('image'), category => $form->param_value('category'), display_order => $order, publish_date => $form->param_value('publish_date') };
+    my $article_data ={ image => $form->param_value('image'), category => $category, display_order => $order, publish_date => $form->param_value('publish_date') };
     if($id)
     {
         $article_row = schema->resultset('Article')->find($id);
