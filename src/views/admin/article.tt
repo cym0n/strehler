@@ -28,7 +28,15 @@
            }
     }
     function get_last_chapter() {
-        var category = $("#category_selector").val();
+        var category;
+        if($("#subcat").val())
+        {
+            category = $("#subcat").val();
+        }
+        else
+        {
+            category = $("#category_selector").val();   
+        }
         if(category)
         {
             var request = $.ajax({
