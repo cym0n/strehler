@@ -260,13 +260,14 @@ any '/category/list' => sub
     #THE FORM
     my $form = HTML::FormFu->new;
     $form->load_config_file( 'forms/admin/category.yml' );
+    my $parent = $form->get_element({ name => 'parent'});
+    $parent->options(Strehler::Element::Category::make_select());
     my $params_hashref = params;
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
         my $new_category = Strehler::Element::Category::save_form($form);
-        my %new_el = $new_category->get_basic_data();
-        push @{$to_view}, \%new_el;
+        redirect dancer_app->prefix . '/category/list';
     }
     template "admin/category", { categories => $to_view, form => $form };
 };

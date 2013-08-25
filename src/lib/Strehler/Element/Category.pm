@@ -100,7 +100,8 @@ sub get_attr
 
 sub make_select
 {
-    my @category_values = schema->resultset('Category')->all();
+    my $parent = shift;
+    my @category_values = schema->resultset('Category')->search({ parent => $parent });
     my @category_values_for_select;
     push @category_values_for_select, { value => undef, label => "-- seleziona --" }; 
     for(@category_values)
@@ -142,7 +143,15 @@ sub get_list
 sub save_form
 {
     my $form = shift;
-    my $new_category = schema->resultset('Category')->create({category => $form->param_value('category') });
+    my $new_category;
+    if($form->param_value('parent'))
+    {
+        $new_category = schema->resultset('Category')->create({category => $form->param_value('category'), parent => $form->param_value('parent')});
+    }
+    else
+    {
+        $new_category = schema->resultset('Category')->create({category => $form->param_value('category')});
+    }
     return Strehler::Element::Category->new($new_category->id());     
 }
 

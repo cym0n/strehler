@@ -4,6 +4,10 @@ elements:
       constraints:
         type: Required
         message: 'Categoria necessaria<br />'
+    - type: Select
+      id: category_selector
+      name: parent
+      label: categoria padre
     - type: Block
       name: save
       tag: button

@@ -23,7 +23,7 @@
             [% FOREACH subel IN el.subcategories %]
             <tr>
                 <td>[% subel.id %]</td>
-                <td>[% subel.name %]</td>
+                <td class="sub_category">[% subel.name %]</td>
                 <td>
                     <div class="btn-group span2 offset1">
                         <a href="/admin/category/delete/[% subel.id %]" class="btn">Delete</a>
