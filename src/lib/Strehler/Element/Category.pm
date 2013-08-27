@@ -17,7 +17,7 @@ sub BUILDARGS {
         my $id = shift @args; 
         $category = schema->resultset('Category')->find($id);
    }
-   else
+   elsif($#args == 1)
    {
        if($args[0] eq 'name')
        {
@@ -27,7 +27,11 @@ sub BUILDARGS {
        {
             $category = $args[1];
        }
-
+   }
+   else
+   {
+        my %hash_args =  @args;
+        $category = schema->resultset('Category')->find({ category => $hash_args{'parent'}, parent => undef })->subcategories->find({ category => $hash_args{'category'}});
    }
    return { row => $category };
 };
