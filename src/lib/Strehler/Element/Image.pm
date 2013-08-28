@@ -134,8 +134,18 @@ sub get_list
     }
     return {'to_view' => \@to_view, 'last_page' => $pager->last_page()};
 }
-
-
+sub exists
+{
+    my $self = shift;
+    if($self->row)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
 sub save_form
 {
     my $id = shift;

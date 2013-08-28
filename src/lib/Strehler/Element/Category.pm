@@ -142,6 +142,18 @@ sub get_list
     }
     return  \@to_view;
 }
+sub exists
+{
+    my $self = shift;
+    if($self->row)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
 
 
 sub save_form
