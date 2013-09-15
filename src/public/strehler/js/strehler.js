@@ -1,4 +1,19 @@
-function subcategories() { 
+function maincategories(cat, subcat)
+{
+    var request = $.ajax({
+        url: "/admin/category/select",
+        dataType: 'text',
+    });
+    request.done(function(msg) {
+       $("#category_selector").html(msg);
+       if(cat)
+       {
+            $("#category_selector").val(cat);
+       }
+       category_init(subcat);
+    });
+}
+function subcategories(subcat) { 
         var category = $("#category_selector").val(); 
         if(category)
         {
@@ -15,25 +30,36 @@ function subcategories() {
                 {
                     $("#subcat").parent(".select").show();
                     $('#subcat').html(msg);
+                    if(subcat)
+                    {
+                        $('#subcat').val(subcat);
+                    }
                 }
             });
         }   
-        else
-        {
-            $('#image_preview').attr('src', '/strehler/images/no-image.png');
-        }
 };
-function category_init() {
+function get_final_category()
+{
+    if(! $('#subcat').val())
+    {
+        return $('#category_selector').val();
+    }
+    else
+    {
+        return $('#subcat').val();
+    }
+}
+function category_init(subcat) {
+    $("#category_selector").on("change", subcategories);
     if(! $('#subcat').val())
     {
         if($('#category_selector').val())
         {
-            subcategories();
+            subcategories(subcat);
         }
         else
         {
             $("#subcat").parent(".select").hide();
         }
     }
-    $("#category_selector").on("change", subcategories);
 };

@@ -176,9 +176,27 @@ get '/article' => sub
 get '/article/list' => sub
 {
     my $page = params->{'page'} || 1;
+    my $cat_param = params->{'cat'} || undef;
+    my $cat = undef;
+    my $subcat = undef;
+    if($cat_param)
+    {
+        my $category = Strehler::Element::Category->new($cat_param);
+        my $parent = $category->get_attr('parent'); 
+        if($parent)
+        {
+            $subcat = $cat_param;
+            $cat = $parent;
+        }
+        else
+        {
+            $cat = $cat_param;
+        }
+    }
     my $entries_per_page = 20;
-    my $elements = Strehler::Element::Article::get_list({ page => $page, entries_per_page => 20});
-    template "admin/article_list", { articles => $elements->{'to_view'}, page => $page, last_page => $elements->{'last_page'} };
+    my $elements = Strehler::Element::Article::get_list({ page => $page, entries_per_page => $entries_per_page, category_id => $cat_param});
+    template "admin/article_list", { articles => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, last_page => $elements->{'last_page'} };
+
 };
 
 
@@ -308,6 +326,18 @@ get '/category/select/:id' => sub
 {
     my $id = params->{id};
     my $data = Strehler::Element::Category::make_select($id);
+    if($data->[1])
+    {
+        template 'admin/category_select', { categories => $data }, { layout => undef };
+    }
+    else
+    {
+        return 0;
+    }
+};
+get '/category/select' => sub
+{
+    my $data = Strehler::Element::Category::make_select(undef);
     if($data->[1])
     {
         template 'admin/category_select', { categories => $data }, { layout => undef };

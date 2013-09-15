@@ -5,10 +5,27 @@
         <a href="/admin/article/add" class="span1 offset8 btn btn-primary">Nuova</a>
     </div>
 [% END %]
+[% BLOCK categoryfilter %]
+        <div class="row">        
+         <div class="span2">
+            Filta su categoria:
+         </div>
+         <div class="span3">
+            <select id="category_selector">
+            </select>
+        </div>
+        <div class="span3 select">
+            <select id="subcat">
+            </select>
+        </div>
+        <a href="#" id="filter-button" class="span1 btn btn">Filtra</a>
+        </div>
+[% END %]
 <div class="span12">
     <h1>Administrator panel - articles</h1>
 </div>
 <div class="content articlelist span12">
+        [% INCLUDE categoryfilter %]
         [% INCLUDE pager %]
         <table class="table table-striped">
         <thead>
@@ -51,4 +68,34 @@
         </table>
         [% INCLUDE pager %]
 </div>
+<script>
+  function go_to_filtered()
+  {
+    cat = get_final_category();
+    if(! cat)
+    {
+        alert("nothing to do");
+        return false;
+    }
+    var raw = "[% request.request_uri %]";
+    raw = raw.replace(/&cat=\d+/, '');
+    raw = raw.replace(/cat=\d+&/, '');
+    raw = raw.replace(/cat=\d+/, '');
+    if(raw.indexOf("?") != -1)
+    {
+        destination = raw+"&cat="+cat;
+    }
+    else
+    {
+        destination = raw+"?cat="+cat;
+    }
+    window.location.href = destination;
+    return false;
+  }
+  $(document).ready(function() {
+        maincategories([% IF cat_filter %][% cat_filter %][% IF subcat_filter %], [% subcat_filter %][% END %][% END %]);
+        $("#filter-button").on("click", go_to_filtered);
+        
+  });
+</script>
 
