@@ -7,7 +7,7 @@ elements:
       attributes: 
         class: span5
     - type: Select
-      id: cat
+      id: category_selector
       name: category
       label: categoria
     - type: Select

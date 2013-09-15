@@ -14,44 +14,8 @@
     </div>
 </div>
 <script>
-  function subcategories() { 
-    var category = $("#cat").val(); 
-    if(category)
-    {
-        var request = $.ajax({
-        url: "/admin/category/select/"+category,
-        dataType: 'text',
-        });
-        request.done(function(msg) {
-            if(msg == '0')
-            {
-                $("#subcat").parent(".select").hide();
-            }
-            else
-            {
-                $("#subcat").parent(".select").show();
-                $('#subcat').html(msg);
-            }
-        });
-    }   
-    else
-    {
-        $('#image_preview').attr('src', '/strehler/images/no-image.png');
-    }
-  }
   $(document).ready(function() {
-        if(! $('#subcat').val())
-        {
-            if($('#cat').val())
-            {
-                subcategories();
-            }
-            else
-            {
-                $("#subcat").parent(".select").hide();
-            }
-        }
-        $("#cat").on("change", subcategories);
+        category_init();
   });
 </script>
 
