@@ -1,7 +1,15 @@
 [% BLOCK pager %]
     <div class="row">
-        [% IF page > 1 %]<a href="[% request.path %]?page=[% page - 1 %]" class="span1 btn">&lt;</a>[% ELSE %]<span class="span1">&nbsp;</span>[% END %]
-        [% IF page < last_page %]<a href="[% request.path %]?page=[% page + 1 %]" class="span1 btn">&gt;</a>[% ELSE %]<span class="span1">&nbsp;</span>[% END %]
+        [% IF page > 1 %]
+            <a href="[% request.path %]?page=[% page - 1 %][% IF params.cat %]&cat=[% params.cat %][% END %]" class="span1 btn">&lt;</a>
+        [% ELSE %]
+            <span class="span1">&nbsp;</span>
+        [% END %]
+        [% IF page < last_page %]
+            <a href="[% request.path %]?page=[% page + 1 %][% IF params.cat %]&cat=[% params.cat %][% END %]" class="span1 btn">&gt;</a>
+        [% ELSE %]
+            <span class="span1">&nbsp;</span>
+        [% END %]
         <a href="/admin/article/add" class="span1 offset8 btn btn-primary">Nuova</a>
     </div>
 [% END %]
