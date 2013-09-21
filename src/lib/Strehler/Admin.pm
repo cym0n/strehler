@@ -99,7 +99,7 @@ get '/image/list' => sub
     my $cat = undef;
     my $subcat = undef;
     ($cat, $subcat) = Strehler::Element::Category::explode_tree($cat_param);
-    my $entries_per_page = 2;
+    my $entries_per_page = 20;
     my $elements = Strehler::Element::Image::get_list({ page => $page, entries_per_page => $entries_per_page, category_id => $cat_param});
     session 'image-page' => $page;
     session 'image-cat-filter' => $cat_param;
@@ -188,7 +188,7 @@ get '/article/list' => sub
     my $cat = undef;
     my $subcat = undef;
     ($cat, $subcat) = Strehler::Element::Category::explode_tree($cat_param);
-    my $entries_per_page = 3;
+    my $entries_per_page = 20;
     my $elements = Strehler::Element::Article::get_list({ page => $page, entries_per_page => $entries_per_page, category_id => $cat_param});
     session 'article-page' => $page;
     session 'article-cat-filter' => $cat_param;
