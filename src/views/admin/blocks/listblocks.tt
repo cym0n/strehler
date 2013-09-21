@@ -1,12 +1,12 @@
 [% BLOCK pager %]
     <div class="row">
         [% IF page > 1 %]
-            <a href="[% request.path %]?page=[% page - 1 %][% IF params.cat %]&cat=[% params.cat %][% END %]" class="span1 btn">&lt;</a>
+            <a href="[% request.path %]?page=[% page - 1 %]" class="span1 btn">&lt;</a>
         [% ELSE %]
             <span class="span1">&nbsp;</span>
         [% END %]
         [% IF page < last_page %]
-            <a href="[% request.path %]?page=[% page + 1 %][% IF params.cat %]&cat=[% params.cat %][% END %]" class="span1 btn">&gt;</a>
+            <a href="[% request.path %]?page=[% page + 1 %]" class="span1 btn">&gt;</a>
         [% ELSE %]
             <span class="span1">&nbsp;</span>
         [% END %]
@@ -28,7 +28,7 @@
         </div>
         <div class="btn-group span3">
         <a href="#" id="filter-button" class="btn">Filtra</a>
-        <a href="[% request.path_info %]" id="filter-button" class="btn">Azzera filtro</a>
+        <a href="[% request.path_info %]?cat=&page=" id="filter-button" class="btn">Azzera filtro</a>
         </div>
         </div>
 [% END %]
@@ -58,7 +58,7 @@
         destination = raw+"?cat="+cat;
     }*/
     raw = raw.replace(/\?.*/, '');
-    destination = raw+"?cat="+cat;
+    destination = raw+"?page=1&cat="+cat;
 
     window.location.href = destination;
     return false;
