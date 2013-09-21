@@ -1,3 +1,7 @@
+function evoke_subcategories(event)
+{
+    subcategories(null);
+}
 function maincategories(cat, subcat)
 {
     var request = $.ajax({
@@ -30,6 +34,7 @@ function subcategories(subcat) {
                 {
                     $("#subcat").parent(".select").show();
                     $('#subcat').html(msg);
+                    console.dir(subcat);
                     if(subcat)
                     {
                         $('#subcat').val(subcat);
@@ -50,7 +55,7 @@ function get_final_category()
     }
 }
 function category_init(subcat) {
-    $("#category_selector").on("change", subcategories);
+    $("#category_selector").on("change", evoke_subcategories);
     if(! $('#subcat').val())
     {
         if($('#category_selector').val())
