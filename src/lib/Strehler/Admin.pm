@@ -95,9 +95,12 @@ get '/image/list' => sub
 {
     my $page = params->{'page'} || 1;
     my $cat_param = params->{'cat'} || undef;
+    my $cat = undef;
+    my $subcat = undef;
+    ($cat, $subcat) = Strehler::Element::Category::explode_tree($cat_param);
     my $entries_per_page = 20;
-    my $elements = Strehler::Element::Image::get_list({ page => $page, entries_per_page => 20});
-    template "admin/image_list", { images => $elements->{'to_view'}, page => $page, last_page => $elements->{'last_page'} };
+    my $elements = Strehler::Element::Image::get_list({ page => $page, entries_per_page => $entries_per_page, category_id => $cat_param});
+    template "admin/image_list", { images => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, last_page => $elements->{'last_page'} };
 };
 
 any '/image/add' => sub

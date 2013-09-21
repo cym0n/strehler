@@ -1,14 +1,9 @@
-[% BLOCK pager %]
-    <div class="row">
-        [% IF page > 1 %]<a href="[% request.path %]?page=[% page - 1 %]" class="span1 btn">&lt;</a>[% ELSE %]<span class="span1">&nbsp;</span>[% END %]
-        [% IF page < last_page %]<a href="[% request.path %]?page=[% page + 1 %]" class="span1 btn">&gt;</a>[% ELSE %]<span class="span1">&nbsp;</span>[% END %]
-        <a href="/admin/image/add" class="span1 offset8 btn btn-primary">Nuova</a>
-    </div>
-[% END %]
+[% PROCESS admin/blocks/listblocks.tt %]
 <div class="span12">
     <h1>Administrator panel - images</h1>
 </div>
 <div class="content imagelist span12">
+        [% INCLUDE categoryfilter %]
         [% INCLUDE pager %]
         <table class="table table-striped">
         <thead>
@@ -42,4 +37,5 @@
         </table>
         [% INCLUDE pager %]
 </div>
+[% INCLUDE filterscripts %]
 
