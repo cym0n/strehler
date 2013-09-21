@@ -29,6 +29,7 @@ function subcategories(subcat) {
                 if(msg == '0')
                 {
                     $("#subcat").parent(".select").hide();
+                    $('#subcat').val(undef);
                 }
                 else
                 {
