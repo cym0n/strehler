@@ -4,6 +4,7 @@ use Moo;
 use Dancer2;
 use Dancer2::Plugin::DBIC;
 use Data::Dumper;
+use Strehler::Element::Tag;
 
 has row => (
     is => 'ro',
@@ -194,6 +195,7 @@ sub save_form
         my $lan = $_;
         $img_row->descriptions->create( { title => $form->param_value('title_' . $lan), description => $form->param_value('description_' . $lan), language => $lan }) if($form->param_value('title_' . $lan) || $form->param_value('description_' . $lan));;
     }
+    Strehler::Element::Tag::save_tags($form->param_value('tags'), $img_row->id, 'image');
     return $img_row->id;     
 }
 
