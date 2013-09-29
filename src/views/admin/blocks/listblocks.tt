@@ -10,7 +10,7 @@
         [% ELSE %]
             <span class="span1">&nbsp;</span>
         [% END %]
-        <a href="/admin/article/add" class="span1 offset8 btn btn-primary">Nuova</a>
+        <a href="add" class="span1 offset8 btn btn-primary">Nuova</a>
     </div>
 [% END %]
 [% BLOCK categoryfilter %]
