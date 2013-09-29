@@ -39,6 +39,7 @@ sub get_form_data
         $data->{'title_' . $lan} = $d->title;
         $data->{'description_' . $lan} = $d->description;
     }
+    $data->{'tags'} = Strehler::Element::Tag::tags_to_string($self->get_attr('id'), 'image');
     return $data;
 }
 sub main_title

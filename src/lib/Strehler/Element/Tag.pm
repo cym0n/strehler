@@ -31,17 +31,36 @@ sub BUILDARGS {
    return { row => $tag };
 };
 
+sub tags_to_string
+{
+    my $item = shift;
+    my $item_type = shift;
+    my @tags = schema->resultset('Tag')->search({ item_id => $item, item_type => $item_type });
+    my $out = "";
+    for(@tags)
+    {
+        $out .= $_->tag . ", ";
+    }
+    $out =~ s/, $//;
+    return $out;
+}
+
 sub save_tags
 {
     my $string = shift;
     my $item = shift;
     my $item_type = shift;
-    $string = s/ ?, ?/,/g;
+    $string =~ s/ ?, ?/,/g;
     my @tags = split(',', $string);
-    schema->resulset('Tag')->search({item_id => $item})->delete_all();
+    schema->resultset('Tag')->search({item_id => $item})->delete_all();
+    my %already;
     for(@tags)
     {
-        my $new_tag = schema->resultset('Tag')->create({tag => $_, item_id => $item, item_type => $item_type});
+        if(! $already{$_})
+        {
+            $already{$_} = 1;
+            my $new_tag = schema->resultset('Tag')->create({tag => $_, item_id => $item, item_type => $item_type});
+        }
     }
 }
 

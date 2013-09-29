@@ -19,6 +19,10 @@ elements:
       label: sottocategoria
       id: subcat
     - type: Fieldset
+      elements:
+        - name: tags
+          label: Tags
+    - type: Fieldset
       elements: 
           - name: order
             id: order
