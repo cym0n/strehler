@@ -45,12 +45,30 @@ sub tags_to_string
     return $out;
 }
 
+sub get_elements_by_tag
+{
+    my $tag = shift;
+    my @images;
+    my @articles;
+    foreach(schema->resultset('Tag')->search({tag => $tag, item_type => 'image'}))
+    {
+        debug "IMG: " . $_->item_id;
+        push @images, Strehler::Element::Image->new($_->item_id);
+    }
+    for(schema->resultset('Tag')->search({tag => $tag, item_type => 'article'}))
+    {
+        debug "ART: " . $_->item_id;
+        push @articles, Strehler::Element::Article->new($_->item_id);
+    }
+    return { images => \@images, articles => \@articles };
+}
+
 sub save_tags
 {
     my $string = shift;
     my $item = shift;
     my $item_type = shift;
-    $string =~ s/ ?, ?/,/g;
+    $string =~ s/( +)?,( +)?/,/g;
     my @tags = split(',', $string);
     schema->resultset('Tag')->search({item_id => $item})->delete_all();
     my %already;
