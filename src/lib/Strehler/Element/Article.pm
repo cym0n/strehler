@@ -3,7 +3,6 @@ package Strehler::Element::Article;
 use Moo;
 use Dancer2;
 use Dancer2::Plugin::DBIC;
-use Strehler::Element::Tag;
 use Data::Dumper;
 
 has row => (
@@ -338,6 +337,12 @@ sub get_list
     {
         $search_criteria->{'published'} = $args{'published'};
     }
+    if(exists $args{'tag'} && $args{'tag'})
+    {
+        my $ids = schema->resultset('Tag')->search({tag => $args{'tag'}, item_type => 'article'})->get_column('item_id');
+        $search_criteria->{'id'} = { -in => $ids->as_query };
+    }
+
     my $rs;
     if(exists $args{'category_id'} && $args{'category_id'})
     {

@@ -114,7 +114,11 @@ sub get_list
     #{
     #    $search_criteria->{'published'} = $args{'published'};
     #}
-
+    if(exists $args{'tag'} && $args{'tag'})
+    {
+        my $ids = schema->resultset('Tag')->search({tag => $args{'tag'}, item_type => 'image'})->get_column('item_id');
+        $search_criteria->{'id'} = { -in => $ids->as_query };
+    }
     my $rs;
     if(exists $args{'category_id'} && $args{'category_id'})
     {
