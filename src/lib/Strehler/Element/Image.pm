@@ -4,7 +4,6 @@ use Moo;
 use Dancer2;
 use Dancer2::Plugin::DBIC;
 use Data::Dumper;
-use Strehler::Element::Tag;
 
 has row => (
     is => 'ro',
@@ -64,6 +63,12 @@ sub get_basic_data
     $data{'source'} = $self->get_attr('image');
     $data{'category'} = $self->row->category->category;
     return %data;
+}
+sub src
+{
+    my $self = shift;
+    #just a wrapper for templates
+    return $self->get_attr('image');
 }
 sub delete
 {
