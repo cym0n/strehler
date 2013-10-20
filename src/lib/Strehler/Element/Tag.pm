@@ -52,12 +52,10 @@ sub get_elements_by_tag
     my @articles;
     foreach(schema->resultset('Tag')->search({tag => $tag, item_type => 'image'}))
     {
-        debug "IMG: " . $_->item_id;
         push @images, Strehler::Element::Image->new($_->item_id);
     }
     for(schema->resultset('Tag')->search({tag => $tag, item_type => 'article'}))
     {
-        debug "ART: " . $_->item_id;
         push @articles, Strehler::Element::Article->new($_->item_id);
     }
     return { images => \@images, articles => \@articles };
