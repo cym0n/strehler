@@ -108,6 +108,16 @@ sub get_list
     $args{'order_by'} ||= 'id';
     $args{'entries_per_page'} ||= 20;
     $args{'page'} ||= 1;
+    
+    my $no_paging = 0;
+    my $default_page = 1;
+    if($args{'entries_per_page'} == -1)
+    {
+        $args{'entries_per_page'} = undef;
+        $default_page = undef;
+        $no_paging = 1;
+    }
+
     my $search_criteria = undef;
 
     #Images have no publish logic
@@ -124,19 +134,30 @@ sub get_list
     if(exists $args{'category_id'} && $args{'category_id'})
     {
         my $category = schema->resultset('Category')->find( { id => $args{'category_id'} } );
-        $rs = $category->images->search($search_criteria, { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => 1, rows => $args{'entries_per_page'} });
+        $rs = $category->images->search($search_criteria, { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => $default_page, rows => $args{'entries_per_page'} });
     }
     elsif(exists $args{'category'} && $args{'category'})
     {
         my $category = schema->resultset('Category')->find( { category => $args{'category'} } );
-        $rs = $category->images->search($search_criteria, { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => 1, rows => $args{'entries_per_page'} });
+        $rs = $category->images->search($search_criteria, { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => $default_page, rows => $args{'entries_per_page'} });
     }
     else
     {
-        $rs = schema->resultset('Image')->search($search_criteria, { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => 1, rows => $args{'entries_per_page'}});
+        $rs = schema->resultset('Image')->search($search_criteria, { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => $default_page, rows => $args{'entries_per_page'}});
     }
-    my $pager = $rs->pager();
-    my $elements = $rs->page($args{'page'});
+    my $elements;
+    my $last_page;
+    if($no_paging)
+    {
+        $elements = $rs;
+        $last_page = 1;
+    }
+    else
+    {
+        my $pager = $rs->pager();
+        $elements = $rs->page($args{'page'});
+        $last_page = $pager->last_page();
+    }
     my @to_view;
     for($elements->all())
     {
@@ -144,7 +165,7 @@ sub get_list
         my %el = $img->get_basic_data();
         push @to_view, \%el;
     }
-    return {'to_view' => \@to_view, 'last_page' => $pager->last_page()};
+    return {'to_view' => \@to_view, 'last_page' => $last_page};
 }
 sub exists
 {
