@@ -20,7 +20,10 @@ hook before => sub {
     if((! session 'user') && request->path_info ne dancer_app->prefix . '/login')
     {
         session redir_url => request->path_info;
-        redirect dancer_app->prefix . '/login';
+        my $redir = redirect(dancer_app->prefix . '/login');
+        context->response->is_halted(0);
+        return $redir;
+        #redirect dancer_app->prefix . '/login';
     }
 };
 
@@ -69,11 +72,17 @@ any '/login' => sub {
             session 'user' => $params_hashref->{'user'};
             if( session 'redir_url' )
             {
-                redirect session 'redir_url';
+                my $redir = redirect(session 'redir_url');
+                context->response->is_halted(0);
+                return $redir;
+                #redirect session 'redir_url';
             }
             else
             {
-                redirect dancer_app->prefix . '/';
+                my $redir = redirect(dancer_app->prefix . '/');
+                context->response->is_halted(0);
+                return $redir;
+                #redirect dancer_app->prefix . '/';
             }
         }
         else
@@ -388,7 +397,7 @@ sub form_article
     $form = add_multilang_fields($form, \@languages, 'forms/admin/article_multilang.yml'); 
     my $default_language = config->{default_language};
     $form->constraint({ name => 'title_' . $default_language, type => 'Required' }); 
-    $form->constraint({ name => 'text_' . $default_language, type => 'Required' }); 
+    #$form->constraint({ name => 'text_' . $default_language, type => 'Required' }); 
     my $image = $form->get_element({ name => 'image'});
     $image->options(Strehler::Element::Image::make_select());
     my $category = $form->get_element({ name => 'category'});
