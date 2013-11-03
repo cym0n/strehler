@@ -441,10 +441,28 @@ sub save_form
     for(@languages)
     {
         my $lan = $_;
-        if($form->param_value('title_' . $lan) && $form->param_value('text_' . $lan))
+        my $title;
+        my $text;
+        if($form->param_value('title_' . $lan) =~ /^ *$/)
+        {
+            $title = undef;
+        }
+        else
+        {
+            $title = $form->param_value('title_' . $lan);
+        }
+        if($form->param_value('text_' . $lan) =~ /^ *$/)
+        {
+            $text = undef;
+        }
+        else
+        {
+            $text = $form->param_value('text_' . $lan);
+        }
+        if($title)
         {
             my $slug = $article_row->id . '-' . Strehler::Helpers::slugify($form->param_value('title_' . $lan));
-            $article_row->contents->create( { title => $form->param_value('title_' . $lan), text => $form->param_value('text_' . $lan), slug => $slug, language => $lan }) 
+            $article_row->contents->create( { title => $title, text => $text, slug => $slug, language => $lan }) 
         }
     }
     Strehler::Element::Tag::save_tags($form->param_value('tags'), $article_row->id, 'article');
