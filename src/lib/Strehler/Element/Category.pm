@@ -167,6 +167,21 @@ sub explode_tree
         return (undef, undef);
     }
 }
+sub explode_name
+{
+    my $category_path = shift;
+    my @cats = split '/', $category_path;
+    debug $cats[0] . " " . $cats[1];
+    if(exists $cats[1])
+    {
+        debug "Going down with the recursion\n"; 
+        return Strehler::Element::Category->new(parent => $cats[0], category => $cats[1]);
+    }
+    else
+    {
+        return Strehler::Element::Category->new(name => $cats[0]);
+    }
+}
   
 
 

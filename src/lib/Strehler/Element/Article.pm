@@ -367,10 +367,15 @@ sub get_list
     }
     elsif(exists $args{'category'} && $args{'category'})
     {
-        my $category = schema->resultset('Category')->find( { category => $args{'category'} } );
-        if(! $category)
+        my $category;
+        my $category_obj = Strehler::Element::Category::explode_name($args{'category'});
+        if(! $category_obj->exists())
         {
             return {'to_view' => [], 'last_page' => 1 };
+        }
+        else
+        {
+            $category = $category_obj->row;
         }
         $rs = $category->articles->search($search_criteria, { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => $default_page, rows => $args{'entries_per_page'} });
     }
