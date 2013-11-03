@@ -31,7 +31,15 @@ sub BUILDARGS {
    else
    {
         my %hash_args =  @args;
-        $category = schema->resultset('Category')->find({ category => $hash_args{'parent'}, parent => undef })->subcategories->find({ category => $hash_args{'category'}});
+        my $main = schema->resultset('Category')->find({ category => $hash_args{'parent'}, parent => undef });
+        if($main)
+        {
+            $category = $main->subcategories->find({ category => $hash_args{'category'}});
+        }
+        else
+        {
+            $category = undef;
+        }
    }
    return { row => $category };
 };
