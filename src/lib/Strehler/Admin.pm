@@ -388,6 +388,29 @@ get '/category/select' => sub
         return 0;
     }
 };
+ajax '/category/tagform/:type/:id?' => sub
+{
+    if(params->{id})
+    {
+        my $tags = Strehler::Element::Tag::get_configured_tags(params->{id}, 'array');
+        if($tags->{'both'})
+        {
+           template 'admin/configured_tags', { tags => $tags->{'both'}, default => $tags->{'default-both'}};
+        }
+        elsif($tags->{params->{type}})
+        {
+           template 'admin/configured_tags', { tags => $tags->{params->{type}}, default => $tags->{'default-'. params->{type}}};
+        }
+        else
+        {
+            template 'admin/open_tags';
+        }
+    }
+    else
+    {
+        template 'admin/open_tags';
+    }
+};
 
 ##### Helpers #####
 # They only manipulate forms rendering and manage login

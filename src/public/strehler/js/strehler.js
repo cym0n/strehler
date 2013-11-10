@@ -46,7 +46,7 @@ function subcategories(subcat) {
 };
 function get_final_category()
 {
-    if(! $('#subcat').val())
+    if((! $('#subcat').val()) || (! $('#subcat').is(":visible")))
     {
         return $('#category_selector').val();
     }
@@ -69,3 +69,33 @@ function category_init(subcat) {
         }
     }
 };
+function tags_refresh_on_parent() {
+    category = $("#category_selector").val()
+    var request = $.ajax({
+        url: "/admin/category/tagform/"+item_type+"/"+category,
+        dataType: 'text',
+    });
+    request.done(function(msg) {
+        $('#tags-place').html(msg);
+    });
+};
+function tags_refresh_on_sub() {
+    category = $("#subcat").val();
+    if(! category)
+    {
+        category = $("#category_selector").val()
+    }
+    var request = $.ajax({
+        url: "/admin/category/tagform/"+item_type+"/"+category,
+        dataType: 'text',
+    });
+    request.done(function(msg) {
+        $('#tags-place').html(msg);
+    });
+};
+function tags_init()
+{
+    $("#category_selector").on("change", tags_refresh_on_parent);
+    $("#subcat").on("change", tags_refresh_on_sub);
+    tags_refresh_on_parent();
+}

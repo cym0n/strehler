@@ -20,8 +20,13 @@ elements:
       id: subcat
     - type: Fieldset
       elements:
-        - name: tags
-          label: Tags
+    #    - name: tags
+    #      label: Tags
+        - type: Block
+          tag: div
+          id: tags-place
+          attributes:
+            class: text label
     - type: Fieldset
       elements: 
           - name: order

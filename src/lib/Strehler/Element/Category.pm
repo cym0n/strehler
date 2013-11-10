@@ -249,7 +249,14 @@ sub save_form
     if($id)
     {
         $new_category = schema->resultset('Category')->find($id);
-        $new_category->update({category => $form->param_value('category'), parent => $form->param_value('parent')});
+        if($form->param_value('parent'))
+        {
+            $new_category->update({category => $form->param_value('category'), parent => $form->param_value('parent')});
+        }
+        else
+        {
+            $new_category->update({category => $form->param_value('category')});
+        }
     }
     else
     {
