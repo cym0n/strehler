@@ -1,0 +1,19 @@
+elements:
+    - name: category
+      label: categoria
+      constraints:
+        type: Required
+        message: 'Categoria necessaria<br />'
+    - type: Select
+      id: category_selector
+      name: parent
+      label: categoria padre
+    - type: Block
+      name: save
+      tag: button
+      content: Nuova categoria
+      attributes:
+        type: submit
+        class: btn btn-primary
+
+   

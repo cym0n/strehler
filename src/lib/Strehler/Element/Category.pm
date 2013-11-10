@@ -3,6 +3,7 @@ package Strehler::Element::Category;
 use Moo;
 use Dancer2;
 use Dancer2::Plugin::DBIC;
+use Strehler::Element::Tag;
 use Data::Dumper;
 
 has row => (
@@ -205,20 +206,80 @@ sub exists
     }
 }
 
-
-sub save_form
+sub get_form_data
 {
-    my $form = shift;
-    my $new_category;
-    if($form->param_value('parent'))
+    my $self = shift;
+    my $row = $self->row;
+    my $data;
+    $data->{'category'} = $row->category;
+    $data->{'parent'} = $row->parent;
+    my $configured_tags = Strehler::Element::Tag::get_configured_tags($row->id, 'string');
+    if($configured_tags->{'both'})
     {
-        $new_category = schema->resultset('Category')->create({category => $form->param_value('category'), parent => $form->param_value('parent')});
+        $data->{'type-1'} = 'b';
+        $data->{'tags-1'} = $configured_tags->{'both'};
+        $data->{'default-1'} = $configured_tags->{'default-both'};
     }
     else
     {
-        $new_category = schema->resultset('Category')->create({category => $form->param_value('category')});
+        my $counter = 1;
+        if($configured_tags->{'article'})
+        {   
+            $data->{'type-1'} = 'a';
+            $data->{'tags-1'} = $configured_tags->{'article'};
+            $data->{'default-1'} = $configured_tags->{'default-article'};
+            $counter++;
+        }
+        if($configured_tags->{'image'})
+        {   
+            $data->{'type-'.$counter} = 'i';
+            $data->{'tags-'.$counter} = $configured_tags->{'image'};
+            $data->{'default-'.$counter} = $configured_tags->{'default-image'};
+            $counter++;
+        }
     }
-    return Strehler::Element::Category->new($new_category->id());     
+    return $data;
+}
+
+sub save_form
+{
+    my $id = shift;
+    my $form = shift;
+    my $new_category;
+    if($id)
+    {
+        $new_category = schema->resultset('Category')->find($id);
+        $new_category->update({category => $form->param_value('category'), parent => $form->param_value('parent')});
+    }
+    else
+    {
+        if($form->param_value('parent'))
+        {
+            $new_category = schema->resultset('Category')->create({category => $form->param_value('category'), parent => $form->param_value('parent')});
+        }
+        else
+        {
+            $new_category = schema->resultset('Category')->create({category => $form->param_value('category')});
+        }
+    }
+    if($form->param_value('tags-1') || $form->param_value('tags-2'))
+    {
+        Strehler::Element::Tag::clean_configured_tags($new_category->id);
+        my $first_form = $form->param_value('type-1');
+        if($form->param_value('tags-1'))
+        {
+
+            Strehler::Element::Tag::save_configured_tags($form->param_value('tags-1'), $form->param_value('default-1'), $new_category->id, $form->param_value('type-1'));
+        }
+        if($form->param_value('tags-1'))
+        {
+            if($first_form ne 'b' && $first_form ne  $form->param_value('type-2'))
+            {
+                Strehler::Element::Tag::save_configured_tags($form->param_value('tags-2'), $form->param_value('default-2'), $new_category->id, $form->param_value('type-2'));
+            }
+        }
+
+    }
 }
 
 

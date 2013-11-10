@@ -8,10 +8,36 @@ elements:
       id: category_selector
       name: parent
       label: categoria padre
+    - type: Fieldset
+      elements: 
+        - name: type-1
+          label: per chi?
+          type: Select
+          options:
+             - ['i', 'immagini']
+             - ['a', 'articoli']
+             - ['b', 'entrambi']
+        - name: tags-1
+          label: tags
+        - name: default-1
+          label: default
+    - type: Fieldset
+      elements: 
+        - name: type-2
+          label: per chi?
+          type: Select
+          options:
+             - ['i', 'immagini']
+             - ['a', 'articoli']
+             - ['b', 'entrambi']
+        - name: tags-2
+          label: tags
+        - name: default-2
+          label: default
     - type: Block
       name: save
       tag: button
-      content: Nuova categoria
+      content: Submit
       attributes:
         type: submit
         class: btn btn-primary

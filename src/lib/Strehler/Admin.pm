@@ -285,7 +285,7 @@ any '/category/list' => sub
 
     #THE FORM
     my $form = HTML::FormFu->new;
-    $form->load_config_file( 'forms/admin/category.yml' );
+    $form->load_config_file( 'forms/admin/category_fast.yml' );
     my $parent = $form->get_element({ name => 'parent'});
     $parent->options(Strehler::Element::Category::make_select());
     my $params_hashref = params;
@@ -295,7 +295,42 @@ any '/category/list' => sub
         my $new_category = Strehler::Element::Category::save_form($form);
         redirect dancer_app->prefix . '/category/list';
     }
-    template "admin/category", { categories => $to_view, form => $form };
+    template "admin/category_list", { categories => $to_view, form => $form };
+};
+
+any '/category/add' => sub
+{
+    my $form = form_category();
+    my $params_hashref = params;
+    $form->process($params_hashref);
+    if($form->submitted_and_valid)
+    {
+        Strehler::Element::Category::save_form(undef, $form);
+        redirect dancer_app->prefix . '/category/list'; 
+    }
+    $form = bootstrap_divider($form);
+    template "admin/category", { form => $form->render() }
+};
+get '/category/edit/:id' => sub {
+    my $id = params->{id};
+    my $category = Strehler::Element::Category->new($id);
+    my $form_data = $category->get_form_data();
+    my $form = form_category();
+    $form->default_values($form_data);
+    template "admin/category", { form => $form->render() }
+};
+post '/category/edit/:id' => sub
+{
+    my $form = form_category();
+    my $id = params->{id};
+    my $params_hashref = params;
+    $form->process($params_hashref);
+    if($form->submitted_and_valid)
+    {
+        Strehler::Element::Category::save_form($id, $form);
+        redirect dancer_app->prefix . '/category/list';
+    }
+    template "admin/category", { form => $form->render() }
 };
 
 get '/category/delete/:id' => sub
@@ -404,6 +439,15 @@ sub form_article
     $category->options(Strehler::Element::Category::make_select());
     my $subcategory = $form->get_element({ name => 'subcategory'});
     $subcategory->options(Strehler::Element::Category::make_select($has_sub));
+    return $form;
+}
+
+sub form_category
+{
+    my $form = HTML::FormFu->new;
+    $form->load_config_file( 'forms/admin/category.yml' );
+    my $category = $form->get_element({ name => 'parent'});
+    $category->options(Strehler::Element::Category::make_select());
     return $form;
 }
 
