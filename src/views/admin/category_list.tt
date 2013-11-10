@@ -2,6 +2,13 @@
     <h1>Administrator panel - Categories</h1>
 </div>
 <div class="content categorylist span12">
+        <div class="row">
+          <a href="add" class="span2 btn btn-primary">Nuova categoria</a>
+        </div>
+        <br />
+       <div class="categoryadd">
+            [% form %]
+        </div>
         <table class="table">
         <thead>
             <tr>
@@ -16,6 +23,7 @@
                 <td>[% el.name %]</td>
                 <td>
                     <div class="btn-group span2 offset1">
+                        <a href="/admin/category/edit/[% el.id %]" class="btn">Edit</a>
                         <a href="/admin/category/delete/[% el.id %]" class="btn">Delete</a>
                     </div>
                 </td>
@@ -26,6 +34,7 @@
                 <td class="sub_category">[% subel.name %]</td>
                 <td>
                     <div class="btn-group span2 offset1">
+                        <a href="/admin/category/edit/[% subel.id %]" class="btn">Edit</a>
                         <a href="/admin/category/delete/[% subel.id %]" class="btn">Delete</a>
                     </div>
                 </td>
@@ -34,9 +43,7 @@
             [% END %]
         </tbody>
         </table>
-        <div class="categoryadd">
-            [% form %]
-        </div>
+     
 </div>
 
 

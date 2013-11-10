@@ -11,7 +11,7 @@ elements:
     - type: Block
       name: save
       tag: button
-      content: Nuova categoria
+      content: Nuova categoria (veloce)
       attributes:
         type: submit
         class: btn btn-primary
