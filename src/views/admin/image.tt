@@ -15,7 +15,9 @@
 </div>
 <script>
   $(document).ready(function() {
+        item_type = 'image';
         category_init();
+        tags_init();
   });
 </script>
 

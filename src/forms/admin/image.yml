@@ -14,10 +14,11 @@ elements:
       name: subcategory
       label: sottocategoria
       id: subcat
-    - name: tags
-      label: Tags
+    - type: Block
+      tag: div
+      id: tags-place
       attributes:
-        class: span5
+        class: text label
     - name: save
       type: Block
       tag: button
