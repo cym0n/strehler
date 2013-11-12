@@ -210,12 +210,25 @@ any '/article/add' => sub
 {
     my $form = form_article(); 
     my $params_hashref = params;
+    if($params_hashref->{'configured-tag'})
+    {
+        $params_hashref->{'tags'} = join(',', @{$params_hashref->{'configured-tag'}});
+        my $subcategory = $form->get_element({ name => 'subcategory'});
+        $form->insert_after($form->element({ type => 'Text', name => 'tags'}), $subcategory);
+    }
+    elsif($params_hashref->{'tags'})
+    { 
+        my $subcategory = $form->get_element({ name => 'subcategory'});
+        $form->insert_after($form->element({ type => 'Text', name => 'tags'}), $subcategory);
+    }
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
         Strehler::Element::Article::save_form(undef, $form);
         redirect dancer_app->prefix . '/article/list';
     }
+    my $fake_tags = $form->get_element({ name => 'tags'});
+    $form->remove_element($fake_tags);
     template "admin/article", { form => $form->render() }
 };
 
@@ -395,11 +408,11 @@ ajax '/category/tagform/:type/:id?' => sub
         my $tags = Strehler::Element::Tag::get_configured_tags(params->{id}, 'array');
         if($tags->{'both'})
         {
-           template 'admin/configured_tags', { tags => $tags->{'both'}, default => $tags->{'default-both'}};
+           template 'admin/configured_tags', { tags => $tags->{'both'}, default_tag => $tags->{'default-both'}};
         }
         elsif($tags->{params->{type}})
         {
-           template 'admin/configured_tags', { tags => $tags->{params->{type}}, default => $tags->{'default-'. params->{type}}};
+           template 'admin/configured_tags', { tags => $tags->{params->{type}}, default_tag => $tags->{'default-'. params->{type}}};
         }
         else
         {

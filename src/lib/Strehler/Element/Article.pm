@@ -478,7 +478,10 @@ sub save_form
             $article_row->contents->create( { title => $title, text => $text, slug => $slug, language => $lan }) 
         }
     }
-    Strehler::Element::Tag::save_tags($form->param_value('tags'), $article_row->id, 'article');
+    if($form->param_value('tags'))
+    {
+        Strehler::Element::Tag::save_tags($form->param_value('tags'), $article_row->id, 'article');
+    }
     return $article_row->id;  
 }
 

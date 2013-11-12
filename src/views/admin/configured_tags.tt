@@ -1,4 +1,4 @@
 <label>Tags</label>
 [% FOREACH tag IN tags %]
-<input type="checkbox" name="configured-tag" value="[% tag %]">[% tag %]
+<input type="checkbox" name="configured-tag" value="[% tag %]" [% IF tag == default_tag %]checked[% END %]>[% tag %]
 [% END %]
