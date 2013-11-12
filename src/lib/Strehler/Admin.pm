@@ -119,6 +119,7 @@ any '/image/add' => sub
 {
     my $form = form_image('add');
     my $params_hashref = params;
+    $form = tags_for_form($form, $params_hashref);
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
@@ -161,6 +162,7 @@ post '/image/edit/:id' => sub
     my $form = form_image('edit');
     my $id = params->{id};
     my $params_hashref = params;
+    $form = tags_for_form($form, $params_hashref);
     $form->process($params_hashref);
     my $message;
     if($form->submitted_and_valid)
@@ -210,17 +212,7 @@ any '/article/add' => sub
 {
     my $form = form_article(); 
     my $params_hashref = params;
-    if($params_hashref->{'configured-tag'})
-    {
-        $params_hashref->{'tags'} = join(',', @{$params_hashref->{'configured-tag'}});
-        my $subcategory = $form->get_element({ name => 'subcategory'});
-        $form->insert_after($form->element({ type => 'Text', name => 'tags'}), $subcategory);
-    }
-    elsif($params_hashref->{'tags'})
-    { 
-        my $subcategory = $form->get_element({ name => 'subcategory'});
-        $form->insert_after($form->element({ type => 'Text', name => 'tags'}), $subcategory);
-    }
+    $form = tags_for_form($form, $params_hashref);
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
@@ -246,6 +238,7 @@ post '/article/edit/:id' => sub
     my $form = form_article();
     my $id = params->{id};
     my $params_hashref = params;
+    $form = tags_for_form($form, $params_hashref);
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
@@ -484,6 +477,23 @@ sub form_category
     $form->load_config_file( 'forms/admin/category.yml' );
     my $category = $form->get_element({ name => 'parent'});
     $category->options(Strehler::Element::Category::make_select());
+    return $form;
+}
+sub tags_for_form
+{
+    my $form = shift;
+    my $params_hashref = shift;
+    if($params_hashref->{'configured-tag'})
+    {
+        $params_hashref->{'tags'} = join(',', @{$params_hashref->{'configured-tag'}});
+        my $subcategory = $form->get_element({ name => 'subcategory'});
+        $form->insert_after($form->element({ type => 'Text', name => 'tags'}), $subcategory);
+    }
+    elsif($params_hashref->{'tags'})
+    { 
+        my $subcategory = $form->get_element({ name => 'subcategory'});
+        $form->insert_after($form->element({ type => 'Text', name => 'tags'}), $subcategory);
+    }
     return $form;
 }
 
