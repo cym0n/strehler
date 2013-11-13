@@ -220,7 +220,7 @@ any '/article/add' => sub
         redirect dancer_app->prefix . '/article/list';
     }
     my $fake_tags = $form->get_element({ name => 'tags'});
-    $form->remove_element($fake_tags);
+    $form->remove_element($fake_tags) if($fake_tags);
     template "admin/article", { form => $form->render() }
 };
 
@@ -275,6 +275,30 @@ get '/article/turnoff/:id' => sub
     my $article = Strehler::Element::Article->new($id);
     $article->unpublish();
     redirect dancer_app->prefix . '/article/list';
+};
+ajax '/article/tagform/:id?' => sub
+{
+    if(params->{id})
+    {
+        my $article = Strehler::Element::Article->new(params->{id});
+        my $tags = Strehler::Element::Tag::get_configured_tags($article->get_attr('category'));
+#        if($tags->{'both'})
+#        {
+#           template 'admin/configured_tags', { tags => $tags->{'both'}, default_tag => $tags->{'default-both'}};
+#        }
+#        elsif($tags->{params->{type}})
+#        {
+#           template 'admin/configured_tags', { tags => $tags->{params->{type}}, default_tag => $tags->{'default-'. params->{type}}};
+#        }
+#        else
+#        {
+#            template 'admin/open_tags';
+#        }
+#    }
+#    else
+#    {
+#        template 'admin/open_tags';
+    }
 };
 
 #Categories
@@ -398,14 +422,10 @@ ajax '/category/tagform/:type/:id?' => sub
 {
     if(params->{id})
     {
-        my $tags = Strehler::Element::Tag::get_configured_tags(params->{id}, 'array');
-        if($tags->{'both'})
+        my @tags = Strehler::Element::Tag::get_configured_tags_for_template(params->{id}, params->{type});
+        if($#tags > -1)
         {
-           template 'admin/configured_tags', { tags => $tags->{'both'}, default_tag => $tags->{'default-both'}};
-        }
-        elsif($tags->{params->{type}})
-        {
-           template 'admin/configured_tags', { tags => $tags->{params->{type}}, default_tag => $tags->{'default-'. params->{type}}};
+           template 'admin/configured_tags', { tags => \@tags };
         }
         else
         {
