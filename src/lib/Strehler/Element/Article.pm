@@ -89,6 +89,12 @@ sub get_ext_data
     $data{'publish_date'} = $self->publish_date();
     return %data;
 }
+sub get_tags
+{
+    my $self = shift;
+    my $tags = Strehler::Element::Tag::tags_to_string($self->get_attr('id'), 'article');
+    return $tags;
+}
 sub next_in_category_by_order
 {
     my $self = shift;

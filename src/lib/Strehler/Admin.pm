@@ -183,6 +183,38 @@ ajax '/image/src/:id' => sub
     return $img->get_attr('image');
 };
 
+ajax '/image/tagform/:id?' => sub
+{
+    if(params->{id})
+    {
+        my $image = Strehler::Element::Image->new(params->{id});
+        my @category_tags = Strehler::Element::Tag::get_configured_tags_for_template($article->get_attr('category'), 'image');
+        my @tags = split(',', $article->get_tags());
+        my @out;
+        if($#category_tags > -1)
+        {
+            foreach my $c_t (@category_tags)
+            {
+                my $default = 0;
+                if (grep {$_ eq $c_t->tag} @tags) 
+                {
+                    $default = 1;
+                }
+                push @out, { tag => $c_t->tag, default_tag => $default };
+            }
+            template 'admin/configured_tags', { tags => \@out };
+        }
+        else
+        {
+            template 'admin/open_tags';
+        }
+    }
+    else
+    {
+           template 'admin/open_tags';
+    }
+};
+
 
 ##### Articles #####
 
@@ -281,23 +313,30 @@ ajax '/article/tagform/:id?' => sub
     if(params->{id})
     {
         my $article = Strehler::Element::Article->new(params->{id});
-        my $tags = Strehler::Element::Tag::get_configured_tags($article->get_attr('category'));
-#        if($tags->{'both'})
-#        {
-#           template 'admin/configured_tags', { tags => $tags->{'both'}, default_tag => $tags->{'default-both'}};
-#        }
-#        elsif($tags->{params->{type}})
-#        {
-#           template 'admin/configured_tags', { tags => $tags->{params->{type}}, default_tag => $tags->{'default-'. params->{type}}};
-#        }
-#        else
-#        {
-#            template 'admin/open_tags';
-#        }
-#    }
-#    else
-#    {
-#        template 'admin/open_tags';
+        my @category_tags = Strehler::Element::Tag::get_configured_tags_for_template($article->get_attr('category'), 'article');
+        my @tags = split(',', $article->get_tags());
+        my @out;
+        if($#category_tags > -1)
+        {
+            foreach my $c_t (@category_tags)
+            {
+                my $default = 0;
+                if (grep {$_ eq $c_t->tag} @tags) 
+                {
+                    $default = 1;
+                }
+                push @out, { tag => $c_t->tag, default_tag => $default };
+            }
+            template 'admin/configured_tags', { tags => \@out };
+        }
+        else
+        {
+            template 'admin/open_tags';
+        }
+    }
+    else
+    {
+           template 'admin/open_tags';
     }
 };
 
@@ -505,7 +544,14 @@ sub tags_for_form
     my $params_hashref = shift;
     if($params_hashref->{'configured-tag'})
     {
-        $params_hashref->{'tags'} = join(',', @{$params_hashref->{'configured-tag'}});
+        if(ref($params_hashref->{'configured-tag'}) eq 'ARRAY')
+        {
+            $params_hashref->{'tags'} = join(',', @{$params_hashref->{'configured-tag'}});
+        }
+        else
+        {
+            $params_hashref->{'tags'} = $params_hashref->{'configured-tag'};
+        }
         my $subcategory = $form->get_element({ name => 'subcategory'});
         $form->insert_after($form->element({ type => 'Text', name => 'tags'}), $subcategory);
     }

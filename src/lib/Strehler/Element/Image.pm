@@ -65,6 +65,11 @@ sub get_basic_data
     $data{'category'} = $self->row->category->category;
     return %data;
 }
+sub get_tags
+{
+    my $self = shift;
+    return Strehler::Element::Tag::tags_to_string($self->get_attr('id'), 'image');
+}
 sub src
 {
     my $self = shift;
