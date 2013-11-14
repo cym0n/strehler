@@ -39,9 +39,9 @@ sub tags_to_string
     my $out = "";
     for(@tags)
     {
-        $out .= $_->tag . ", ";
+        $out .= $_->tag . ",";
     }
-    $out =~ s/, $//;
+    $out =~ s/,$//;
     return $out;
 }
 

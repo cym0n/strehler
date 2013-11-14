@@ -60,7 +60,7 @@
         $("#last").on("click", get_last_chapter);
         item_type = 'article';
         category_init();
-        tags_init();
+        tags_init([% id %]);
     });
 </script>
 

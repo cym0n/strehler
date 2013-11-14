@@ -93,9 +93,26 @@ function tags_refresh_on_sub() {
         $('#tags-place').html(msg);
     });
 };
-function tags_init()
+function tags_refresh_on_id(id) {
+    var request = $.ajax({
+        url: "/admin/"+item_type+"/tagform/"+id,
+        dataType: 'text',
+    });
+    request.done(function(msg) {
+        $('#tags-place').html(msg);
+    });
+};
+function tags_init(id)
 {
     $("#category_selector").on("change", tags_refresh_on_parent);
     $("#subcat").on("change", tags_refresh_on_sub);
-    tags_refresh_on_parent();
+    if(id)
+    {
+        tags_refresh_on_id(id)
+    }
+    else
+    {
+        tags_refresh_on_parent();
+    }
+
 }

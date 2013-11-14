@@ -35,6 +35,17 @@
 {
     margin-bottom: 10px;
 }
+#tags-place
+{
+    margin-bottom: 7px;
+    font-size: 14px;
+}
+#tags-place span
+{
+    margin-left: 6px;
+    margin-right: 6px;
+}
+
 #footer
 {
     margin-top: 30px;

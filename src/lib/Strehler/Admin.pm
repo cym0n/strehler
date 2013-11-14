@@ -154,7 +154,7 @@ get '/image/edit/:id' => sub {
     my $form = form_image('edit', $form_data->{'category'});
     $form->default_values($form_data);
     $form = bootstrap_divider($form);
-    template "admin/image", { form => $form->render(), img_source => $image->get_attr('image') }
+    template "admin/image", { id => $id, form => $form->render(), img_source => $image->get_attr('image') }
 };
 
 post '/image/edit/:id' => sub
@@ -188,8 +188,8 @@ ajax '/image/tagform/:id?' => sub
     if(params->{id})
     {
         my $image = Strehler::Element::Image->new(params->{id});
-        my @category_tags = Strehler::Element::Tag::get_configured_tags_for_template($article->get_attr('category'), 'image');
-        my @tags = split(',', $article->get_tags());
+        my @category_tags = Strehler::Element::Tag::get_configured_tags_for_template($image->get_attr('category'), 'image');
+        my @tags = split(',', $image->get_tags());
         my @out;
         if($#category_tags > -1)
         {
@@ -262,7 +262,7 @@ get '/article/edit/:id' => sub {
     my $form_data = $article->get_form_data();
     my $form = form_article($form_data->{'category'});
     $form->default_values($form_data);
-    template "admin/article", { form => $form->render() }
+    template "admin/article", { id => $id, form => $form->render() }
 };
 
 post '/article/edit/:id' => sub
