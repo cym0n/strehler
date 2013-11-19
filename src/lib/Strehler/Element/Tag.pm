@@ -66,6 +66,7 @@ sub save_tags
     my $string = shift;
     my $item = shift;
     my $item_type = shift;
+    $string ||= '';
     $string =~ s/( +)?,( +)?/,/g;
     my @tags = split(',', $string);
     schema->resultset('Tag')->search({item_id => $item, item_type => $item_type})->delete_all();
