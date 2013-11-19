@@ -361,7 +361,7 @@ any '/category/list' => sub
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
-        my $new_category = Strehler::Element::Category::save_form($form);
+        my $new_category = Strehler::Element::Category::save_form(undef, $form);
         redirect dancer_app->prefix . '/category/list';
     }
     template "admin/category_list", { categories => $to_view, form => $form };
