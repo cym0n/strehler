@@ -2,7 +2,11 @@
     <h1>Administrator panel - homepage</h1>
 </div>
 <div class="content homepage">
+[% TRY %]
+[% INCLUDE 'strehler-home.tt' %]
+[% CATCH %]
 <p class="lead span10 text-center">
     Seleziona una sezione dal menu in alto
 </p>
+[% END %]
 </div>
