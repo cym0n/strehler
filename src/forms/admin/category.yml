@@ -2,8 +2,11 @@ elements:
     - name: category
       label: categoria
       constraints:
-        type: Required
-        message: 'Categoria necessaria<br />'
+        - type: Required
+          message: 'Categoria necessaria<br />'
+        - type: Regex
+          regex: '^[^\/]*$'
+          message: 'Carattere non ammesso'
     - type: Select
       id: category_selector
       name: parent

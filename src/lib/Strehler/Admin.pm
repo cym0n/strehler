@@ -104,6 +104,11 @@ get '/image/list' => sub
 {
     my $page = exists params->{'page'} ? params->{'page'} : session 'image-page';
     my $cat_param = exists params->{'cat'} ? params->{'cat'} : session 'image-cat-filter';
+    if(exists params->{'catname'})
+    {
+        my $wanted_cat = Strehler::Element::Category::explode_name(params->{'catname'});
+        $cat_param = $wanted_cat->get_attr('id');
+    }
     $page ||= 1;
     my $cat = undef;
     my $subcat = undef;
@@ -227,6 +232,11 @@ get '/article/list' => sub
 {
     my $page = exists params->{'page'} ? params->{'page'} : session 'article-page';
     my $cat_param = exists params->{'cat'} ? params->{'cat'} : session 'article-cat-filter';
+    if(exists params->{'catname'})
+    {
+        my $wanted_cat = Strehler::Element::Category::explode_name(params->{'catname'});
+        $cat_param = $wanted_cat->get_attr('id');
+    }
     $page ||= 1;
     my $cat = undef;
     my $subcat = undef;
