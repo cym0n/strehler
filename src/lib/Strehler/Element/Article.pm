@@ -88,10 +88,8 @@ sub get_ext_data
     $data{'text'} = $self->get_attr_multilang('text', $language);
     $data{'display_order'} = $self->get_attr('display_order');
     $data{'publish_date'} = $self->publish_date();
-
-    $image = Strehler::Element::Image->new($self->get_attr('image'));
+    my $image = Strehler::Element::Image->new($self->get_attr('image'));
     $data{'image'} = $image->get_attr('image');
-
     return %data;
 }
 sub get_tags
