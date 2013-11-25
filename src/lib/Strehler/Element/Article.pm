@@ -89,7 +89,10 @@ sub get_ext_data
     $data{'display_order'} = $self->get_attr('display_order');
     $data{'publish_date'} = $self->publish_date();
     my $image = Strehler::Element::Image->new($self->get_attr('image'));
-    $data{'image'} = $image->get_attr('image');
+    if($image->exists())
+    {
+        $data{'image'} = $image->get_attr('image');
+    }
     return %data;
 }
 sub get_tags
