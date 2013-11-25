@@ -5,6 +5,7 @@ use Moo;
 use Dancer2;
 use Dancer2::Plugin::DBIC;
 use Strehler::Element::Tag; # qw(save_tags tags_to_string);
+use Strehler::Element::Image; # qw(save_tags tags_to_string);
 use Data::Dumper;
 
 has row => (
@@ -87,6 +88,10 @@ sub get_ext_data
     $data{'text'} = $self->get_attr_multilang('text', $language);
     $data{'display_order'} = $self->get_attr('display_order');
     $data{'publish_date'} = $self->publish_date();
+
+    $image = Strehler::Element::Image->new($self->get_attr('image'));
+    $data{'image'} = $image->get_attr('image');
+
     return %data;
 }
 sub get_tags
