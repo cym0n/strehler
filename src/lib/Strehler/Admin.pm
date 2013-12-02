@@ -16,7 +16,7 @@ prefix '/admin';
 set layout => 'admin';
 
 hook before => sub {
-    return if(! config->{admin_secured});
+    return if(! config->{Strehler}->{admin_secured});
     if((! session 'user') && request->path_info ne dancer_app->prefix . '/login')
     {
         session redir_url => request->path_info;
@@ -46,7 +46,7 @@ hook before_template_render => sub {
         $tokens->{'navbar'} = \%navbar;
     };
 
-my @languages = @{config->{languages}};
+my @languages = @{config->{Strehler}->{languages}};
 
 
 ##### Homepage #####
@@ -528,7 +528,7 @@ sub form_article
     my $form = HTML::FormFu->new;
     $form->load_config_file( 'forms/admin/article.yml' );
     $form = add_multilang_fields($form, \@languages, 'forms/admin/article_multilang.yml'); 
-    my $default_language = config->{default_language};
+    my $default_language = config->{Strehler}->{default_language};
     $form->constraint({ name => 'title_' . $default_language, type => 'Required' }); 
     #$form->constraint({ name => 'text_' . $default_language, type => 'Required' }); 
     my $image = $form->get_element({ name => 'image'});

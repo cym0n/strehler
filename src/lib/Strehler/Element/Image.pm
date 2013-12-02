@@ -45,7 +45,7 @@ sub get_form_data
 sub main_title
 {
     my $self = shift;
-    my @desc = $self->row->descriptions->search({ language => config->{default_language } });
+    my @desc = $self->row->descriptions->search({ language => config->{Strehler}->{default_language } });
     if($desc[0])
     {
         return $desc[0]->title;
@@ -239,7 +239,7 @@ sub save_form
     {
         $img_row = schema->resultset('Image')->create({ image => $ref, category => $category });
     }
-    my @languages = @{config->{languages}};
+    my @languages = @{config->{Strehler}->{languages}};
     for(@languages)
     {
         my $lan = $_;

@@ -54,7 +54,7 @@ sub get_form_data
 sub main_title
 {
     my $self = shift;
-    my @contents = $self->row->contents->search({ language => config->{default_language} });
+    my @contents = $self->row->contents->search({ language => config->{Strehler}->{default_language} });
     if($contents[0])
     {
         return $contents[0]->title;
@@ -345,7 +345,7 @@ sub get_list
     $args{'order_by'} ||= 'id';
     $args{'entries_per_page'} ||= 20;
     $args{'page'} ||= 1;
-    $args{'language'} ||= config->{default_language};
+    $args{'language'} ||= config->{Strehler}->{default_language};
 
     my $no_paging = 0;
     my $default_page = 1;
@@ -462,7 +462,7 @@ sub save_form
     {
         $article_row = schema->resultset('Article')->create($article_data);
     }
-    my @languages = @{config->{languages}};
+    my @languages = @{config->{Strehler}->{languages}};
     for(@languages)
     {
         my $lan = $_;
