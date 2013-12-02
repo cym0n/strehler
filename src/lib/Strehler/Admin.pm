@@ -44,6 +44,7 @@ hook before_template_render => sub {
         my %navbar;
         $navbar{$tab} = 'active';
         $tokens->{'navbar'} = \%navbar;
+        $tokens->{'extramenu'} = config->{Strehler}->{'extra_menu'};
     };
 
 my @languages = @{config->{Strehler}->{languages}};
