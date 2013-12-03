@@ -4,6 +4,7 @@ use Digest::MD5 "md5_hex";
 use Dancer2;
 use Dancer2::Plugin::DBIC;
 use Dancer2::Plugin::Ajax;
+use Dancer2::Plugin::Strehler;
 use HTML::FormFu;
 use HTML::FormFu::Element::Block;
 use Data::Dumper;
@@ -12,20 +13,9 @@ use Strehler::Element::Image;
 use Strehler::Element::Article;
 use Strehler::Element::Category;
 
+
 prefix '/admin';
 set layout => 'admin';
-
-hook before => sub {
-    return if(! config->{Strehler}->{admin_secured});
-    if((! session 'user') && request->path_info ne dancer_app->prefix . '/login')
-    {
-        session redir_url => request->path_info;
-        my $redir = redirect(dancer_app->prefix . '/login');
-        context->response->is_halted(0);
-        return $redir;
-        #redirect dancer_app->prefix . '/login';
-    }
-};
 
 hook before_template_render => sub {
         my $tokens = shift;
@@ -76,14 +66,12 @@ any '/login' => sub {
                 my $redir = redirect(session 'redir_url');
                 context->response->is_halted(0);
                 return $redir;
-                #redirect session 'redir_url';
             }
             else
             {
                 my $redir = redirect(dancer_app->prefix . '/');
                 context->response->is_halted(0);
                 return $redir;
-                #redirect dancer_app->prefix . '/';
             }
         }
         else
