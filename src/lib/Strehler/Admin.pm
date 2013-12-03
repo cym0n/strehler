@@ -13,32 +13,7 @@ use Strehler::Element::Image;
 use Strehler::Element::Article;
 use Strehler::Element::Category;
 
-
-prefix '/admin';
-set layout => 'admin';
-
-hook before_template_render => sub {
-        my $tokens = shift;
-        my $match_string = "^" . dancer_app->prefix . "\/(.*?)\/";
-        my $match_regexp = qr/$match_string/;
-        my $path = request->path_info();
-        my $tab;
-        if($path =~ $match_regexp)
-        {
-            $tab = $1;
-        }
-        else
-        {
-            $tab = 'home';
-        }
-        my %navbar;
-        $navbar{$tab} = 'active';
-        $tokens->{'navbar'} = \%navbar;
-        $tokens->{'extramenu'} = config->{Strehler}->{'extra_menu'};
-    };
-
 my @languages = @{config->{Strehler}->{languages}};
-
 
 ##### Homepage #####
 
