@@ -6,15 +6,14 @@ use Dancer2::Plugin::DBIC;
 use Strehler::Element::Tag; # qw(save_tags tags_to_string);
 use Data::Dumper;
 
-has row => (
-    is => 'ro',
-);
+extends 'Strehler::Element';
+
 
 sub BUILDARGS {
    my ( $class, @args ) = @_;
    my $id = shift @args; 
    my $img_row = schema->resultset('Image')->find($id);
-   return { row => $img_row };
+   return { row => $img_row, type => 'image', multilang_children => 'descriptions' };
 };
 
 sub get_form_data
@@ -65,29 +64,11 @@ sub get_basic_data
     $data{'category'} = $self->row->category->category;
     return %data;
 }
-sub get_tags
-{
-    my $self = shift;
-    return Strehler::Element::Tag::tags_to_string($self->get_attr('id'), 'image');
-}
 sub src
 {
     my $self = shift;
     #just a wrapper for templates
     return $self->get_attr('image');
-}
-sub delete
-{
-    my $self = shift;
-    $self->row->delete();
-    $self->row->descriptions->delete_all();
-}
-
-sub get_attr
-{
-    my $self = shift;
-    my $attr = shift;
-    return $self->row->get_column($attr);
 }
 
 #Static helpers
@@ -104,6 +85,14 @@ sub make_select
     }
     return \@images_values_for_select;
 }
+
+sub category_accessor
+{
+    my $self = shift;
+    my $category = shift;
+    return $category->can('images');
+}
+
 
 sub get_list
 {
@@ -185,18 +174,7 @@ sub get_list
     }
     return {'to_view' => \@to_view, 'last_page' => $last_page};
 }
-sub exists
-{
-    my $self = shift;
-    if($self->row)
-    {
-        return 1;
-    }
-    else
-    {
-        return 0;
-    }
-}
+
 sub save_form
 {
     my $id = shift;

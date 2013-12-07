@@ -8,19 +8,22 @@ use Strehler::Element::Tag; # qw(save_tags tags_to_string);
 use Strehler::Element::Image; # qw(save_tags tags_to_string);
 use Data::Dumper;
 
-has row => (
-    is => 'ro',
-);
+extends 'Strehler::Element';
+
 
 sub BUILDARGS {
    my ( $class, @args ) = @_;
    my $id = shift @args; 
+   my $article;
    if(! $id)
    {
-    return { row => undef };
+        $article = undef;
    }
-   my $article = schema->resultset('Article')->find($id);
-   return { row => $article };
+   else
+   {
+        $article = schema->resultset('Article')->find($id);
+   }
+   return { row => $article, type => 'article', multilang_children => 'contents' };
 };
 
 sub get_form_data
@@ -95,98 +98,8 @@ sub get_ext_data
     }
     return %data;
 }
-sub get_tags
-{
-    my $self = shift;
-    my $tags = Strehler::Element::Tag::tags_to_string($self->get_attr('id'), 'article');
-    return $tags;
-}
-sub next_in_category_by_order
-{
-    my $self = shift;
-    my $language = shift;
-    my $category = schema->resultset('Category')->find( { category => $self->category() } );
-    my @nexts = $category->articles->search({ published => 1, display_order => { '>', $self->get_attr('display_order') }}, { order_by => {-asc => 'display_order' }});
-    my $next_slug = undef;
-    if($#nexts >= 0)
-    {
-        for(@nexts)
-        {
-            my $el = Strehler::Element::Article->new($_->id);
-            if($el->has_language($language))
-            {
-                return $el;
-            }
-        }
-    }
-    return Strehler::Element::Article->new(undef);
-}
-sub prev_in_category_by_order
-{
-    my $self = shift;
-    my $language = shift;
-    my $category = schema->resultset('Category')->find( { category => $self->category() } );
-    my @nexts = $category->articles->search({ published => 1, display_order => { '<', $self->get_attr('display_order') }}, { order_by => {-desc => 'display_order' }});
-    my $next_slug = undef;
-    if($#nexts >= 0)
-    {
-        for(@nexts)
-        {
-            my $el = Strehler::Element::Article->new($_->id);
-            if($el->has_language($language))
-            {
-                return $el;
-            }
-        }
-    }
-    return Strehler::Element::Article->new(undef);
-}
-sub next_in_category_by_date
-{
-    my $self = shift;
-    my $language = shift;
-    my $category = schema->resultset('Category')->find( { category => $self->category() } );
-    my @nexts = $category->articles->search({ published => 1, publish_date => { '>', $self->get_attr('publish_date') }}, { order_by => {-asc => 'publish_date' }});
-    my $next_slug = undef;
-    if($#nexts >= 0)
-    {
-        for(@nexts)
-        {
-            my $el = Strehler::Element::Article->new($_->id);
-            if($el->has_language($language))
-            {
-                return $el;
-            }
-        }
-    }
-    return Strehler::Element::Article->new(undef);
-}
-sub prev_in_category_by_date
-{
-    my $self = shift;
-    my $language = shift;
-    my $category = schema->resultset('Category')->find( { category => $self->category() } );
-    my @nexts = $category->articles->search({ published => 1, publish_date => { '<', $self->get_attr('publish_date') }}, { order_by => {-desc => 'publish_date' }});
-    my $next_slug = undef;
-    if($#nexts >= 0)
-    {
-        for(@nexts)
-        {
-            my $el = Strehler::Element::Article->new($_->id);
-            if($el->has_language($language))
-            {
-                return $el;
-            }
-        }
-    }
-    return Strehler::Element::Article->new(undef);
-}
-sub delete
-{
-    my $self = shift;
-    $self->row->delete();
-    $self->row->contents->delete_all();
-}
+
+
 sub publish
 {
     my $self = shift;
@@ -199,128 +112,24 @@ sub unpublish
     $self->row->published(0);
     $self->row->update();
 }
-sub get_attr
-{
-    my $self = shift;
-    my $attr = shift;
-    return $self->row->get_column($attr);
-}
+
 #Ad hoc accessor to return the DateTime object
 sub publish_date
 {
     my $self = shift;
     return $self->row->publish_date;
 }
-sub category
+
+#Category accessor used by static methods
+sub category_accessor
 {
     my $self = shift;
-    return $self->row->category->category;
-}
-sub exists
-{
-    my $self = shift;
-    if($self->row)
-    {
-        return 1;
-    }
-    else
-    {
-        return 0;
-    }
-}
-sub has_language
-{
-    my $self = shift;
-    my $language = shift;
-    my $content = $self->row->contents->find({language => $language});
-    if($content)
-    {
-        return 1;
-    }
-    else
-    {
-        return 0;
-    }
+    my $category = shift;
+    return $category->can('articles');
 }
 
-sub get_attr_multilang
-{
-    my $self = shift;
-    my $attr = shift;
-    my $lang = shift;
-    my $content = $self->row->contents->find({'language' => $lang});
-    if($content)
-    {
-        return $content->get_column($attr);
-    }
-    else
-    {
-        return undef;
-    }
-}
 
 #Static helpers
-
-sub get_last_by_order
-{
-    my $cat = shift;
-    my $category = schema->resultset('Category')->find( { category => $cat } );
-    return undef if(! $category);
-    my @chapters = $category->articles->search( { published => 1 }, { order_by => { -desc => 'display_order' } });
-    if($chapters[0])
-    {
-        return Strehler::Element::Article->new($chapters[0]->id);
-    }
-    else
-    {
-        return undef;
-    }
-}
-sub get_last_by_date
-{
-    my $cat = shift;
-    my $category = schema->resultset('Category')->find( { category => $cat } );
-    return undef if(! $category);
-    my @chapters = $category->articles->search( { published => 1 }, { order_by => { -desc => 'publish_date' } });
-    if($chapters[0])
-    {
-        return Strehler::Element::Article->new($chapters[0]->id);
-    }
-    else
-    {
-        return undef;
-    }
-}
-sub get_first_by_order
-{
-    my $cat = shift;
-    my $category = schema->resultset('Category')->find( { category => $cat } );
-    return undef if(! $category);
-    my @chapters = $category->articles->search( { published => 1 }, { order_by => { -asc => 'display_order' } });
-    if($chapters[0])
-    {
-        return Strehler::Element::Article->new($chapters[0]->id);
-    }
-    else
-    {
-        return undef;
-    }
-}
-sub get_first_by_date
-{
-    my $cat = shift;
-    my $category = schema->resultset('Category')->find( { category => $cat } );
-    return undef if(! $category);
-    my @chapters = $category->articles->search( { published => 1 }, { order_by => { -asc => 'publish_date' } });
-    if($chapters[0])
-    {
-        return Strehler::Element::Article->new($chapters[0]->id);
-    }
-    else
-    {
-        return undef;
-    }
-}
 sub get_by_slug
 {
     my $slug = shift;
