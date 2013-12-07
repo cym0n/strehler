@@ -78,7 +78,7 @@ get '/image/list' => sub
     my $subcat = undef;
     ($cat, $subcat) = Strehler::Element::Category::explode_tree($cat_param);
     my $entries_per_page = 20;
-    my $elements = Strehler::Element::Image::get_list({ page => $page, entries_per_page => $entries_per_page, category_id => $cat_param});
+    my $elements = Strehler::Element::Image->get_list({ page => $page, entries_per_page => $entries_per_page, category_id => $cat_param});
     session 'image-page' => $page;
     session 'image-cat-filter' => $cat_param;
     template "admin/image_list", { images => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, last_page => $elements->{'last_page'} };
@@ -206,7 +206,7 @@ get '/article/list' => sub
     my $subcat = undef;
     ($cat, $subcat) = Strehler::Element::Category::explode_tree($cat_param);
     my $entries_per_page = 20;
-    my $elements = Strehler::Element::Article::get_list({ page => $page, entries_per_page => $entries_per_page, category_id => $cat_param});
+    my $elements = Strehler::Element::Article->get_list({ page => $page, entries_per_page => $entries_per_page, category_id => $cat_param});
     session 'article-page' => $page;
     session 'article-cat-filter' => $cat_param;
     template "admin/article_list", { articles => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, last_page => $elements->{'last_page'} };

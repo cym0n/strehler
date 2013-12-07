@@ -23,7 +23,7 @@ sub BUILDARGS {
    {
         $article = schema->resultset('Article')->find($id);
    }
-   return { row => $article, type => 'article', multilang_children => 'contents' };
+   return { row => $article };
 };
 
 sub get_form_data
@@ -128,6 +128,20 @@ sub category_accessor
     return $category->can('articles');
 }
 
+sub item_type
+{
+    return "article";
+}
+
+sub ORMObj
+{
+    return "Article";
+}
+sub multilang_children
+{
+    return 'contents';
+}
+
 
 #Static helpers
 sub get_by_slug
@@ -146,94 +160,6 @@ sub get_by_slug
 }
 
 
-sub get_list
-{
-    my $params = shift;
-    my %args = %{ $params };
-    $args{'order'} ||= 'desc';
-    $args{'order_by'} ||= 'id';
-    $args{'entries_per_page'} ||= 20;
-    $args{'page'} ||= 1;
-    $args{'language'} ||= config->{Strehler}->{default_language};
-
-    my $no_paging = 0;
-    my $default_page = 1;
-    if($args{'entries_per_page'} == -1)
-    {
-        $args{'entries_per_page'} = undef;
-        $default_page = undef;
-        $no_paging = 1;
-    }
-
-    my $search_criteria = undef;
-    if(exists $args{'published'})
-    {
-        $search_criteria->{'published'} = $args{'published'};
-    }
-    if(exists $args{'tag'} && $args{'tag'})
-    {
-        my $ids = schema->resultset('Tag')->search({tag => $args{'tag'}, item_type => 'article'})->get_column('item_id');
-        $search_criteria->{'id'} = { -in => $ids->as_query };
-    }
-
-    my $rs;
-    if(exists $args{'category_id'} && $args{'category_id'})
-    {
-        my $category = schema->resultset('Category')->find( { id => $args{'category_id'} } );
-        if(! $category)
-        {
-            return {'to_view' => [], 'last_page' => 1 };
-        }
-        $rs = $category->articles->search($search_criteria, { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => $default_page, rows => $args{'entries_per_page'} });
-    }
-    elsif(exists $args{'category'} && $args{'category'})
-    {
-        my $category;
-        my $category_obj = Strehler::Element::Category::explode_name($args{'category'});
-        if(! $category_obj->exists())
-        {
-            return {'to_view' => [], 'last_page' => 1 };
-        }
-        else
-        {
-            $category = $category_obj->row;
-        }
-        $rs = $category->articles->search($search_criteria, { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => $default_page, rows => $args{'entries_per_page'} });
-    }
-    else
-    {
-        $rs = schema->resultset('Article')->search($search_criteria, { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => $default_page, rows => $args{'entries_per_page'}});
-    }
-    my $elements;
-    my $last_page;
-    if($no_paging)
-    {
-        $elements = $rs;
-        $last_page = 1;
-    }
-    else
-    {
-        my $pager = $rs->pager();
-        $elements = $rs->page($args{'page'});
-        $last_page = $pager->last_page();
-    }
-    my @to_view;
-    for($elements->all())
-    {
-        my $img = Strehler::Element::Article->new($_->id);
-        my %el;
-        if(exists $args{'ext'})
-        {
-            %el = $img->get_ext_data($args{'language'});
-        }
-        else
-        {
-            %el = $img->get_basic_data();
-        }
-        push @to_view, \%el;
-    }
-    return {'to_view' => \@to_view, 'last_page' => $last_page};
-}
 
 
 sub save_form
