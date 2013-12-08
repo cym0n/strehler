@@ -3,6 +3,7 @@ package Strehler::Element;
 use Moo;
 use Dancer2;
 use Dancer2::Plugin::DBIC;
+use Strehler::Meta::Tag;
 
 use Data::Dumper;
 
@@ -77,7 +78,7 @@ sub category
 sub get_tags
 {
     my $self = shift;
-    my $tags = Strehler::Element::Tag::tags_to_string($self->get_attr('id'), $self->item_type());
+    my $tags = Strehler::Meta::Tag::tags_to_string($self->get_attr('id'), $self->item_type());
     return $tags;
 }
 
@@ -333,7 +334,7 @@ sub get_list
     elsif(exists $args{'category'} && $args{'category'})
     {
         my $category;
-        my $category_obj = Strehler::Element::Category::explode_name($args{'category'});
+        my $category_obj = Strehler::Meta::Category::explode_name($args{'category'});
         if(! $category_obj->exists())
         {
             return {'to_view' => [], 'last_page' => 1 };

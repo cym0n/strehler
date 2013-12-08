@@ -1,9 +1,8 @@
-package Strehler::Element::Category;
+package Strehler::Meta::Category;
 
 use Moo;
 use Dancer2;
 use Dancer2::Plugin::DBIC;
-use Strehler::Element::Tag;
 use Data::Dumper;
 
 has row => (
@@ -51,7 +50,7 @@ sub subcategories
     my @subs;
     for($self->row->subcategories)
     {
-        push @subs, Strehler::Element::Category->new('row', $_);
+        push @subs, Strehler::Meta::Category->new('row', $_);
     }
     return @subs;
 }
@@ -145,7 +144,7 @@ sub get_list
     my $rs = schema->resultset('Category')->search({parent => $args{'parent'}}, { order_by => { '-' . $args{'order'} => $args{'order_by'} }});
     for($rs->all())
     {
-        my $cat = Strehler::Element::Category->new($_->id);
+        my $cat = Strehler::Meta::Category->new($_->id);
         my %el = $cat->get_basic_data();
         push @to_view, \%el;
     }
@@ -158,7 +157,7 @@ sub explode_tree
     my $subcat = undef;
     if($cat_param)
     {
-        my $category = Strehler::Element::Category->new($cat_param);
+        my $category = Strehler::Meta::Category->new($cat_param);
         my $parent = $category->get_attr('parent'); 
         if($parent)
         {
@@ -182,11 +181,11 @@ sub explode_name
     my @cats = split '/', $category_path;
     if(exists $cats[1])
     {
-        return Strehler::Element::Category->new(parent => $cats[0], category => $cats[1]);
+        return Strehler::Meta::Category->new(parent => $cats[0], category => $cats[1]);
     }
     else
     {
-        return Strehler::Element::Category->new(name => $cats[0]);
+        return Strehler::Meta::Category->new(name => $cats[0]);
     }
 }
   
@@ -213,7 +212,7 @@ sub get_form_data
     my $data;
     $data->{'category'} = $row->category;
     $data->{'parent'} = $row->parent;
-    my $configured_tags = Strehler::Element::Tag::get_configured_tags($row->id, 'string');
+    my $configured_tags = Strehler::Meta::Tag::get_configured_tags($row->id, 'string');
     if($configured_tags->{'both'})
     {
         $data->{'type-1'} = 'b';
@@ -271,18 +270,18 @@ sub save_form
     }
     if($form->param_value('tags-1') || $form->param_value('tags-2'))
     {
-        Strehler::Element::Tag::clean_configured_tags($new_category->id);
+        Strehler::Meta::Tag::clean_configured_tags($new_category->id);
         my $first_form = $form->param_value('type-1');
         if($form->param_value('tags-1'))
         {
 
-            Strehler::Element::Tag::save_configured_tags($form->param_value('tags-1'), $form->param_value('default-1'), $new_category->id, $form->param_value('type-1'));
+            Strehler::Meta::Tag::save_configured_tags($form->param_value('tags-1'), $form->param_value('default-1'), $new_category->id, $form->param_value('type-1'));
         }
         if($form->param_value('tags-1'))
         {
             if($first_form ne 'b' && $first_form ne  $form->param_value('type-2'))
             {
-                Strehler::Element::Tag::save_configured_tags($form->param_value('tags-2'), $form->param_value('default-2'), $new_category->id, $form->param_value('type-2'));
+                Strehler::Meta::Tag::save_configured_tags($form->param_value('tags-2'), $form->param_value('default-2'), $new_category->id, $form->param_value('type-2'));
             }
         }
 

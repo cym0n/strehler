@@ -4,8 +4,6 @@ package Strehler::Element::Article;
 use Moo;
 use Dancer2;
 use Dancer2::Plugin::DBIC;
-use Strehler::Element::Tag; # qw(save_tags tags_to_string);
-use Strehler::Element::Image; # qw(save_tags tags_to_string);
 use Data::Dumper;
 
 extends 'Strehler::Element';
@@ -51,7 +49,7 @@ sub get_form_data
         $data->{'title_' . $lan} = $d->title;
         $data->{'text_' . $lan} = $d->text;
     }
-    $data->{'tags'} = Strehler::Element::Tag::tags_to_string($self->get_attr('id'), 'article');
+    $data->{'tags'} = Strehler::Meta::Tag::tags_to_string($self->get_attr('id'), 'article');
     return $data;
 }
 sub main_title
@@ -142,10 +140,9 @@ sub multilang_children
     return 'contents';
 }
 
-
-#Static helpers
 sub get_by_slug
 {
+    my $self = shift;
     my $slug = shift;
     my $language = shift;
     my $chapter = schema->resultset('Content')->find({ slug => $slug, language => $language });
@@ -227,7 +224,7 @@ sub save_form
     }
     if($form->param_value('tags'))
     {
-        Strehler::Element::Tag::save_tags($form->param_value('tags'), $article_row->id, 'article');
+        Strehler::Meta::Tag::save_tags($form->param_value('tags'), $article_row->id, 'article');
     }
     return $article_row->id;  
 }

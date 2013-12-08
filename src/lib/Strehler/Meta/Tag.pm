@@ -1,4 +1,4 @@
-package Strehler::Element::Tag;
+package Strehler::Meta::Tag;
 
 use Moo;
 use Dancer2;
@@ -117,6 +117,7 @@ sub get_configured_tags
 }
 sub get_configured_tags_for_template
 {
+    my $self = shift;
     my $category = shift;
     my $type = shift;
     my @tags = schema->resultset('ConfiguredTag')->search({category_id => $category, item_type => 'both'});

@@ -9,9 +9,10 @@ use HTML::FormFu;
 use HTML::FormFu::Element::Block;
 use Data::Dumper;
 use Strehler::Helpers;
+use Strehler::Meta::Tag;
 use Strehler::Element::Image;
 use Strehler::Element::Article;
-use Strehler::Element::Category;
+use Strehler::Meta::Category;
 
 my @languages = @{config->{Strehler}->{languages}};
 
@@ -70,13 +71,13 @@ get '/image/list' => sub
     my $cat_param = exists params->{'cat'} ? params->{'cat'} : session 'image-cat-filter';
     if(exists params->{'catname'})
     {
-        my $wanted_cat = Strehler::Element::Category::explode_name(params->{'catname'});
+        my $wanted_cat = Strehler::Meta::Category::explode_name(params->{'catname'});
         $cat_param = $wanted_cat->get_attr('id');
     }
     $page ||= 1;
     my $cat = undef;
     my $subcat = undef;
-    ($cat, $subcat) = Strehler::Element::Category::explode_tree($cat_param);
+    ($cat, $subcat) = Strehler::Meta::Category::explode_tree($cat_param);
     my $entries_per_page = 20;
     my $elements = Strehler::Element::Image->get_list({ page => $page, entries_per_page => $entries_per_page, category_id => $cat_param});
     session 'image-page' => $page;
@@ -157,7 +158,7 @@ ajax '/image/tagform/:id?' => sub
     if(params->{id})
     {
         my $image = Strehler::Element::Image->new(params->{id});
-        my @category_tags = Strehler::Element::Tag::get_configured_tags_for_template($image->get_attr('category'), 'image');
+        my @category_tags = Strehler::Meta::Tag->get_configured_tags_for_template($image->get_attr('category'), 'image');
         my @tags = split(',', $image->get_tags());
         my @out;
         if($#category_tags > -1)
@@ -198,13 +199,13 @@ get '/article/list' => sub
     my $cat_param = exists params->{'cat'} ? params->{'cat'} : session 'article-cat-filter';
     if(exists params->{'catname'})
     {
-        my $wanted_cat = Strehler::Element::Category::explode_name(params->{'catname'});
+        my $wanted_cat = Strehler::Meta::Category::explode_name(params->{'catname'});
         $cat_param = $wanted_cat->get_attr('id');
     }
     $page ||= 1;
     my $cat = undef;
     my $subcat = undef;
-    ($cat, $subcat) = Strehler::Element::Category::explode_tree($cat_param);
+    ($cat, $subcat) = Strehler::Meta::Category::explode_tree($cat_param);
     my $entries_per_page = 20;
     my $elements = Strehler::Element::Article->get_list({ page => $page, entries_per_page => $entries_per_page, category_id => $cat_param});
     session 'article-page' => $page;
@@ -287,7 +288,7 @@ ajax '/article/tagform/:id?' => sub
     if(params->{id})
     {
         my $article = Strehler::Element::Article->new(params->{id});
-        my @category_tags = Strehler::Element::Tag::get_configured_tags_for_template($article->get_attr('category'), 'article');
+        my @category_tags = Strehler::Meta::Tag->get_configured_tags_for_template($article->get_attr('category'), 'article');
         my @tags = split(',', $article->get_tags());
         my @out;
         if($#category_tags > -1)
@@ -324,18 +325,18 @@ get '/category' => sub
 any '/category/list' => sub
 {
     #THE TABLE
-    my $to_view = Strehler::Element::Category::get_list();
+    my $to_view = Strehler::Meta::Category::get_list();
 
     #THE FORM
     my $form = HTML::FormFu->new;
     $form->load_config_file( 'forms/admin/category_fast.yml' );
     my $parent = $form->get_element({ name => 'parent'});
-    $parent->options(Strehler::Element::Category::make_select());
+    $parent->options(Strehler::Meta::Category::make_select());
     my $params_hashref = params;
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
-        my $new_category = Strehler::Element::Category::save_form(undef, $form);
+        my $new_category = Strehler::Meta::Category::save_form(undef, $form);
         redirect dancer_app->prefix . '/category/list';
     }
     template "admin/category_list", { categories => $to_view, form => $form };
@@ -348,7 +349,7 @@ any '/category/add' => sub
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
-        Strehler::Element::Category::save_form(undef, $form);
+        Strehler::Meta::Category::save_form(undef, $form);
         redirect dancer_app->prefix . '/category/list'; 
     }
     $form = bootstrap_divider($form);
@@ -356,7 +357,7 @@ any '/category/add' => sub
 };
 get '/category/edit/:id' => sub {
     my $id = params->{id};
-    my $category = Strehler::Element::Category->new($id);
+    my $category = Strehler::Meta::Category->new($id);
     my $form_data = $category->get_form_data();
     my $form = form_category();
     $form->default_values($form_data);
@@ -370,7 +371,7 @@ post '/category/edit/:id' => sub
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
-        Strehler::Element::Category::save_form($id, $form);
+        Strehler::Meta::Category::save_form($id, $form);
         redirect dancer_app->prefix . '/category/list';
     }
     template "admin/category", { form => $form->render() }
@@ -379,7 +380,7 @@ post '/category/edit/:id' => sub
 get '/category/delete/:id' => sub
 {
     my $id = params->{id};
-    my $category = Strehler::Element::Category->new($id);
+    my $category = Strehler::Meta::Category->new($id);
     if($category->has_elements())
     {
         my $message = "La categoria " . $category->get_attr('category') . " non &egrave; vuota! Non &egrave; possibile cancellarla";    
@@ -395,7 +396,7 @@ get '/category/delete/:id' => sub
 post '/category/delete/:id' => sub
 {
     my $id = params->{id};
-    my $category = Strehler::Element::Category->new($id);
+    my $category = Strehler::Meta::Category->new($id);
     $category->delete();
     redirect dancer_app->prefix . '/category/list';
 };
@@ -403,13 +404,13 @@ post '/category/delete/:id' => sub
 ajax '/category/last/:id' => sub
 {
     my $id = params->{id};
-    my $category = Strehler::Element::Category->new($id);
+    my $category = Strehler::Meta::Category->new($id);
     return $category->max_article_order() + 1;
 };
 get '/category/select/:id' => sub
 {
     my $id = params->{id};
-    my $data = Strehler::Element::Category::make_select($id);
+    my $data = Strehler::Meta::Category::make_select($id);
     if($data->[1])
     {
         template 'admin/category_select', { categories => $data }, { layout => undef };
@@ -421,7 +422,7 @@ get '/category/select/:id' => sub
 };
 get '/category/select' => sub
 {
-    my $data = Strehler::Element::Category::make_select(undef);
+    my $data = Strehler::Meta::Category::make_select(undef);
     if($data->[1])
     {
         template 'admin/category_select', { categories => $data }, { layout => undef };
@@ -435,7 +436,7 @@ ajax '/category/tagform/:type/:id?' => sub
 {
     if(params->{id})
     {
-        my @tags = Strehler::Element::Tag::get_configured_tags_for_template(params->{id}, params->{type});
+        my @tags = Strehler::Meta::Tag->get_configured_tags_for_template(params->{id}, params->{type});
         if($#tags > -1)
         {
            template 'admin/configured_tags', { tags => \@tags };
@@ -480,9 +481,9 @@ sub form_image
     $form = add_multilang_fields($form, \@languages, 'forms/admin/image_multilang.yml'); 
     $form->constraint({ name => 'photo', type => 'Required' }) if $action eq 'add';
     my $category = $form->get_element({ name => 'category'});
-    $category->options(Strehler::Element::Category::make_select());
+    $category->options(Strehler::Meta::Category::make_select());
     my $subcategory = $form->get_element({ name => 'subcategory'});
-    $subcategory->options(Strehler::Element::Category::make_select($has_sub));
+    $subcategory->options(Strehler::Meta::Category::make_select($has_sub));
     return $form;
 }
 
@@ -498,9 +499,9 @@ sub form_article
     my $image = $form->get_element({ name => 'image'});
     $image->options(Strehler::Element::Image::make_select());
     my $category = $form->get_element({ name => 'category'});
-    $category->options(Strehler::Element::Category::make_select());
+    $category->options(Strehler::Meta::Category::make_select());
     my $subcategory = $form->get_element({ name => 'subcategory'});
-    $subcategory->options(Strehler::Element::Category::make_select($has_sub));
+    $subcategory->options(Strehler::Meta::Category::make_select($has_sub));
     return $form;
 }
 
@@ -509,7 +510,7 @@ sub form_category
     my $form = HTML::FormFu->new;
     $form->load_config_file( 'forms/admin/category.yml' );
     my $category = $form->get_element({ name => 'parent'});
-    $category->options(Strehler::Element::Category::make_select());
+    $category->options(Strehler::Meta::Category::make_select());
     return $form;
 }
 sub tags_for_form

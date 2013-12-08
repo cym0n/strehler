@@ -3,7 +3,6 @@ package Strehler::Element::Image;
 use Moo;
 use Dancer2;
 use Dancer2::Plugin::DBIC;
-use Strehler::Element::Tag; # qw(save_tags tags_to_string);
 use Data::Dumper;
 
 extends 'Strehler::Element';
@@ -38,7 +37,7 @@ sub get_form_data
         $data->{'title_' . $lan} = $d->title;
         $data->{'description_' . $lan} = $d->description;
     }
-    $data->{'tags'} = Strehler::Element::Tag::tags_to_string($self->get_attr('id'), 'image');
+    $data->{'tags'} = Strehler::Meta::Tag::tags_to_string($self->get_attr('id'), 'image');
     return $data;
 }
 sub main_title
@@ -154,7 +153,7 @@ sub save_form
         my $lan = $_;
         $img_row->descriptions->create( { title => $form->param_value('title_' . $lan), description => $form->param_value('description_' . $lan), language => $lan }) if($form->param_value('title_' . $lan) || $form->param_value('description_' . $lan));;
     }
-    Strehler::Element::Tag::save_tags($form->param_value('tags'), $img_row->id, 'image');
+    Strehler::Meta::Tag::save_tags($form->param_value('tags'), $img_row->id, 'image');
     return $img_row->id;     
 }
 
