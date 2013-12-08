@@ -28,7 +28,7 @@ sub delete
     my $self = shift;
     my $children = $self->row->can($self->multilang_children());
     $self->row->delete();
-    $self->row->$children->delete_all();
+    $self->row->$children->delete_all() if($children);
 }
 
 sub get_attr
@@ -59,7 +59,7 @@ sub has_language
     my $self = shift;
     my $language = shift;
     my $children = $self->row->can($self->multilang_children());
-    return 0 if not $children;
+    return 1 if not $children;
     my $content = $self->row->$children->find({language => $language});
     if($content)
     {
