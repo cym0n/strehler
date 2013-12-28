@@ -621,7 +621,7 @@ sub get_entities
     my $extra = config->{'Strehler'}->{'extra_menu'};
     for(@{$extra})
     {
-        push @entities, $_->[0];
+        push @entities, $_->[1];
     }
     return @entities;
 }
