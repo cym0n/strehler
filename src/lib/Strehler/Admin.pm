@@ -329,6 +329,7 @@ any '/category/list' => sub
 
     #THE FORM
     my $form = HTML::FormFu->new;
+    my @entities = get_entities();
     $form->load_config_file( 'forms/admin/category_fast.yml' );
     my $parent = $form->get_element({ name => 'parent'});
     $parent->options(Strehler::Meta::Category::make_select());
@@ -336,7 +337,7 @@ any '/category/list' => sub
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
-        my $new_category = Strehler::Meta::Category::save_form(undef, $form);
+        my $new_category = Strehler::Meta::Category::save_form(undef, $form, \@entities);
         redirect dancer_app->prefix . '/category/list';
     }
     template "admin/category_list", { categories => $to_view, form => $form };
@@ -346,10 +347,11 @@ any '/category/add' => sub
 {
     my $form = form_category();
     my $params_hashref = params;
+    my @entities = get_entities();
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
-        Strehler::Meta::Category::save_form(undef, $form);
+        Strehler::Meta::Category::save_form(undef, $form, \@entities);
         redirect dancer_app->prefix . '/category/list'; 
     }
     $form = bootstrap_divider($form);
@@ -358,9 +360,11 @@ any '/category/add' => sub
 get '/category/edit/:id' => sub {
     my $id = params->{id};
     my $category = Strehler::Meta::Category->new($id);
-    my $form_data = $category->get_form_data();
+    my @entities = get_entities();
+    my $form_data = $category->get_form_data(\@entities);
     my $form = form_category();
     $form->default_values($form_data);
+    $form = bootstrap_divider($form);
     template "admin/category", { form => $form->render() }
 };
 post '/category/edit/:id' => sub
@@ -368,10 +372,11 @@ post '/category/edit/:id' => sub
     my $form = form_category();
     my $id = params->{id};
     my $params_hashref = params;
+    my @entities = get_entities();
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
-        Strehler::Meta::Category::save_form($id, $form);
+        Strehler::Meta::Category::save_form($id, $form, \@entities);
         redirect dancer_app->prefix . '/category/list';
     }
     template "admin/category", { form => $form->render() }
@@ -508,9 +513,13 @@ sub form_article
 sub form_category
 {
     my $form = HTML::FormFu->new;
+    my @entities = get_entities();
+
     $form->load_config_file( 'forms/admin/category.yml' );
     my $category = $form->get_element({ name => 'parent'});
     $category->options(Strehler::Meta::Category::make_select());
+    $form = add_dynamic_fields_for_category($form); 
+    
     return $form;
 }
 sub tags_for_form
@@ -573,6 +582,50 @@ sub add_multilang_fields
     }
     return $form;
 }
+
+sub add_dynamic_fields_for_category
+{
+    my $form = shift;
+    my $config = 'forms/admin/category_dynamic.yml';
+    my $position = $form->get_element({ name => 'save' });
+    for(get_entities())
+    {
+        my $ent = $_;
+        my $form_dyna = HTML::FormFu->new;
+        my $fieldset = HTML::FormFu::Element::Fieldset->new;
+        $fieldset->element( { name => 'placeholder', type => 'Blank' } );
+        my $f_position = $fieldset->get_element( { name => 'placeholder' } );
+        $form_dyna->load_config_file($config);
+        for(@{$form_dyna->get_elements()})
+        {
+            my $el = $_;
+            if(ref($el) eq "HTML::FormFu::Element::Block")
+            {
+                $el->content("Per " . $ent);
+                $el->name($el->name() . '-' . $ent);
+                $fieldset->insert_before($el->clone(), $f_position);
+            }
+            else
+            {
+                $el->name($el->name() . '-' . $ent);
+                $fieldset->insert_before($el->clone(), $f_position);
+            }
+        }
+        $form->insert_before($fieldset->clone(), $position);
+    }
+    return $form;
+}
+sub get_entities
+{
+    my @entities = ('article', 'image'); #standard entities for Strehler
+    my $extra = config->{'Strehler'}->{'extra_menu'};
+    for(@{$extra})
+    {
+        push @entities, $_->[0];
+    }
+    return @entities;
+}
+
 
 
 1;

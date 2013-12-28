@@ -11,31 +11,20 @@ elements:
       id: category_selector
       name: parent
       label: categoria padre
+    - type: Block
+      tag: h3
+      content: 'Tag management'
     - type: Fieldset
       elements: 
-        - name: type-1
-          label: per chi?
-          type: Select
-          options:
-             - ['i', 'immagini']
-             - ['a', 'articoli']
-             - ['b', 'entrambi']
-        - name: tags-1
+        - type: Block
+          name: whatis
+          tag: div
+          content: 'Per tutti'
+          attributes:
+             class: alert alert-info 
+        - name: tags-all
           label: tags
-        - name: default-1
-          label: default
-    - type: Fieldset
-      elements: 
-        - name: type-2
-          label: per chi?
-          type: Select
-          options:
-             - ['i', 'immagini']
-             - ['a', 'articoli']
-             - ['b', 'entrambi']
-        - name: tags-2
-          label: tags
-        - name: default-2
+        - name: default-all
           label: default
     - type: Block
       name: save

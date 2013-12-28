@@ -208,34 +208,22 @@ sub exists
 sub get_form_data
 {
     my $self = shift;
+    my $ents = shift;
+    my @entities = @{$ents};
+    push @entities, 'all';
     my $row = $self->row;
     my $data;
     $data->{'category'} = $row->category;
     $data->{'parent'} = $row->parent;
-    my $configured_tags = Strehler::Meta::Tag::get_configured_tags($row->id, 'string');
-    if($configured_tags->{'both'})
+    my $configured_tags = Strehler::Meta::Tag::get_configured_tags($row->id, \@entities);
+    for(@entities)
     {
-        $data->{'type-1'} = 'b';
-        $data->{'tags-1'} = $configured_tags->{'both'};
-        $data->{'default-1'} = $configured_tags->{'default-both'};
-    }
-    else
-    {
-        my $counter = 1;
-        if($configured_tags->{'article'})
-        {   
-            $data->{'type-1'} = 'a';
-            $data->{'tags-1'} = $configured_tags->{'article'};
-            $data->{'default-1'} = $configured_tags->{'default-article'};
-            $counter++;
-        }
-        if($configured_tags->{'image'})
-        {   
-            $data->{'type-'.$counter} = 'i';
-            $data->{'tags-'.$counter} = $configured_tags->{'image'};
-            $data->{'default-'.$counter} = $configured_tags->{'default-image'};
-            $counter++;
-        }
+       my $e = $_;
+       if($configured_tags->{$e})
+       {
+            $data->{'tags-' . $e} = $configured_tags->{$e};
+            $data->{'default-' . $e} = $configured_tags->{'default-' . $e};
+       } 
     }
     return $data;
 }
@@ -244,6 +232,8 @@ sub save_form
 {
     my $id = shift;
     my $form = shift;
+    my $ents = shift;
+    my @entities = @{$ents};
     my $new_category;
     if($id)
     {
@@ -268,23 +258,27 @@ sub save_form
             $new_category = schema->resultset('Category')->create({category => $form->param_value('category')});
         }
     }
-    if($form->param_value('tags-1') || $form->param_value('tags-2'))
+    if($form->param_value('tags-all'))
     {
         Strehler::Meta::Tag::clean_configured_tags($new_category->id);
-        my $first_form = $form->param_value('type-1');
-        if($form->param_value('tags-1'))
+        Strehler::Meta::Tag::save_configured_tags($form->param_value('tags-all'), $form->param_value('default-all'), $new_category->id, 'all');
+    }
+    else
+    {
+        my $cleaned = 0;
+        for(@entities)
         {
-
-            Strehler::Meta::Tag::save_configured_tags($form->param_value('tags-1'), $form->param_value('default-1'), $new_category->id, $form->param_value('type-1'));
-        }
-        if($form->param_value('tags-1'))
-        {
-            if($first_form ne 'b' && $first_form ne  $form->param_value('type-2'))
+            my $e = $_;
+            if($form->param_value('tags-' . $e))
             {
-                Strehler::Meta::Tag::save_configured_tags($form->param_value('tags-2'), $form->param_value('default-2'), $new_category->id, $form->param_value('type-2'));
+                if(! $cleaned)
+                {
+                    Strehler::Meta::Tag::clean_configured_tags($new_category->id);
+                    $cleaned = 1;
+                }
+                Strehler::Meta::Tag::save_configured_tags($form->param_value('tags-' . $e), $form->param_value('default-' . $e), $new_category->id, $e);
             }
         }
-
     }
 }
 

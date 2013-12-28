@@ -84,7 +84,8 @@ sub save_tags
 sub get_configured_tags
 {
     my $category = shift;
-    my @types = ('article', 'image', 'both');
+    my $t = shift;
+    my @types = @{$t};
     my $out;
     foreach my $t (@types)
     {
@@ -120,7 +121,7 @@ sub get_configured_tags_for_template
     my $self = shift;
     my $category = shift;
     my $type = shift;
-    my @tags = schema->resultset('ConfiguredTag')->search({category_id => $category, item_type => 'both'});
+    my @tags = schema->resultset('ConfiguredTag')->search({category_id => $category, item_type => 'all'});
     if($#tags > -1)
     {
         return @tags;
@@ -153,18 +154,7 @@ sub save_configured_tags
             if (grep {$_ eq $t} @dtags) {
                 $default = 1;
             }
-            if($type eq 'i')
-            {
-                schema->resultset('ConfiguredTag')->create({tag => $t, category_id => $category, item_type => 'image', default_tag => $default});
-            }
-            elsif($type eq 'a')
-            {
-                schema->resultset('ConfiguredTag')->create({tag => $t, category_id => $category, item_type => 'article', default_tag => $default});
-            }
-            elsif($type eq 'b')
-            {
-                schema->resultset('ConfiguredTag')->create({tag => $t, category_id => $category, item_type => 'both', default_tag => $default});
-            }
+            schema->resultset('ConfiguredTag')->create({tag => $t, category_id => $category, item_type => $type, default_tag => $default});
         }
     }
 }
