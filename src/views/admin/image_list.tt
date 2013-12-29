@@ -1,6 +1,6 @@
 [% PROCESS admin/blocks/listblocks.tt %]
 <div class="span12">
-    <h1>Administrator panel - images</h1>
+    <h1>Administrator panel - [% entity %]</h1>
 </div>
 <div class="content imagelist span12">
         [% INCLUDE categoryfilter %]
@@ -15,7 +15,7 @@
             </tr>
         </thead>
         <tbody>
-            [% FOREACH el IN images %]
+            [% FOREACH el IN elements %]
             <tr>
                 <td>[% el.id %]</td>
                 <td>[% el.title %]</td>

@@ -60,31 +60,6 @@ any '/login' => sub {
 
 ##### Images #####
 
-get '/image' => sub
-{
-    redirect dancer_app->prefix . '/image/list';
-};
-
-get '/image/list' => sub
-{
-    my $page = exists params->{'page'} ? params->{'page'} : session 'image-page';
-    my $cat_param = exists params->{'cat'} ? params->{'cat'} : session 'image-cat-filter';
-    if(exists params->{'catname'})
-    {
-        my $wanted_cat = Strehler::Meta::Category::explode_name(params->{'catname'});
-        $cat_param = $wanted_cat->get_attr('id');
-    }
-    $page ||= 1;
-    my $cat = undef;
-    my $subcat = undef;
-    ($cat, $subcat) = Strehler::Meta::Category::explode_tree($cat_param);
-    my $entries_per_page = 20;
-    my $elements = Strehler::Element::Image->get_list({ page => $page, entries_per_page => $entries_per_page, category_id => $cat_param});
-    session 'image-page' => $page;
-    session 'image-cat-filter' => $cat_param;
-    template "admin/image_list", { images => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, last_page => $elements->{'last_page'} };
-};
-
 any '/image/add' => sub
 {
     my $form = form_image('add');
@@ -187,33 +162,6 @@ ajax '/image/tagform/:id?' => sub
 
 
 ##### Articles #####
-
-get '/article' => sub
-{
-    redirect dancer_app->prefix . '/article/list';
-};
-
-get '/article/list' => sub
-{
-    my $page = exists params->{'page'} ? params->{'page'} : session 'article-page';
-    my $cat_param = exists params->{'cat'} ? params->{'cat'} : session 'article-cat-filter';
-    if(exists params->{'catname'})
-    {
-        my $wanted_cat = Strehler::Meta::Category::explode_name(params->{'catname'});
-        $cat_param = $wanted_cat->get_attr('id');
-    }
-    $page ||= 1;
-    my $cat = undef;
-    my $subcat = undef;
-    ($cat, $subcat) = Strehler::Meta::Category::explode_tree($cat_param);
-    my $entries_per_page = 20;
-    my $elements = Strehler::Element::Article->get_list({ page => $page, entries_per_page => $entries_per_page, category_id => $cat_param});
-    session 'article-page' => $page;
-    session 'article-cat-filter' => $cat_param;
-    template "admin/article_list", { articles => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, last_page => $elements->{'last_page'} };
-
-};
-
 
 any '/article/add' => sub
 {
@@ -459,9 +407,14 @@ ajax '/category/tagform/:type/:id?' => sub
 
 get '/:entity' => sub
 {
-    if(config->{'Strehler'}->{'extra_menu'}->{params->{entity}})
+    my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    if($entity)
     {
-        redirect dancer_app->prefix . '/' . params->{entity} . '/list';
+        redirect dancer_app->prefix . '/' . $entity . '/list';
+    }
+    else
+    {
+        return pass;
     }
 };
 
@@ -471,17 +424,14 @@ any '/:entity/list' => sub
     my $class;
     my $categorized;
     my $publishable;
-    if(config->{'Strehler'}->{'extra_menu'}->{params->{entity}})
+    my $custom_list_view;
+    ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    if(! $entity)
     {
-        $entity = params->{entity};
-        $class = config->{'Strehler'}->{'extra_menu'}->{params->{entity}}->{class};
-        $categorized = config->{'Strehler'}->{'extra_menu'}->{params->{entity}}->{categorized};
-        $publishable = config->{'Strehler'}->{'extra_menu'}->{params->{entity}}->{publishable};
+        return pass;
     }
-    else
-    {
-        pass;
-    }
+    $custom_list_view ||= 'admin/generic_list';
+    
     my $page = exists params->{'page'} ? params->{'page'} : session $entity . '-page';
     my $cat_param = exists params->{'cat'} ? params->{'cat'} : session $entity . '-cat-filter';
     if(exists params->{'catname'})
@@ -498,7 +448,7 @@ any '/:entity/list' => sub
     my $elements = $class->get_list({ page => $page, entries_per_page => $entries_per_page, category_id => $cat_param});
     session $entity . '-page' => $page;
     session $entity . '-cat-filter' => $cat_param;
-    template "admin/generic_list", { entity => $entity, elements => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, last_page => $elements->{'last_page'}, categorized => $categorized, publishable => $publishable };
+    template $custom_list_view, { entity => $entity, elements => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, last_page => $elements->{'last_page'}, categorized => $categorized, publishable => $publishable };
 };
 
 
@@ -669,6 +619,48 @@ sub get_entities
         push @entities, $_;
     }
     return @entities;
+}
+
+sub get_entity_data
+{
+    my $entity = shift;
+    my $class = undef;
+    my $categorized = undef;
+    my $publishable = undef;
+    my $custom_list_view = undef;
+    if($entity eq 'article')
+    {
+        $class = 'Strehler::Element::Article';
+        $categorized = 1;
+        $publishable = 1;
+        $custom_list_view = 'admin/article_list';
+    }
+    elsif($entity eq 'image')
+    {
+        $class = 'Strehler::Element::Image';
+        $categorized = 1;
+        $publishable = 1;
+        $custom_list_view = 'admin/image_list';
+    }
+    elsif(config->{'Strehler'}->{'extra_menu'}->{$entity})
+    {
+        if(config->{'Strehler'}->{'extra_menu'}->{$entity}->{auto})
+        {
+            $class = config->{'Strehler'}->{'extra_menu'}->{$entity}->{class};
+            $categorized = config->{'Strehler'}->{'extra_menu'}->{$entity}->{categorized};
+            $publishable = config->{'Strehler'}->{'extra_menu'}->{$entity}->{publishable};
+            $custom_list_view = config->{'Strehler'}->{'extra_menu'}->{$entity}->{custom_list_view}; 
+        }
+        else
+        {
+            $entity = undef;
+        }
+    }
+    else
+    {
+        $entity = undef;
+    }
+    return ($entity, $class, $categorized, $publishable, $custom_list_view);
 }
 
 

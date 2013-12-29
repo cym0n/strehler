@@ -13,6 +13,7 @@
                 <th>ID</th>
                 <th>Titolo</th>
                 [% IF categorized %]<th>Categoria</th>[% END %]
+                [% IF publishable %]<th>Status</th>[% END %]
             </tr>
         </thead>
         <tbody>
@@ -21,6 +22,15 @@
                 <td>[% el.id %]</td>
                 <td>[% el.title %]</td>
                 [% IF categorized %]<td>[% el.category %]</td>[% END %]
+                [% IF publishable %]
+                <td>
+                [% IF el.published == 1 %]
+                    <span class="inlist-icon icon-large icon-ok"></span>
+                [% ELSE %]
+                    <span class="inlist-icon icon-large icon-remove"></span>
+                [% END %]
+                </td>
+                [% END %]
                 <td>
                     <div class="btn-group span2 offset1">
                         <a href="/admin/article/edit/[% el.id %]" class="btn">Edit</a>
