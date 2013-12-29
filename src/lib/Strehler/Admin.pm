@@ -112,39 +112,6 @@ ajax '/image/src/:id' => sub
     return $img->get_attr('image');
 };
 
-ajax '/image/tagform/:id?' => sub
-{
-    if(params->{id})
-    {
-        my $image = Strehler::Element::Image->new(params->{id});
-        my @category_tags = Strehler::Meta::Tag->get_configured_tags_for_template($image->get_attr('category'), 'image');
-        my @tags = split(',', $image->get_tags());
-        my @out;
-        if($#category_tags > -1)
-        {
-            foreach my $c_t (@category_tags)
-            {
-                my $default = 0;
-                if (grep {$_ eq $c_t->tag} @tags) 
-                {
-                    $default = 1;
-                }
-                push @out, { tag => $c_t->tag, default_tag => $default };
-            }
-            template 'admin/configured_tags', { tags => \@out };
-        }
-        else
-        {
-            template 'admin/open_tags';
-        }
-    }
-    else
-    {
-           template 'admin/open_tags';
-    }
-};
-
-
 ##### Articles #####
 
 any '/article/add' => sub
@@ -187,37 +154,6 @@ post '/article/edit/:id' => sub
     template "admin/article", { form => $form->render() }
 };
 
-ajax '/article/tagform/:id?' => sub
-{
-    if(params->{id})
-    {
-        my $article = Strehler::Element::Article->new(params->{id});
-        my @category_tags = Strehler::Meta::Tag->get_configured_tags_for_template($article->get_attr('category'), 'article');
-        my @tags = split(',', $article->get_tags());
-        my @out;
-        if($#category_tags > -1)
-        {
-            foreach my $c_t (@category_tags)
-            {
-                my $default = 0;
-                if (grep {$_ eq $c_t->tag} @tags) 
-                {
-                    $default = 1;
-                }
-                push @out, { tag => $c_t->tag, default_tag => $default };
-            }
-            template 'admin/configured_tags', { tags => \@out };
-        }
-        else
-        {
-            template 'admin/open_tags';
-        }
-    }
-    else
-    {
-           template 'admin/open_tags';
-    }
-};
 
 #Categories
 
@@ -409,6 +345,10 @@ any '/:entity/list' => sub
 get '/:entity/turnon/:id' => sub
 {
     my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+     if(! $entity)
+    {
+        return pass;
+    }
     if(! $publishable)
     {
         return pass;
@@ -422,6 +362,10 @@ get '/:entity/turnon/:id' => sub
 get '/:entity/turnoff/:id' => sub
 {
     my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    if(! $entity)
+    {
+        return pass;
+    }
     if(! $publishable)
     {
         return pass;
@@ -435,6 +379,10 @@ get '/:entity/turnoff/:id' => sub
 get '/:entity/delete/:id' => sub
 {
     my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    if(! $entity)
+    {
+        return pass;
+    }
     my $id = params->{id};
     eval "require $class";
     my $obj = $class->new($id);
@@ -444,11 +392,56 @@ get '/:entity/delete/:id' => sub
 post '/:entity/delete/:id' => sub
 {
     my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    if(! $entity)
+    {
+        return pass;
+    }
     my $id = params->{id};
     eval "require $class";
     my $obj = $class->new($id);
     $obj->delete();
     redirect dancer_app->prefix . '/' . $entity . '/list';
+};
+ajax '/:entity/tagform/:id?' => sub
+{
+    my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    if(! $entity)
+    {
+        return pass;
+    }
+    if(! $categorized)
+    {
+        return pass;
+    }
+    if(params->{id})
+    {
+        eval "require $class";
+        my $obj = $class->new(params->{id});
+        my @category_tags = Strehler::Meta::Tag->get_configured_tags_for_template($obj->get_attr('category'), $entity);
+        my @tags = split(',', $obj->get_tags());
+        my @out;
+        if($#category_tags > -1)
+        {
+            foreach my $c_t (@category_tags)
+            {
+                my $default = 0;
+                if (grep {$_ eq $c_t->tag} @tags) 
+                {
+                    $default = 1;
+                }
+                push @out, { tag => $c_t->tag, default_tag => $default };
+            }
+            template 'admin/configured_tags', { tags => \@out };
+        }
+        else
+        {
+            template 'admin/open_tags';
+        }
+    }
+    else
+    {
+           template 'admin/open_tags';
+    }
 };
 
 
