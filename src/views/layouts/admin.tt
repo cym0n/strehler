@@ -28,6 +28,7 @@
       <li class="[% navbar.image %]"><a href="/admin/image">Image</a></li>
       <li class="[% navbar.article %]"><a href="/admin/article">Article</a></li>
       <li class="[% navbar.category %]"><a href="/admin/category">Category</a></li>
+      <li class="[% navbar.user %]"><a href="/admin/user">User</a></li>
       [% FOREACH k in extramenu.keys %]
           [% menuname = extramenu.$k.label %]
           [% menulink = k %]

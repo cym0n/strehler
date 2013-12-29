@@ -1,0 +1,8 @@
+<div class="span12">
+    <h1>Administrator panel - user</h1>
+</div>
+<div class="content article span9">
+    <div>
+    [% form %]
+    </div>
+</div>

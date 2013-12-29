@@ -1,0 +1,37 @@
+attributes:
+    class: well
+elements:
+    - name: user
+      label: Username
+      attributes: 
+        class: span8
+      constraints:
+        type: Required
+        message: 'Nome utente necessario<br />'
+    - name: password
+      label: Password
+      type: Password
+      attributes: 
+        class: span8
+      constraints:
+        - type: Equal
+          others: password-confirm
+          message: "Password and password confirmation don't match"
+    - name: password-confirm
+      label: Conferma password
+      type: Password
+      attributes: 
+        class: span8
+    - type: Select
+      name: role
+      label: Ruolo
+      options:
+          - [ 'admin', 'admin' ]
+          - [ 'editor', 'editor' ]
+    - type: Block
+      name: save
+      tag: button
+      content: Submit
+      attributes:
+        type: submit
+        class: btn btn-primary

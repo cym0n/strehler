@@ -12,7 +12,9 @@ use Strehler::Helpers;
 use Strehler::Meta::Tag;
 use Strehler::Element::Image;
 use Strehler::Element::Article;
+use Strehler::Element::User;
 use Strehler::Meta::Category;
+
 
 my @languages = @{config->{Strehler}->{languages}};
 
@@ -154,6 +156,44 @@ post '/article/edit/:id' => sub
     template "admin/article", { form => $form->render() }
 };
 
+#Users
+
+any '/user/add' => sub
+{
+    my $form = form_user('add');
+    my $params_hashref = params;
+    $form->process($params_hashref);
+    if($form->submitted_and_valid)
+    {
+        my $id = Strehler::Element::User->save_form(undef, $form);
+        redirect dancer_app->prefix . '/user/list';
+    }
+    $form = bootstrap_divider($form);
+    template "admin/user", { form => $form->render() }
+};
+
+get '/user/edit/:id' => sub {
+    my $id = params->{id};
+    my $user = Strehler::Element::User->new($id);
+    my $form_data = $user->get_form_data();
+    my $form = form_user('edit');
+    $form->default_values($form_data);
+    template "admin/user", { form => $form->render() }
+};
+
+post '/user/edit/:id' => sub
+{
+    my $form = form_user('edit');
+    my $id = params->{id};
+    my $params_hashref = params;
+    $form->process($params_hashref);
+    if($form->submitted_and_valid)
+    {
+        Strehler::Element::User->save_form($id, $form);
+        redirect dancer_app->prefix . '/user/list';
+    }
+    template "admin/user", { form => $form->render() }
+};
 
 #Categories
 
@@ -507,9 +547,23 @@ sub form_category
     my $category = $form->get_element({ name => 'parent'});
     $category->options(Strehler::Meta::Category::make_select());
     $form = add_dynamic_fields_for_category($form); 
-    
     return $form;
 }
+
+sub form_user
+{
+    my $action = shift;
+    my $form = HTML::FormFu->new;
+    $form->load_config_file( 'forms/admin/user.yml' );
+    if($action eq 'add')
+    {
+        $form->constraint({ name => 'password', type => 'Required' }); 
+        $form->constraint({ name => 'password-confirm', type => 'Required' }); 
+    }
+    return $form;
+}
+
+
 sub tags_for_form
 {
     my $form = shift;
@@ -638,6 +692,14 @@ sub get_entity_data
         $publishable = 1;
         $custom_list_view = 'admin/image_list';
     }
+    elsif($entity eq 'user')
+    {
+        $class = 'Strehler::Element::User';
+        $categorized = 0;
+        $publishable = 0;
+#        $custom_list_view = 'admin/image_list';
+    }
+  
     elsif(config->{'Strehler'}->{'extra_menu'}->{$entity})
     {
         if(config->{'Strehler'}->{'extra_menu'}->{$entity}->{auto})
