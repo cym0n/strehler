@@ -469,10 +469,14 @@ any '/:entity/list' => sub
 {
     my $entity;
     my $class;
+    my $categorized;
+    my $publishable;
     if(config->{'Strehler'}->{'extra_menu'}->{params->{entity}})
     {
         $entity = params->{entity};
         $class = config->{'Strehler'}->{'extra_menu'}->{params->{entity}}->{class};
+        $categorized = config->{'Strehler'}->{'extra_menu'}->{params->{entity}}->{categorized};
+        $publishable = config->{'Strehler'}->{'extra_menu'}->{params->{entity}}->{publishable};
     }
     else
     {
@@ -494,7 +498,7 @@ any '/:entity/list' => sub
     my $elements = $class->get_list({ page => $page, entries_per_page => $entries_per_page, category_id => $cat_param});
     session $entity . '-page' => $page;
     session $entity . '-cat-filter' => $cat_param;
-    template "admin/generic_list", { elements => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, last_page => $elements->{'last_page'} };
+    template "admin/generic_list", { entity => $entity, elements => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, last_page => $elements->{'last_page'}, categorized => $categorized, publishable => $publishable };
 };
 
 
