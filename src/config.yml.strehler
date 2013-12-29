@@ -3,5 +3,9 @@ Strehler:
     languages: ['it', 'en']
     default_language: 'it'
     extra_menu:
-        - ['menu1', 'prova']
-        - ['secondo', 'xxxx']
+        path1:
+            label: firstpath
+            class: Site::Element::Dummy
+        path2:
+            label: thesecond
+            class: Site::Element::Second

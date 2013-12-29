@@ -457,6 +457,47 @@ ajax '/category/tagform/:type/:id?' => sub
     }
 };
 
+get '/:entity' => sub
+{
+    if(config->{'Strehler'}->{'extra_menu'}->{params->{entity}})
+    {
+        redirect dancer_app->prefix . '/' . params->{entity} . '/list';
+    }
+};
+
+any '/:entity/list' => sub
+{
+    my $entity;
+    my $class;
+    if(config->{'Strehler'}->{'extra_menu'}->{params->{entity}})
+    {
+        $entity = params->{entity};
+        $class = config->{'Strehler'}->{'extra_menu'}->{params->{entity}}->{class};
+    }
+    else
+    {
+        pass;
+    }
+    my $page = exists params->{'page'} ? params->{'page'} : session $entity . '-page';
+    my $cat_param = exists params->{'cat'} ? params->{'cat'} : session $entity . '-cat-filter';
+    if(exists params->{'catname'})
+    {
+        my $wanted_cat = Strehler::Meta::Category::explode_name(params->{'catname'});
+        $cat_param = $wanted_cat->get_attr('id');
+    }
+    $page ||= 1;
+    my $cat = undef;
+    my $subcat = undef;
+    ($cat, $subcat) = Strehler::Meta::Category::explode_tree($cat_param);
+    my $entries_per_page = 20;
+    eval "require $class";
+    my $elements = $class->get_list({ page => $page, entries_per_page => $entries_per_page, category_id => $cat_param});
+    session $entity . '-page' => $page;
+    session $entity . '-cat-filter' => $cat_param;
+    template "admin/generic_list", { elements => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, last_page => $elements->{'last_page'} };
+};
+
+
 ##### Helpers #####
 # They only manipulate forms rendering and manage login
 
