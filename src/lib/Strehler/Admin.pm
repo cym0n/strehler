@@ -36,9 +36,11 @@ any '/login' => sub {
     my $message;
     if($form->submitted_and_valid)
     {
-        if(login_valid($params_hashref->{'user'}, $params_hashref->{'password'}))
+        my $role = login_valid($params_hashref->{'user'}, $params_hashref->{'password'});
+        if($role)
         {
             session 'user' => $params_hashref->{'user'};
+            session 'role' => $role;
             if( session 'redir_url' )
             {
                 my $redir = redirect(session 'redir_url');
@@ -498,11 +500,11 @@ sub login_valid
                 hash_base64 => $rs->password_hash);
     if($ppr->match($password))
     {
-        return 1;
+        return $rs->role;
     }
     else
     {
-        return 0;
+        return undef;
     }
         
 }
