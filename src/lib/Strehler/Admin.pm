@@ -7,7 +7,7 @@ use Dancer2::Plugin::Ajax;
 use Dancer2::Plugin::Strehler;
 use HTML::FormFu;
 use HTML::FormFu::Element::Block;
-use Data::Dumper;
+use Authen::Passphrase::BlowfishCrypt;
 use Strehler::Helpers;
 use Strehler::Meta::Tag;
 use Strehler::Element::Image;
@@ -452,9 +452,11 @@ sub login_valid
 {
     my $user = shift;
     my $password = shift;
-    my $hashed = md5_hex($password);
-    my $rs = schema->resultset('User')->find({'user' => $user, 'password' => $hashed});
-    if($rs)
+    my $rs = schema->resultset('User')->find({'user' => $user});
+    my $ppr = Authen::Passphrase::BlowfishCrypt->new(
+                cost => 8, salt_base64 => $rs->password_salt,
+                hash_base64 => $rs->password_hash);
+    if($ppr->match($password))
     {
         return 1;
     }
