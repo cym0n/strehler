@@ -33,13 +33,13 @@
                 [% END %]
                 <td>
                     <div class="btn-group span2 offset1">
-                        <a href="/admin/article/edit/[% el.id %]" class="btn">Edit</a>
-                        <a href="/admin/article/delete/[% el.id %]" class="btn">Delete</a>
+                        <a href="/admin/[% entity %]/edit/[% el.id %]" class="btn">Edit</a>
+                        <a href="/admin/[% entity %]/delete/[% el.id %]" class="btn">Delete</a>
                         [% IF publishable %]
                         [% IF el.published == 1 %]
-                            <a href="/admin/article/turnoff/[% el.id %]" class="btn">Offline</a>
+                            <a href="/admin/[% entity %]/turnoff/[% el.id %]" class="btn">Offline</a>
                         [% ELSE %]
-                            <a href="/admin/article/turnon/[% el.id %]" class="btn">Online</a>
+                            <a href="/admin/[% entity %]/turnon/[% el.id %]" class="btn">Online</a>
                         [% END %]
                         [% END %]
                     </div>

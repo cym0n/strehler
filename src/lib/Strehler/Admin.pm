@@ -217,20 +217,6 @@ post '/article/delete/:id' => sub
     $article->delete();
     redirect dancer_app->prefix . '/article/list';
 };
-get '/article/turnon/:id' => sub
-{
-    my $id = params->{id};
-    my $article = Strehler::Element::Article->new($id);
-    $article->publish();
-    redirect dancer_app->prefix . '/article/list';
-};
-get '/article/turnoff/:id' => sub
-{
-    my $id = params->{id};
-    my $article = Strehler::Element::Article->new($id);
-    $article->unpublish();
-    redirect dancer_app->prefix . '/article/list';
-};
 ajax '/article/tagform/:id?' => sub
 {
     if(params->{id})
@@ -449,6 +435,24 @@ any '/:entity/list' => sub
     session $entity . '-page' => $page;
     session $entity . '-cat-filter' => $cat_param;
     template $custom_list_view, { entity => $entity, elements => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, last_page => $elements->{'last_page'}, categorized => $categorized, publishable => $publishable };
+};
+get '/:entity/turnon/:id' => sub
+{
+    my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    my $id = params->{id};
+    eval "require $class";
+    my $obj = $class->new($id);
+    $obj->publish();
+    redirect dancer_app->prefix . '/'. $entity . '/list';
+};
+get '/:entity/turnoff/:id' => sub
+{
+    my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    my $id = params->{id};
+    eval "require $class";
+    my $obj = $class->new($id);
+    $obj->unpublish();
+    redirect dancer_app->prefix . '/'. $entity . '/list';
 };
 
 
