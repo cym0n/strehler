@@ -37,6 +37,8 @@ on_plugin_import {
             $navbar{$tab} = 'active';
             $tokens->{'navbar'} = \%navbar;
             $tokens->{'extramenu'} = $dsl->config->{Strehler}->{'extra_menu'};
+            $tokens->{'role'} = $dsl->context->session->read('role');
+            $tokens->{'user'} = $dsl->context->session->read('user');
         }));
     };
     

@@ -22,13 +22,15 @@
 <body>
 <div class="navbar">
   <div class="navbar-inner">
-    <span class="brand">Admin</span>
+    <span class="brand">User [% user %] ([% role %])</span>
     <ul class="nav">
       <li class="[% navbar.home %]"><a href="/admin">Home</a></li>
       <li class="[% navbar.image %]"><a href="/admin/image">Image</a></li>
       <li class="[% navbar.article %]"><a href="/admin/article">Article</a></li>
+      [% IF role == 'admin' %]
       <li class="[% navbar.category %]"><a href="/admin/category">Category</a></li>
       <li class="[% navbar.user %]"><a href="/admin/user">User</a></li>
+      [% END %]
       [% FOREACH k in extramenu.keys %]
           [% menuname = extramenu.$k.label %]
           [% menulink = k %]

@@ -162,6 +162,11 @@ post '/article/edit/:id' => sub
 
 any '/user/add' => sub
 {
+    if (! check_role('user'))
+    {
+        send_error("Access denied", 403);
+        return;
+    }
     my $form = form_user('add');
     my $params_hashref = params;
     $form->process($params_hashref);
@@ -175,6 +180,11 @@ any '/user/add' => sub
 };
 
 get '/user/edit/:id' => sub {
+    if (! check_role('user'))
+    {
+        send_error("Access denied", 403);
+        return;
+    }
     my $id = params->{id};
     my $user = Strehler::Element::User->new($id);
     my $form_data = $user->get_form_data();
@@ -185,6 +195,11 @@ get '/user/edit/:id' => sub {
 
 post '/user/edit/:id' => sub
 {
+    if (! check_role('user'))
+    {
+        send_error("Access denied", 403);
+        return;
+    }
     my $form = form_user('edit');
     my $id = params->{id};
     my $params_hashref = params;
@@ -201,11 +216,21 @@ post '/user/edit/:id' => sub
 
 get '/category' => sub
 {
+    if (! check_role('category'))
+    {
+        send_error("Access denied", 403);
+        return;
+    }
     redirect dancer_app->prefix . '/category/list';
 };
 
 any '/category/list' => sub
 {
+    if (! check_role('category'))
+    {
+        send_error("Access denied", 403);
+        return;
+    }
     #THE TABLE
     my $to_view = Strehler::Meta::Category::get_list();
 
@@ -227,6 +252,11 @@ any '/category/list' => sub
 
 any '/category/add' => sub
 {
+    if (! check_role('category'))
+    {
+        send_error("Access denied", 403);
+        return;
+    }
     my $form = form_category();
     my $params_hashref = params;
     my @entities = get_categorized_entities();
@@ -240,6 +270,11 @@ any '/category/add' => sub
     template "admin/category", { form => $form->render() }
 };
 get '/category/edit/:id' => sub {
+    if (! check_role('category'))
+    {
+        send_error("Access denied", 403);
+        return;
+    }
     my $id = params->{id};
     my $category = Strehler::Meta::Category->new($id);
     my @entities = get_categorized_entities();
@@ -251,6 +286,11 @@ get '/category/edit/:id' => sub {
 };
 post '/category/edit/:id' => sub
 {
+    if (! check_role('category'))
+    {
+        send_error("Access denied", 403);
+        return;
+    }
     my $form = form_category();
     my $id = params->{id};
     my $params_hashref = params;
@@ -266,6 +306,11 @@ post '/category/edit/:id' => sub
 
 get '/category/delete/:id' => sub
 {
+    if (! check_role('category'))
+    {
+        send_error("Access denied", 403);
+        return;
+    }
     my $id = params->{id};
     my $category = Strehler::Meta::Category->new($id);
     if($category->has_elements())
@@ -282,6 +327,11 @@ get '/category/delete/:id' => sub
 };
 post '/category/delete/:id' => sub
 {
+    if (! check_role('category'))
+    {
+        send_error("Access denied", 403);
+        return;
+    }
     my $id = params->{id};
     my $category = Strehler::Meta::Category->new($id);
     $category->delete();
@@ -294,7 +344,7 @@ ajax '/category/last/:id' => sub
     my $category = Strehler::Meta::Category->new($id);
     return $category->max_article_order() + 1;
 };
-get '/category/select/:id' => sub
+ajax '/category/select/:id' => sub
 {
     my $id = params->{id};
     my $data = Strehler::Meta::Category::make_select($id);
@@ -307,7 +357,7 @@ get '/category/select/:id' => sub
         return 0;
     }
 };
-get '/category/select' => sub
+ajax '/category/select' => sub
 {
     my $data = Strehler::Meta::Category::make_select(undef);
     if($data->[1])
@@ -342,6 +392,11 @@ ajax '/category/tagform/:type/:id?' => sub
 get '/:entity' => sub
 {
     my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    if (! check_role($entity))
+    {
+        send_error("Access denied", 403);
+        return;
+    }
     if($entity)
     {
         redirect dancer_app->prefix . '/' . $entity . '/list';
@@ -354,12 +409,12 @@ get '/:entity' => sub
 
 any '/:entity/list' => sub
 {
-    my $entity;
-    my $class;
-    my $categorized;
-    my $publishable;
-    my $custom_list_view;
-    ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    if (! check_role($entity))
+    {
+        send_error("Access denied", 403);
+        return;
+    }
     if(! $entity)
     {
         return pass;
@@ -387,7 +442,12 @@ any '/:entity/list' => sub
 get '/:entity/turnon/:id' => sub
 {
     my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
-     if(! $entity)
+    if (! check_role($entity))
+    {
+        send_error("Access denied", 403);
+        return;
+    }
+    if(! $entity)
     {
         return pass;
     }
@@ -404,6 +464,11 @@ get '/:entity/turnon/:id' => sub
 get '/:entity/turnoff/:id' => sub
 {
     my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    if (! check_role($entity))
+    {
+        send_error("Access denied", 403);
+        return;
+    }
     if(! $entity)
     {
         return pass;
@@ -421,6 +486,11 @@ get '/:entity/turnoff/:id' => sub
 get '/:entity/delete/:id' => sub
 {
     my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    if (! check_role($entity))
+    {
+        send_error("Access denied", 403);
+        return;
+    }
     if(! $entity)
     {
         return pass;
@@ -434,6 +504,11 @@ get '/:entity/delete/:id' => sub
 post '/:entity/delete/:id' => sub
 {
     my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    if (! check_role($entity))
+    {
+        send_error("Access denied", 403);
+        return;
+    }
     if(! $entity)
     {
         return pass;
@@ -721,6 +796,18 @@ sub get_entity_data
         $entity = undef;
     }
     return ($entity, $class, $categorized, $publishable, $custom_list_view);
+}
+sub check_role
+{
+    my $entity = shift;
+    if(session->read('role') ne 'admin' && ($entity eq 'user' || $entity eq 'category'))
+    {
+        return 0
+    }
+    else
+    {
+        return 1;
+    }
 }
 
 
