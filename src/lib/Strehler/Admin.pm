@@ -76,22 +76,6 @@ any '/image/add' => sub
     template "admin/image", { form => $form->render() }
 };
 
-get '/image/delete/:id' => sub
-{
-    my $id = params->{id};
-    my $img = Strehler::Element::Image->new($id);
-    my %image = $img->get_basic_data();
-    template "admin/delete", { what => "l'immagine", el => \%image, , backlink => dancer_app->prefix . '/image' };
-};
-post '/image/delete/:id' => sub
-{
-    my $id = params->{id};
-    my $image = Strehler::Element::Image->new($id);
-    $image->delete();
-    redirect dancer_app->prefix . '/image/list';
-};
-
-
 get '/image/edit/:id' => sub {
     my $id = params->{id};
     my $image = Strehler::Element::Image->new($id);
@@ -203,20 +187,6 @@ post '/article/edit/:id' => sub
     template "admin/article", { form => $form->render() }
 };
 
-get '/article/delete/:id' => sub
-{
-    my $id = params->{id};
-    my $art = Strehler::Element::Article->new($id);
-    my %article = $art->get_basic_data();
-    template "admin/delete", { what => "l'articolo", el => \%article, , backlink => dancer_app->prefix . '/article' };
-};
-post '/article/delete/:id' => sub
-{
-    my $id = params->{id};
-    my $article = Strehler::Element::Article->new($id);
-    $article->delete();
-    redirect dancer_app->prefix . '/article/list';
-};
 ajax '/article/tagform/:id?' => sub
 {
     if(params->{id})
@@ -439,6 +409,10 @@ any '/:entity/list' => sub
 get '/:entity/turnon/:id' => sub
 {
     my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    if(! $publishable)
+    {
+        return pass;
+    }
     my $id = params->{id};
     eval "require $class";
     my $obj = $class->new($id);
@@ -448,11 +422,33 @@ get '/:entity/turnon/:id' => sub
 get '/:entity/turnoff/:id' => sub
 {
     my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    if(! $publishable)
+    {
+        return pass;
+    }
     my $id = params->{id};
     eval "require $class";
     my $obj = $class->new($id);
     $obj->unpublish();
     redirect dancer_app->prefix . '/'. $entity . '/list';
+};
+get '/:entity/delete/:id' => sub
+{
+    my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    my $id = params->{id};
+    eval "require $class";
+    my $obj = $class->new($id);
+    my %el = $obj->get_basic_data();
+    template "admin/delete", { what => $entity, el => \%el, backlink => dancer_app->prefix . '/' . $entity };
+};
+post '/:entity/delete/:id' => sub
+{
+    my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    my $id = params->{id};
+    eval "require $class";
+    my $obj = $class->new($id);
+    $obj->delete();
+    redirect dancer_app->prefix . '/' . $entity . '/list';
 };
 
 
