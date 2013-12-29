@@ -169,7 +169,7 @@ any '/category/list' => sub
 
     #THE FORM
     my $form = HTML::FormFu->new;
-    my @entities = get_entities();
+    my @entities = get_categorized_entities();
     $form->load_config_file( 'forms/admin/category_fast.yml' );
     my $parent = $form->get_element({ name => 'parent'});
     $parent->options(Strehler::Meta::Category::make_select());
@@ -187,7 +187,7 @@ any '/category/add' => sub
 {
     my $form = form_category();
     my $params_hashref = params;
-    my @entities = get_entities();
+    my @entities = get_categorized_entities();
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
@@ -200,7 +200,7 @@ any '/category/add' => sub
 get '/category/edit/:id' => sub {
     my $id = params->{id};
     my $category = Strehler::Meta::Category->new($id);
-    my @entities = get_entities();
+    my @entities = get_categorized_entities();
     my $form_data = $category->get_form_data(\@entities);
     my $form = form_category();
     $form->default_values($form_data);
@@ -212,7 +212,7 @@ post '/category/edit/:id' => sub
     my $form = form_category();
     my $id = params->{id};
     my $params_hashref = params;
-    my @entities = get_entities();
+    my @entities = get_categorized_entities();
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
@@ -501,8 +501,6 @@ sub form_article
 sub form_category
 {
     my $form = HTML::FormFu->new;
-    my @entities = get_entities();
-
     $form->load_config_file( 'forms/admin/category.yml' );
     my $category = $form->get_element({ name => 'parent'});
     $category->options(Strehler::Meta::Category::make_select());
@@ -576,7 +574,7 @@ sub add_dynamic_fields_for_category
     my $form = shift;
     my $config = 'forms/admin/category_dynamic.yml';
     my $position = $form->get_element({ name => 'save' });
-    for(get_entities())
+    for(get_categorized_entities())
     {
         my $ent = $_;
         my $form_dyna = HTML::FormFu->new;
@@ -603,13 +601,16 @@ sub add_dynamic_fields_for_category
     }
     return $form;
 }
-sub get_entities
+sub get_categorized_entities
 {
     my @entities = ('article', 'image'); #standard entities for Strehler
     my $extra = config->{'Strehler'}->{'extra_menu'};
     for(keys %{$extra})
     {
-        push @entities, $_;
+        if(config->{'Strehler'}->{'extra_menu'}->{$_}->{'categorized'})
+        {
+            push @entities, $_;
+        }
     }
     return @entities;
 }
