@@ -664,9 +664,9 @@ sub get_entities
 {
     my @entities = ('article', 'image'); #standard entities for Strehler
     my $extra = config->{'Strehler'}->{'extra_menu'};
-    for(@{$extra})
+    for(keys %{$extra})
     {
-        push @entities, $_->[1];
+        push @entities, $_;
     }
     return @entities;
 }

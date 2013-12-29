@@ -20,7 +20,7 @@
             <tr>
                 <td>[% el.id %]</td>
                 <td>[% el.title %]</td>
-                [% IF categorized %][% el.category %][% END %]
+                [% IF categorized %]<td>[% el.category %]</td>[% END %]
                 <td>
                     <div class="btn-group span2 offset1">
                         <a href="/admin/article/edit/[% el.id %]" class="btn">Edit</a>
