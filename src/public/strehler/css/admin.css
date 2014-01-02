@@ -1,3 +1,11 @@
+.navbar .navbar-inner .nav .user
+{
+    border-right: 2px solid;
+}
+.navbar .navbar-inner .nav .user .user-toggle
+{
+    color: #ed0000;
+}
 .homepage p
 {
     padding-top: 40px;

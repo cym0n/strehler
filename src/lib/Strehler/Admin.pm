@@ -26,7 +26,7 @@ get '/' => sub {
     template "admin/index", { navbar => \%navbar};
 };
 
-##### Login #####
+##### Login/Logout #####
 
 any '/login' => sub {
     my $form = HTML::FormFu->new;
@@ -60,6 +60,15 @@ any '/login' => sub {
         }
     }
     template "admin/login", { form => $form->render(), message => $message, layout => 'admin' }
+};
+
+get '/logout' => sub
+{
+    session 'user' => undef;
+    session 'role' => undef;
+    my $redir = redirect(dancer_app->prefix . '/');
+    context->response->is_halted(0);
+    return $redir;
 };
 
 ##### Images #####
@@ -800,9 +809,16 @@ sub get_entity_data
 sub check_role
 {
     my $entity = shift;
-    if(session->read('role') ne 'admin' && ($entity eq 'user' || $entity eq 'category'))
+    if($entity eq 'user' || $entity eq 'category')
     {
-        return 0
+        if(session->read('role') && session->read('role') eq 'admin')
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
     }
     else
     {

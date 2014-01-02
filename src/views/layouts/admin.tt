@@ -24,9 +24,9 @@
   <div class="navbar-inner">
     <ul class="nav">
       [% IF user %]
-      <li class="dropdown" style="border-right:2px solid"><a style="color:#ed0000" href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="icon-user"></b>  [% user %] ([% role %])<b class="caret"></b></a>
+      <li class="dropdown user"><a href="#" class="dropdown-toggle user-toggle" data-toggle="dropdown"><b class="icon-user"></b>  [% user %]<b class="caret"></b></a>
         <ul class="dropdown-menu">
-            <li><a href="#">Logout</a></li>
+            <li><a href="/admin/logout">Logout</a></li>
         </ul>
       </li>
       [% END %]
