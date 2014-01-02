@@ -401,13 +401,13 @@ ajax '/category/tagform/:type/:id?' => sub
 get '/:entity' => sub
 {
     my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
-    if (! check_role($entity))
-    {
-        send_error("Access denied", 403);
-        return;
-    }
     if($entity)
     {
+        if (! check_role($entity))
+        {
+            send_error("Access denied", 403);
+            return;
+        }
         redirect dancer_app->prefix . '/' . $entity . '/list';
     }
     else
@@ -419,14 +419,14 @@ get '/:entity' => sub
 any '/:entity/list' => sub
 {
     my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    if(! $entity)
+    {
+        return pass;
+    }
     if (! check_role($entity))
     {
         send_error("Access denied", 403);
         return;
-    }
-    if(! $entity)
-    {
-        return pass;
     }
     $custom_list_view ||= 'admin/generic_list';
     
@@ -451,11 +451,6 @@ any '/:entity/list' => sub
 get '/:entity/turnon/:id' => sub
 {
     my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
-    if (! check_role($entity))
-    {
-        send_error("Access denied", 403);
-        return;
-    }
     if(! $entity)
     {
         return pass;
@@ -463,6 +458,11 @@ get '/:entity/turnon/:id' => sub
     if(! $publishable)
     {
         return pass;
+    }
+    if (! check_role($entity))
+    {
+        send_error("Access denied", 403);
+        return;
     }
     my $id = params->{id};
     eval "require $class";
@@ -473,11 +473,6 @@ get '/:entity/turnon/:id' => sub
 get '/:entity/turnoff/:id' => sub
 {
     my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
-    if (! check_role($entity))
-    {
-        send_error("Access denied", 403);
-        return;
-    }
     if(! $entity)
     {
         return pass;
@@ -485,6 +480,11 @@ get '/:entity/turnoff/:id' => sub
     if(! $publishable)
     {
         return pass;
+    }
+    if (! check_role($entity))
+    {
+        send_error("Access denied", 403);
+        return;
     }
     my $id = params->{id};
     eval "require $class";
@@ -495,14 +495,14 @@ get '/:entity/turnoff/:id' => sub
 get '/:entity/delete/:id' => sub
 {
     my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    if(! $entity)
+    {
+        return pass;
+    }
     if (! check_role($entity))
     {
         send_error("Access denied", 403);
         return;
-    }
-    if(! $entity)
-    {
-        return pass;
     }
     my $id = params->{id};
     eval "require $class";
@@ -513,14 +513,14 @@ get '/:entity/delete/:id' => sub
 post '/:entity/delete/:id' => sub
 {
     my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    if(! $entity)
+    {
+        return pass;
+    }
     if (! check_role($entity))
     {
         send_error("Access denied", 403);
         return;
-    }
-    if(! $entity)
-    {
-        return pass;
     }
     my $id = params->{id};
     eval "require $class";
