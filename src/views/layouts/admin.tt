@@ -22,8 +22,14 @@
 <body>
 <div class="navbar">
   <div class="navbar-inner">
-    <span class="brand">User [% user %] ([% role %])</span>
     <ul class="nav">
+      [% IF user %]
+      <li class="dropdown" style="border-right:2px solid"><a style="color:#ed0000" href="#" class="dropdown-toggle" data-toggle="dropdown"><b class="icon-user"></b>  [% user %] ([% role %])<b class="caret"></b></a>
+        <ul class="dropdown-menu">
+            <li><a href="#">Logout</a></li>
+        </ul>
+      </li>
+      [% END %]
       <li class="[% navbar.home %]"><a href="/admin">Home</a></li>
       <li class="[% navbar.image %]"><a href="/admin/image">Image</a></li>
       <li class="[% navbar.article %]"><a href="/admin/article">Article</a></li>
@@ -37,6 +43,7 @@
           <li class="[% navbar.${menulink} %]"><a href="/admin/[% menulink %]">[% menuname %]</a></li>
       [% END %]
     </ul>
+
   </div>
 </div>
 [% content %]
