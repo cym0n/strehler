@@ -86,7 +86,6 @@ sub category_accessor
 {
     my $self = shift;
     my $category = shift;
-    print "Call in father";
     return undef;
 }
 
@@ -94,6 +93,48 @@ sub item_type
 {
     return "generic";
 }
+
+sub get_basic_data
+{
+    my $self = shift;
+    my %data;
+    $data{'id'} = $self->get_attr('id');
+    $data{'title'} = $self->main_title;
+    if($self->row->can('category'))
+    {
+        $data{'category'} = $self->row->category->category;
+    }
+    if($self->row->result_source->has_column('published'))
+    {
+        $data{'published'} = $self->get_attr('published');
+    }
+    return %data;
+}
+
+sub get_ext_data
+{
+    my $self = shift;
+    return $self->get_basic_data();
+}
+
+sub main_title
+{
+    my $self = shift;
+    if($self->row->result_source->has_column('title'))
+    {
+        return $self->get_attr('title');
+    }
+    elsif($self->row->result_source->has_column('name'))
+    {
+        return $self->get_attr('name');
+    }   
+    else
+    {
+        return "[". $self->get_attr('id') . "]";
+    }
+}
+
+
 
 
 sub next_in_category_by_order
