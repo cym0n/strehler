@@ -44,13 +44,11 @@ any '/login' => sub {
             if( session 'redir_url' )
             {
                 my $redir = redirect(session 'redir_url');
-                context->response->is_halted(0);
                 return $redir;
             }
             else
             {
                 my $redir = redirect(dancer_app->prefix . '/');
-                context->response->is_halted(0);
                 return $redir;
             }
         }
@@ -67,7 +65,6 @@ get '/logout' => sub
     session 'user' => undef;
     session 'role' => undef;
     my $redir = redirect(dancer_app->prefix . '/');
-    context->response->is_halted(0);
     return $redir;
 };
 
@@ -579,18 +576,17 @@ sub login_valid
     my $user = shift;
     my $password = shift;
     my $rs = schema->resultset('User')->find({'user' => $user});
-    my $ppr = Authen::Passphrase::BlowfishCrypt->new(
-                cost => 8, salt_base64 => $rs->password_salt,
-                hash_base64 => $rs->password_hash);
-    if($ppr->match($password))
+    if($rs)
     {
-        return $rs->role;
+        my $ppr = Authen::Passphrase::BlowfishCrypt->new(
+                  cost => 8, salt_base64 => $rs->password_salt,
+                  hash_base64 => $rs->password_hash);
+        if($ppr->match($password))
+        {
+            return $rs->role;
+        }
     }
-    else
-    {
-        return undef;
-    }
-        
+    return undef;
 }
 
 sub form_image

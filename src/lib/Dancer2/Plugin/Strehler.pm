@@ -14,7 +14,6 @@ on_plugin_import {
                 {
                     $context->session->{'redir_url'} = $context->request->path_info;
                     my $redir = $dsl->redirect($dsl->dancer_app->prefix . '/login');
-                    $context->response->is_halted(0);
                     return $redir;
                 }
             }));
