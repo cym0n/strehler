@@ -3,6 +3,6 @@
         <p class="text-center">[% message %]</p>
     </div>
     <div class="row">
-        <a class="span2 offset5 btn" href="[% backlink %]">Torna indietro</a>
+        <a class="span2 offset5 btn" href="[% backlink %]">Back</a>
     </div>
 </div>

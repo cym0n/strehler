@@ -1,5 +1,5 @@
 <div class="span12">
-    <h1>Administrator panel - Categories</h1>
+    <h1>Categories</h1>
 </div>
 <div class="content span12">
        [% form %]

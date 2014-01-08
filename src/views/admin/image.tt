@@ -1,5 +1,5 @@
 <div class="span12">
-    <h1>Administrator panel - image upload</h1>
+    <h1>Images</h1>
 </div>
 [% IF img_source %]
 <div class="span6">

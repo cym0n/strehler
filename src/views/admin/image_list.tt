@@ -1,6 +1,6 @@
 [% PROCESS admin/blocks/listblocks.tt %]
 <div class="span12">
-    <h1>Administrator panel - [% entity %]</h1>
+    <h1>[% label %]</h1>
 </div>
 <div class="content imagelist span12">
         [% INCLUDE categoryfilter %]
