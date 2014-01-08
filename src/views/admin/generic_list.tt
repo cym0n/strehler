@@ -1,6 +1,6 @@
 [% PROCESS admin/blocks/listblocks.tt %]
 <div class="span12">
-    <h1>Administrator panel - [% entity %]</h1>
+    <h1>[% label %]</h1>
 </div>
 <div class="content articlelist span12">
         [% IF categorized %]

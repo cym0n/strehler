@@ -2,11 +2,11 @@
     <form method="post">
         <div class="row">
             <p class="span6 offset3">
-                Sicuro di voler cancellare [% what %] [% el.id %]: [% el.title %]    
+                Delete [% el.id %] of [% what %]: [% el.title %]?    
             </p>
         </div>
         <div class="row">
-            <button class="span3 offset3 btn btn-primary" type="submit">Si</button>
+            <button class="span3 offset3 btn btn-primary" type="submit">Yes</button>
             <a class="span3 btn" href="[% backlink %]">No</a>
         </div>
     </form>

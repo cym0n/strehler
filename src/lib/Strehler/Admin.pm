@@ -57,7 +57,7 @@ any '/login' => sub {
             $message = "Authentication failed!";
         }
     }
-    template "admin/login", { form => $form->render(), message => $message, layout => 'admin' }
+    template "admin/login", { form => $form->render(), message => $message }, { layout => 'light-admin' }
 };
 
 get '/logout' => sub
@@ -397,7 +397,7 @@ ajax '/category/tagform/:type/:id?' => sub
 
 get '/:entity' => sub
 {
-    my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    my ($entity, $label, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
     if($entity)
     {
         if (! check_role($entity))
@@ -415,7 +415,7 @@ get '/:entity' => sub
 
 any '/:entity/list' => sub
 {
-    my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    my ($entity, $label, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
     if(! $entity)
     {
         return pass;
@@ -443,11 +443,11 @@ any '/:entity/list' => sub
     my $elements = $class->get_list({ page => $page, entries_per_page => $entries_per_page, category_id => $cat_param});
     session $entity . '-page' => $page;
     session $entity . '-cat-filter' => $cat_param;
-    template $custom_list_view, { entity => $entity, elements => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, last_page => $elements->{'last_page'}, categorized => $categorized, publishable => $publishable };
+    template $custom_list_view, { entity => $entity, label => $label, elements => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, last_page => $elements->{'last_page'}, categorized => $categorized, publishable => $publishable };
 };
 get '/:entity/turnon/:id' => sub
 {
-    my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    my ($entity, $label, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
     if(! $entity)
     {
         return pass;
@@ -469,7 +469,7 @@ get '/:entity/turnon/:id' => sub
 };
 get '/:entity/turnoff/:id' => sub
 {
-    my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    my ($entity, $label, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
     if(! $entity)
     {
         return pass;
@@ -491,7 +491,7 @@ get '/:entity/turnoff/:id' => sub
 };
 get '/:entity/delete/:id' => sub
 {
-    my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    my ($entity, $label, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
     if(! $entity)
     {
         return pass;
@@ -505,11 +505,11 @@ get '/:entity/delete/:id' => sub
     eval "require $class";
     my $obj = $class->new($id);
     my %el = $obj->get_basic_data();
-    template "admin/delete", { what => $entity, el => \%el, backlink => dancer_app->prefix . '/' . $entity };
+    template "admin/delete", { what => $label, el => \%el, backlink => dancer_app->prefix . '/' . $entity };
 };
 post '/:entity/delete/:id' => sub
 {
-    my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    my ($entity, $label, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
     if(! $entity)
     {
         return pass;
@@ -527,7 +527,7 @@ post '/:entity/delete/:id' => sub
 };
 ajax '/:entity/tagform/:id?' => sub
 {
-    my ($entity, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    my ($entity, $label, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
     if(! $entity)
     {
         return pass;
@@ -756,19 +756,21 @@ sub get_categorized_entities
 sub get_entity_data
 {
     my $entity = shift;
+    my $label = undef;
     my $class = undef;
     my $categorized = undef;
     my $publishable = undef;
     my $custom_list_view = undef;
     if($entity eq 'article')
     {
+        $label = 'Articles';
         $class = 'Strehler::Element::Article';
         $categorized = 1;
         $publishable = 1;
-        $custom_list_view = 'admin/article_list';
     }
     elsif($entity eq 'image')
     {
+        $label = 'Images';
         $class = 'Strehler::Element::Image';
         $categorized = 1;
         $publishable = 1;
@@ -776,16 +778,17 @@ sub get_entity_data
     }
     elsif($entity eq 'user')
     {
+        $label = 'Users';
         $class = 'Strehler::Element::User';
         $categorized = 0;
         $publishable = 0;
-#        $custom_list_view = 'admin/image_list';
     }
   
     elsif(config->{'Strehler'}->{'extra_menu'}->{$entity})
     {
         if(config->{'Strehler'}->{'extra_menu'}->{$entity}->{auto})
         {
+            $label = config->{'Strehler'}->{'extra_menu'}->{$entity}->{label};
             $class = config->{'Strehler'}->{'extra_menu'}->{$entity}->{class};
             $categorized = config->{'Strehler'}->{'extra_menu'}->{$entity}->{categorized};
             $publishable = config->{'Strehler'}->{'extra_menu'}->{$entity}->{publishable};
@@ -800,7 +803,7 @@ sub get_entity_data
     {
         $entity = undef;
     }
-    return ($entity, $class, $categorized, $publishable, $custom_list_view);
+    return ($entity, $label, $class, $categorized, $publishable, $custom_list_view);
 }
 sub check_role
 {

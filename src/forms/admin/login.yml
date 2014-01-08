@@ -22,7 +22,7 @@ elements:
         class: divider
     - type: Block
       tag: button
-      content: Submit
+      content: Login
       attributes:
         type: submit
         class: btn btn-primary

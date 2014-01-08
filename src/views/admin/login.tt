@@ -1,12 +1,9 @@
-<div class="span12">
-    <h1>Administrator panel - login</h1>
-</div>
-[% IF message %]
-<div class="span12 text-center">
-    [% message %]
-</div>
-[% END %]
 <div class="content login span12 text-center">
+    [% IF message %]
+    <div class="alert alert-error">
+        [% message %]
+    </div>
+    [% END %]
     [% form %]
 </div>
 

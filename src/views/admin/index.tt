@@ -1,12 +1,12 @@
 <div class="span10">
-    <h1>Administrator panel - homepage</h1>
+    <h1>Home</h1>
 </div>
 <div class="content homepage">
 [% TRY %]
 [% INCLUDE 'strehler-home.tt' %]
 [% CATCH %]
 <p class="lead span10 text-center">
-    Seleziona una sezione dal menu in alto
+    Select an entity from the navbar
 </p>
 [% END %]
 </div>

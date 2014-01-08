@@ -23,25 +23,7 @@
 <div class="navbar">
   <div class="navbar-inner">
     <ul class="nav">
-      [% IF user %]
-      <li class="dropdown user"><a href="#" class="dropdown-toggle user-toggle" data-toggle="dropdown"><b class="icon-user"></b>  [% user %]<b class="caret"></b></a>
-        <ul class="dropdown-menu">
-            <li><a href="/admin/logout">Logout</a></li>
-        </ul>
-      </li>
-      [% END %]
-      <li class="[% navbar.home %]"><a href="/admin">Home</a></li>
-      <li class="[% navbar.image %]"><a href="/admin/image">Images</a></li>
-      <li class="[% navbar.article %]"><a href="/admin/article">Articles</a></li>
-      [% IF role == 'admin' %]
-      <li class="[% navbar.category %]"><a href="/admin/category">Categories</a></li>
-      <li class="[% navbar.user %]"><a href="/admin/user">Users</a></li>
-      [% END %]
-      [% FOREACH k in extramenu.keys %]
-          [% menuname = extramenu.$k.label %]
-          [% menulink = k %]
-          <li class="[% navbar.${menulink} %]"><a href="/admin/[% menulink %]">[% menuname %]</a></li>
-      [% END %]
+        <li><a href="#">Strehler</a></li>
     </ul>
 
   </div>
