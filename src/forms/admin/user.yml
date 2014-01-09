@@ -7,7 +7,7 @@ elements:
         class: span8
       constraints:
         type: Required
-        message: 'Nome utente necessario<br />'
+        message: 'Username needed<br />'
     - name: password
       label: Password
       type: Password
@@ -18,13 +18,13 @@ elements:
           others: password-confirm
           message: "Password and password confirmation don't match"
     - name: password-confirm
-      label: Conferma password
+      label: Password confirm
       type: Password
       attributes: 
         class: span8
     - type: Select
       name: role
-      label: Ruolo
+      label: Role
       options:
           - [ 'admin', 'admin' ]
           - [ 'editor', 'editor' ]

@@ -1,29 +1,29 @@
 elements:
     - name: category
-      label: categoria
+      label: Category
       constraints:
         - type: Required
-          message: 'Categoria necessaria<br />'
+          message: 'Category needed<br />'
         - type: Regex
           regex: '^[^\/]*$'
-          message: 'Carattere non ammesso'
+          message: 'Invalid character'
     - type: Select
       id: category_selector
       name: parent
-      label: categoria padre
+      label: Parent category
     - type: Block
       tag: h3
-      content: 'Tag management'
+      content: 'Tags management'
     - type: Fieldset
       elements: 
         - type: Block
           name: whatis
           tag: div
-          content: 'Per tutti'
+          content: 'All'
           attributes:
              class: alert alert-info 
         - name: tags-all
-          label: tags
+          label: Tags
         - name: default-all
           label: default
     - type: Block

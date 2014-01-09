@@ -3,16 +3,16 @@ attributes:
 elements:
     - type: File
       name: photo
-      label: Immagine
+      label: Image
       attributes: 
         class: span5
     - type: Select
       id: category_selector
       name: category
-      label: categoria
+      label: Category
     - type: Select
       name: subcategory
-      label: sottocategoria
+      label: Subcategory
       id: subcat
     - type: Block
       tag: div

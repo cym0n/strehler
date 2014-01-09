@@ -2,7 +2,7 @@ attributes:
     class: well
 elements:
     - name: image
-      label: Immagine
+      label: Image
       type: Select
       attributes: 
         id: image_selector
@@ -10,18 +10,16 @@ elements:
     - type: Select
       id: category_selector
       name: category
-      label: categoria
+      label: Category
       constraints:
         type: Required
-        message: 'Categoria necessaria<br />'
+        message: 'Category needed<br />'
     - type: Select
       name: subcategory
-      label: sottocategoria
+      label: Sub-category
       id: subcat
     - type: Fieldset
       elements:
-    #    - name: tags
-    #      label: Tags
         - type: Block
           tag: div
           id: tags-place
@@ -31,18 +29,18 @@ elements:
       elements: 
           - name: order
             id: order
-            label: capitolo
+            label: Order
           - type: Block
             id: last
             name: last
             tag: button
-            content: Prossimo!
+            content: Next!
             attributes:
               type: button
               class: btn btn-warning
     - id: date_of_pub
       name: publish_date
-      label: data
+      label: Date
       inflators:
          - type: DateTime
            parser:

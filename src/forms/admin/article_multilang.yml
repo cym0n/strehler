@@ -1,10 +1,10 @@
 elements:
     - name: title
-      label: Titolo
+      label: Title
       attributes: 
         class: span8
     - name: text
-      label: Testo
+      label: Text
       type: Textarea
       attributes: 
         class: span8

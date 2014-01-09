@@ -1,20 +1,20 @@
 elements:
     - name: category
-      label: categoria
+      label: Category
       constraints:
         - type: Required
-          message: 'Categoria necessaria<br />'
+          message: 'Category needed<br />'
         - type: Regex
           regex: '^[^\/]*$'
           message: 'Carattere non ammesso'
     - type: Select
       id: category_selector
       name: parent
-      label: categoria padre
+      label: Parent category
     - type: Block
       name: save
       tag: button
-      content: Nuova categoria (veloce)
+      content: New category (fast)
       attributes:
         type: submit
         class: btn btn-primary

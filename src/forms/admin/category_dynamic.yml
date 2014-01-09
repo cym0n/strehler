@@ -6,6 +6,6 @@ elements:
       attributes:
          class: alert alert-info 
     - name: tags
-      label: tags
+      label: Tags
     - name: default
-      label: default
+      label: Default
