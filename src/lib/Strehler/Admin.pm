@@ -567,6 +567,27 @@ ajax '/:entity/tagform/:id?' => sub
     }
 };
 
+any '/:entity/add' => sub
+{
+    my ($entity, $label, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    my $form = form_generic(config->{'Strehler'}->{'extra_menu'}->{$entity}->{form}); 
+    my $params_hashref = params;
+    $form = Strehler::Admin::tags_for_form($form, $params_hashref);
+    $form->process($params_hashref);
+    if($form->submitted_and_valid)
+    {
+        eval "require $class";
+        $class->save_form(undef, $form);
+        redirect dancer_app->prefix . '/' . $entity . '/list';
+    }
+    my $fake_tags = $form->get_element({ name => 'tags'});
+    Strehler::Admin::bootstrap_divider($form);
+    $form->remove_element($fake_tags) if($fake_tags);
+    template "admin/generic_add", { entity => $entity, label => $label, form => $form->render() }
+};
+
+
+
 
 ##### Helpers #####
 # They only manipulate forms rendering and manage login
@@ -641,6 +662,27 @@ sub form_user
     {
         $form->constraint({ name => 'password', type => 'Required' }); 
         $form->constraint({ name => 'password-confirm', type => 'Required' }); 
+    }
+    return $form;
+}
+
+sub form_generic
+{
+    my $conf = shift;
+    my $action = shift;
+    my $has_sub = shift;
+
+    my $form = HTML::FormFu->new;
+    $form->load_config_file( $conf );
+    my $category = $form->get_element({ name => 'category'});
+    if($category)
+    {
+       $category->options(Strehler::Meta::Category::make_select());
+       my $subcategory = $form->get_element({ name => 'subcategory'});
+       if($subcategory)
+       {
+           $subcategory->options(Strehler::Meta::Category::make_select($has_sub));
+       }
     }
     return $form;
 }

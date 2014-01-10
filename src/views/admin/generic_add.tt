@@ -1,0 +1,16 @@
+<div class="span12">
+    <h1>[% label %]</h1>
+</div>
+<div class="content wine span9">
+    <div>
+    [% form %]
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        item_type = '[% entity %]';
+        category_init();
+        tags_init([% id %]);
+    });
+</script>
+
