@@ -570,7 +570,7 @@ ajax '/:entity/tagform/:id?' => sub
 any '/:entity/add' => sub
 {
     my ($entity, $label, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
-    my $form = form_generic(config->{'Strehler'}->{'extra_menu'}->{$entity}->{form}); 
+    my $form = form_generic(config->{'Strehler'}->{'extra_menu'}->{$entity}->{form}, 'add'); 
     my $params_hashref = params;
     $form = Strehler::Admin::tags_for_form($form, $params_hashref);
     $form->process($params_hashref);
@@ -584,6 +584,33 @@ any '/:entity/add' => sub
     Strehler::Admin::bootstrap_divider($form);
     $form->remove_element($fake_tags) if($fake_tags);
     template "admin/generic_add", { entity => $entity, label => $label, form => $form->render() }
+};
+get '/:entity/edit/:id' => sub {
+    my $id = params->{id};
+    my ($entity, $label, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    eval "require $class";
+    my $el = $class->new($id);
+    my $form_data = $el->get_form_data();
+    my $form = form_generic(config->{'Strehler'}->{'extra_menu'}->{$entity}->{form}, 'edit', $form_data->{'category'});
+    $form->default_values($form_data);
+    $form = Strehler::Admin::bootstrap_divider($form);
+    template "admin/generic_add", {  entity => $entity, label => $label, id => $id, form => $form->render() }
+};
+post '/:entity/edit/:id' => sub
+{
+    my ($entity, $label, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    my $form = form_generic(config->{'Strehler'}->{'extra_menu'}->{$entity}->{form}, 'edit');
+    my $id = params->{id};
+    my $params_hashref = params;
+    $form = Strehler::Admin::tags_for_form($form, $params_hashref);
+    $form->process($params_hashref);
+    if($form->submitted_and_valid)
+    {
+        eval "require $class";
+        $class->save_form($id, $form);
+        redirect dancer_app->prefix . '/' . $entity . '/list';
+    }
+    template "myadmin/wine", { entity => $entity, label => $label, id => $id, form => $form->render() }
 };
 
 
