@@ -6,7 +6,7 @@ elements:
           message: 'Category needed<br />'
         - type: Regex
           regex: '^[^\/]*$'
-          message: 'Carattere non ammesso'
+          message: 'Invalid character'
     - type: Select
       id: category_selector
       name: parent

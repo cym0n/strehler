@@ -11,8 +11,8 @@
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Titolo</th>
-                [% IF categorized %]<th>Categoria</th>[% END %]
+                <th>Title</th>
+                [% IF categorized %]<th>Category</th>[% END %]
                 [% IF publishable %]<th>Status</th>[% END %]
             </tr>
         </thead>

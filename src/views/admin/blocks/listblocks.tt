@@ -10,13 +10,13 @@
         [% ELSE %]
             <span class="span1">&nbsp;</span>
         [% END %]
-        <a href="add" class="span1 offset8 btn btn-primary">Nuova</a>
+        <a href="add" class="span1 offset8 btn btn-primary">New</a>
     </div>
 [% END %]
 [% BLOCK categoryfilter %]
         <div class="row well" style="margin-left:0">        
          <div class="span2">
-            Filta su categoria:
+            Filter on category:
          </div>
          <div class="span3">
             <select id="category_selector">
@@ -27,8 +27,8 @@
             </select>
         </div>
         <div class="btn-group span3">
-        <a href="#" id="filter-button" class="btn">Filtra</a>
-        <a href="[% request.path_info %]?cat=&page=" id="filter-button" class="btn">Azzera filtro</a>
+        <a href="#" id="filter-button" class="btn">Filter</a>
+        <a href="[% request.path_info %]?cat=&page=" id="filter-button" class="btn">Reset filter</a>
         </div>
         </div>
 [% END %]

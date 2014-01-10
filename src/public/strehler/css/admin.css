@@ -30,17 +30,16 @@
     margin-top: 4px;
     margin-left: 12px;
 }
-.imagelist .thumbnail img
+.articlelist .thumbnail img
 {
     height: 80px;
 }
-.imagelist .row
+.articlelist .row
 {
     padding-top: 10px;
     padding-bottom: 10px;
-    margin-left: 10px;
 }
-.imagelist .elementID
+.articlelist .elementID
 {
     font-size:30px;
     padding-top: 20px;

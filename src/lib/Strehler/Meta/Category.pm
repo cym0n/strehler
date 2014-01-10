@@ -115,7 +115,7 @@ sub make_select
     my $parent = shift;
     my @category_values = schema->resultset('Category')->search({ parent => $parent });
     my @category_values_for_select;
-    push @category_values_for_select, { value => undef, label => "-- seleziona --" }; 
+    push @category_values_for_select, { value => undef, label => "-- select --" }; 
     for(@category_values)
     {
         push @category_values_for_select, { value => $_->id, label => $_->category }
