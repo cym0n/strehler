@@ -558,7 +558,7 @@ ajax '/:entity/tagform/:id?' => sub
         }
         else
         {
-            template 'admin/open_tags';
+            template 'admin/open_tags', { tags => $obj->get_tags() };
         }
     }
     else
