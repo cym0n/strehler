@@ -435,4 +435,27 @@ sub make_select
     return \@category_values_for_select;
 }
 
+sub get_form_data
+{
+    my $self = shift;
+    my $el_row = $self->row;
+    my %columns = $el_row->get_columns;
+    my $data = \%columns;
+    if($self->category) #Is the element categorized?
+    {
+        if($el_row->category->parent_category)
+        {
+            $data->{'category'} = $el_row->category->parent_category->id;
+            $data->{'subcategory'} = $el_row->category->id;
+        }
+        else
+        {
+        $data->{'category'} = $el_row->category->id;
+        }
+    }
+    #print "### " . $self->item_type(); 
+    $data->{'tags'} = Strehler::Meta::Tag::tags_to_string($self->get_attr('id'), $self->item_type());
+    return $data;
+}
+
 1;
