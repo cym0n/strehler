@@ -1,2 +1,2 @@
 <label>Tags</label>
-<input type="text" name="tags">
+<input type="text" name="tags" value="[% tags %]">
