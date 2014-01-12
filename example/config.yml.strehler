@@ -7,6 +7,8 @@ Strehler:
             auto: 1
             label: firstpath
             class: Site::Element::Dummy
+            form: forms/myadmin/wine.yml
+            multilang_form: forms/myadmin/wine_multilang.yml
             categorized: 1
             publishable: 0
         path2:

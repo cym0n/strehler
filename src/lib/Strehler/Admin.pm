@@ -570,7 +570,7 @@ ajax '/:entity/tagform/:id?' => sub
 any '/:entity/add' => sub
 {
     my ($entity, $label, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
-    my $form = form_generic(config->{'Strehler'}->{'extra_menu'}->{$entity}->{form}, 'add'); 
+    my $form = form_generic(config->{'Strehler'}->{'extra_menu'}->{$entity}->{form}, config->{'Strehler'}->{'extra_menu'}->{$entity}->{multilang_form}, 'add'); 
     my $params_hashref = params;
     $form = Strehler::Admin::tags_for_form($form, $params_hashref);
     if(! $form)
@@ -595,7 +595,7 @@ get '/:entity/edit/:id' => sub {
     eval "require $class";
     my $el = $class->new($id);
     my $form_data = $el->get_form_data();
-    my $form = form_generic(config->{'Strehler'}->{'extra_menu'}->{$entity}->{form}, 'edit', $form_data->{'category'});
+    my $form = form_generic(config->{'Strehler'}->{'extra_menu'}->{$entity}->{form}, config->{'Strehler'}->{'extra_menu'}->{$entity}->{multilang_form}, 'edit', $form_data->{'category'});
     if(! $form)
     {
         return pass;
@@ -607,7 +607,7 @@ get '/:entity/edit/:id' => sub {
 post '/:entity/edit/:id' => sub
 {
     my ($entity, $label, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
-    my $form = form_generic(config->{'Strehler'}->{'extra_menu'}->{$entity}->{form}, 'edit');
+    my $form = form_generic(config->{'Strehler'}->{'extra_menu'}->{$entity}->{form}, config->{'Strehler'}->{'extra_menu'}->{$entity}->{multilang_form}, 'edit');
     if(! $form)
     {
         return pass;
@@ -708,6 +708,7 @@ sub form_user
 sub form_generic
 {
     my $conf = shift;
+    my $multilang_conf = shift;
     my $action = shift;
     my $has_sub = shift;
     if(! $conf)
@@ -717,6 +718,10 @@ sub form_generic
 
     my $form = HTML::FormFu->new;
     $form->load_config_file( $conf );
+    if($multilang_conf)
+    {
+        $form = add_multilang_fields($form, \@languages, $multilang_conf); 
+    }
     my $category = $form->get_element({ name => 'category'});
     if($category)
     {
