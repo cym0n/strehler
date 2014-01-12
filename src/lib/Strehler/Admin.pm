@@ -573,6 +573,10 @@ any '/:entity/add' => sub
     my $form = form_generic(config->{'Strehler'}->{'extra_menu'}->{$entity}->{form}, 'add'); 
     my $params_hashref = params;
     $form = Strehler::Admin::tags_for_form($form, $params_hashref);
+    if(! $form)
+    {
+        return pass;
+    }
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
@@ -592,6 +596,10 @@ get '/:entity/edit/:id' => sub {
     my $el = $class->new($id);
     my $form_data = $el->get_form_data();
     my $form = form_generic(config->{'Strehler'}->{'extra_menu'}->{$entity}->{form}, 'edit', $form_data->{'category'});
+    if(! $form)
+    {
+        return pass;
+    }
     $form->default_values($form_data);
     $form = Strehler::Admin::bootstrap_divider($form);
     template "admin/generic_add", {  entity => $entity, label => $label, id => $id, form => $form->render() }
@@ -600,6 +608,10 @@ post '/:entity/edit/:id' => sub
 {
     my ($entity, $label, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
     my $form = form_generic(config->{'Strehler'}->{'extra_menu'}->{$entity}->{form}, 'edit');
+    if(! $form)
+    {
+        return pass;
+    }
     my $id = params->{id};
     my $params_hashref = params;
     $form = Strehler::Admin::tags_for_form($form, $params_hashref);
@@ -698,6 +710,10 @@ sub form_generic
     my $conf = shift;
     my $action = shift;
     my $has_sub = shift;
+    if(! $conf)
+    {
+        return undef;
+    }
 
     my $form = HTML::FormFu->new;
     $form->load_config_file( $conf );
