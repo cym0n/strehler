@@ -453,8 +453,22 @@ sub get_form_data
         $data->{'category'} = $el_row->category->id;
         }
     }
-    #print "### " . $self->item_type(); 
-    $data->{'tags'} = Strehler::Meta::Tag::tags_to_string($self->get_attr('id'), $self->item_type());
+    my $children = $self->row->can($self->multilang_children());
+    if($children)
+    {
+        my @multilang_rows = $self->row->$children;
+        foreach my $ml (@multilang_rows)
+        {
+            my %ml_columns = $ml->get_columns;
+            foreach my $k (keys %ml_columns)
+            {
+                if($k ne 'id' && $k ne $self->item_type() && $k ne 'language')
+                {
+                    $data->{$k . '_' . $ml_columns{'language'}} = $ml_columns{$k};
+                }
+            }
+        }
+    }
     return $data;
 }
 
