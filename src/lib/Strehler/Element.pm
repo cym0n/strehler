@@ -472,4 +472,71 @@ sub get_form_data
     return $data;
 }
 
+sub save_form
+{
+    my $self = shift;
+    my $id = shift;
+    my $form = shift;
+    
+    my $el_row;
+    my $el_data;
+    foreach my $column (schema->resultset($self->ORMObj())->result_source->columns)
+    {
+        if($column ne 'category' && $column ne 'id' && $column ne 'published')
+        {
+            $el_data->{$column} = $form->param_value($column);
+        }
+        elsif($column eq 'category')
+        {
+            my $category;
+            if($form->param_value('subcategory'))
+            {
+                $category = $form->param_value('subcategory');
+            }
+            elsif($form->param_value('category'))
+            {
+                $category = $form->param_value('category');
+            }
+            $el_data->{'category'} = $category;
+        }
+    }
+    my $children;
+    if($id)
+    {
+        $el_row = schema->resultset($self->ORMObj())->find($id);
+        $el_row->update($el_data);
+        $children = $el_row->can($self->multilang_children());
+        $el_row->$children->delete_all() if($children);
+    }
+    else
+    {
+        $el_row = schema->resultset($self->ORMObj())->create($el_data);
+        $children = $el_row->can($self->multilang_children());
+    }
+    my @languages = @{config->{Strehler}->{languages}};
+    foreach my $lang (@languages)
+    {
+        my $to_write = 0;
+        my $multi_el_data;
+        foreach my $multicolumn (schema->resultset($self->ORMObj())->$children->result_source->columns)
+        {
+            if($form->param_value($multicolumn . '_' . $lang))
+            {
+                $multi_el_data->{$multicolumn} = $form->param_value($multicolumn . '_' . $lang);
+                $to_write = 1;
+            }    
+        }
+        if($to_write)
+        {
+            $multi_el_data->{'language'} = $lang;
+            $el_row->$children->create( $multi_el_data );   
+        }
+    }
+    if($form->param_value('tags'))
+    {
+        Strehler::Meta::Tag::save_tags($form->param_value('tags'), $el_row->id, $self->item_type());
+    }
+    return $el_row->id;  
+}
+
 1;
