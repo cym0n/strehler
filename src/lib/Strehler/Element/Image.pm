@@ -43,6 +43,7 @@ sub main_title
 #Save form redefined to manage image upload
 sub save_form
 {
+    my $self = shift;
     my $id = shift;
     my $img = shift;
     my $form = shift;

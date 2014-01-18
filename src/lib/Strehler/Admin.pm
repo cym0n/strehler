@@ -79,7 +79,7 @@ any '/image/add' => sub
     if($form->submitted_and_valid)
     {
         my $img = request->upload('photo');
-        my $id = Strehler::Element::Image::save_form(undef, $img, $form);
+        my $id = Strehler::Element::Image->save_form(undef, $img, $form);
         redirect dancer_app->prefix . '/image/edit/' . $id;
     }
     $form = bootstrap_divider($form);
@@ -107,7 +107,7 @@ post '/image/edit/:id' => sub
     if($form->submitted_and_valid)
     {
         my $img = request->upload('photo');
-        Strehler::Element::Image::save_form($id, $img, $form);
+        Strehler::Element::Image->save_form($id, $img, $form);
         redirect dancer_app->prefix . '/image/list';
     }
     my $img = Strehler::Element::Image->new($id);
