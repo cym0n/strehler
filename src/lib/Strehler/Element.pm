@@ -118,13 +118,38 @@ sub get_basic_data
     {
         $data{'published'} = $self->get_attr('published');
     }
+    foreach my $attribute (keys %data)
+    {
+        my $accessor = $self->can($attribute);
+        if($accessor)
+        {
+            $data{$attribute} = $self->$accessor();
+        }
+    }
+  
     return %data;
 }
-
 sub get_ext_data
 {
     my $self = shift;
-    return $self->get_basic_data();
+    my $language = shift;
+    my %data;
+    %data = $self->get_basic_data();
+    my $children = $self->row->can($self->multilang_children());
+    if($children)
+    {
+        my $multilang_row = $self->row->$children->find({ language => $language });
+        my %multilang_data = $multilang_row->get_columns;
+        foreach my $attribute (keys %multilang_data)
+        {
+            my $accessor = $self->can($attribute);
+            if($accessor)
+            {
+                $multilang_data{$attribute} = $self->$accessor();
+            }
+        } 
+    }
+    return %data;
 }
 
 sub main_title
@@ -502,7 +527,19 @@ sub save_form
     {
         if($column ne 'category' && $column ne 'id' && $column ne 'published')
         {
-            $el_data->{$column} = $form->param_value($column);
+            if($form->param_value($column))
+            {
+                $el_data->{$column} = $form->param_value($column);
+            }
+            else
+            {
+                my $accessor = $self->can('save_' . $column);
+                if($accessor)
+                {
+                    $el_data->{$column} = $self->$accessor($id, $form, undef);
+
+                }
+            }
         }
         elsif($column eq 'category')
         {
@@ -545,6 +582,14 @@ sub save_form
                     $multi_el_data->{$multicolumn} = $form->param_value($multicolumn . '_' . $lang);
                     $to_write = 1;
                 }    
+                else
+                {
+                    my $accessor = $self->can('save_' . $multicolumn);
+                    if($accessor)
+                    {
+                        $multi_el_data->{$multicolumn} = $self->$accessor($id, $form, $lang);
+                    }
+                }
             }
             if($to_write)
             {

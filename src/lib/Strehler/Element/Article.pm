@@ -72,6 +72,27 @@ sub publish_date
     my $self = shift;
     return $self->row->publish_date;
 }
+sub image
+{
+    my $self = shift;
+    my $image = Strehler::Element::Image->new($self->get_attr('image'));
+    if($image->exists())
+    {
+       return $image->get_attr('image');
+    }
+    else
+    {
+        return undef;
+    }
+}
+sub save_slug
+{
+    my $self = shift;
+    my $id = shift;
+    my $form = shift;
+    my $lan = shift;
+    return $id . '-' . Strehler::Helpers::slugify($form->param_value('title_' . $lan));
+}
 
 sub get_by_slug
 {
