@@ -7,7 +7,7 @@ use Authen::Passphrase::BlowfishCrypt;
 
 extends 'Strehler::Element';
 
-
+#Standard element implementation
 sub BUILDARGS {
    my ( $class, @args ) = @_;
    my $id = shift @args; 
@@ -22,45 +22,25 @@ sub BUILDARGS {
    }
    return { row => $user };
 };
+sub metaclass_data 
+{
+    my $self = shift;
+    my $param = shift;
+    my %element_conf = ( item_type => 'user',
+                         ORMObj => 'User',
+                         category_accessor => '',
+                         multilang_children => '' );
+    return $element_conf{$param};
+}
 
+#Main title redefined because here it's user
 sub main_title
 {
     my $self = shift;
     return $self->get_attr('user');
 }
-sub get_basic_data
-{
-    my $self = shift;
-    my %data;
-    $data{'id'} = $self->get_attr('id');
-    $data{'title'} = $self->main_title;
-    return %data;
-}
-sub get_ext_data
-{
-    my $self = shift;
-    return $self->get_basic_data;
-}
-#Category accessor used by static methods
-sub category_accessor
-{
-    return undef;
-}
 
-sub item_type
-{
-    return "user";
-}
-
-sub ORMObj
-{
-    return "User";
-}
-sub multilang_children
-{
-    return 'no-children';
-}
-
+#Because of password management we need to override form management methods
 sub get_form_data
 {
     my $self = shift;

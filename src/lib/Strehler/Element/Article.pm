@@ -7,6 +7,7 @@ use Dancer2::Plugin::DBIC;
 
 extends 'Strehler::Element';
 
+#Standard element implementation
 sub BUILDARGS {
    my ( $class, @args ) = @_;
    my $id = shift @args; 
@@ -32,6 +33,7 @@ sub metaclass_data
     return $element_conf{$param};
 }
 
+#Main title redefined to fetch title from multilang attributes
 sub main_title
 {
     my $self = shift;
@@ -47,26 +49,8 @@ sub main_title
     }
 
 }
-sub get_ext_data
-{
-    my $self = shift;
-    my $language = shift;
-    my %data;
-    %data = $self->get_basic_data();
-    $data{'title'} = $self->get_attr_multilang('title', $language);
-    $data{'slug'} = $self->get_attr_multilang('slug', $language);
-    $data{'text'} = $self->get_attr_multilang('text', $language);
-    $data{'display_order'} = $self->get_attr('display_order');
-    $data{'publish_date'} = $self->publish_date();
-    my $image = Strehler::Element::Image->new($self->get_attr('image'));
-    if($image->exists())
-    {
-        $data{'image'} = $image->get_attr('image');
-    }
-    return %data;
-}
 
-#Ad hoc accessor to return the DateTime object
+#Ad hoc accessors and hooks
 sub publish_date
 {
     my $self = shift;
@@ -94,12 +78,15 @@ sub save_slug
     return $id . '-' . Strehler::Helpers::slugify($form->param_value('title_' . $lan));
 }
 
+#Method to manage slugs
 sub get_by_slug
 {
     my $self = shift;
     my $slug = shift;
     my $language = shift;
     my $chapter = schema->resultset('Content')->find({ slug => $slug, language => $language });
+    print "$slug - $language";
+    print Dumper($chapter);
     if($chapter)
     {
         return Strehler::Element::Article->new($chapter->article->id);

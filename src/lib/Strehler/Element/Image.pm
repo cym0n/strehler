@@ -7,7 +7,7 @@ use Data::Dumper;
 
 extends 'Strehler::Element';
 
-#Standar element implementation
+#Standard element implementation
 sub BUILDARGS {
    my ( $class, @args ) = @_;
    my $id = shift @args; 
