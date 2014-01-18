@@ -8,7 +8,6 @@ use Data::Dumper;
 
 extends 'Strehler::Element';
 
-
 sub BUILDARGS {
    my ( $class, @args ) = @_;
    my $id = shift @args; 
@@ -23,6 +22,17 @@ sub BUILDARGS {
    }
    return { row => $article };
 };
+
+sub metaclass_data 
+{
+    my $self = shift;
+    my $param = shift;
+    my %element_conf = ( item_type => 'article',
+                         ORMObj => 'Article',
+                         category_accessor => 'articles',
+                         multilang_children => 'contents' );
+    return $element_conf{$param};
+}
 
 sub get_form_data
 {
@@ -116,28 +126,6 @@ sub publish_date
 {
     my $self = shift;
     return $self->row->publish_date;
-}
-
-#Category accessor used by static methods
-sub category_accessor
-{
-    my $self = shift;
-    my $category = shift;
-    return $category->can('articles');
-}
-
-sub item_type
-{
-    return "article";
-}
-
-sub ORMObj
-{
-    return "Article";
-}
-sub multilang_children
-{
-    return 'contents';
 }
 
 sub get_by_slug

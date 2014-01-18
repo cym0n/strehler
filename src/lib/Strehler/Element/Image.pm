@@ -15,6 +15,18 @@ sub BUILDARGS {
    return { row => $img_row };
 };
 
+sub metaclass_data 
+{
+    my $self = shift;
+    my $param = shift;
+    my %element_conf = ( item_type => 'image',
+                         ORMObj => 'Image',
+                         category_accessor => 'images',
+                         multilang_children => 'descriptions' );
+    return $element_conf{$param};
+}
+
+
 sub get_form_data
 {
     my $self = shift;
@@ -71,39 +83,6 @@ sub src
 }
 
 #Static helpers
-
-sub make_select
-{
-    my @images_values = schema->resultset('Image')->all();
-    my @images_values_for_select;
-    push @images_values_for_select, { value => undef, label => "Seleziona immagine..."};
-    for(@images_values)
-    {
-        my $img = Strehler::Element::Image->new($_->id);
-        push @images_values_for_select, { value => $_->id, label => $img->main_title() }
-    }
-    return \@images_values_for_select;
-}
-
-sub category_accessor
-{
-    my $self = shift;
-    my $category = shift;
-    return $category->can('images');
-}
-
-sub item_type
-{
-    return "image";
-}
-sub ORMObj
-{
-    return "Image";
-}
-sub multilang_children
-{
-    return "descriptions";
-}
 
 sub save_form
 {

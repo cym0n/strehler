@@ -11,6 +11,32 @@ has row => (
     is => 'ro',
 );
 
+sub category_accessor
+{
+    my $self = shift;
+    my $category = shift;
+    return $category->can($self->metaclass_data('category_accessor'));
+}
+
+sub item_type
+{
+    my $self = shift;
+    return $self->metaclass_data('item_type');
+}
+
+sub ORMObj
+{
+    my $self = shift;
+    return $self->metaclass_data('ORMObj');
+}
+sub multilang_children
+{
+    my $self = shift;
+    return $self->metaclass_data('multilang_children');
+}
+
+
+
 sub exists
 {
     my $self = shift;
@@ -82,17 +108,6 @@ sub get_tags
     return $tags;
 }
 
-sub category_accessor
-{
-    my $self = shift;
-    my $category = shift;
-    return undef;
-}
-
-sub item_type
-{
-    return "generic";
-}
 
 sub get_basic_data
 {
