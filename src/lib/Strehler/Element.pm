@@ -99,7 +99,7 @@ sub has_language
 sub get_tags
 {
     my $self = shift;
-    my $tags = Strehler::Meta::Tag::tags_to_string($self->get_attr('id'), $self->item_type());
+    my $tags = Strehler::Meta::Tag->tags_to_string($self->get_attr('id'), $self->item_type());
     return $tags;
 }
 
@@ -600,7 +600,7 @@ sub save_form
     }
     if($form->param_value('tags'))
     {
-        Strehler::Meta::Tag::save_tags($form->param_value('tags'), $el_row->id, $self->item_type());
+        Strehler::Meta::Tag->save_tags($form->param_value('tags'), $el_row->id, $self->item_type());
     }
     return $el_row->id;  
 }

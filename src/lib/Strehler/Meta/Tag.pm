@@ -33,6 +33,7 @@ sub BUILDARGS {
 
 sub tags_to_string
 {
+    my $self = shift;
     my $item = shift;
     my $item_type = shift;
     my @tags = schema->resultset('Tag')->search({ item_id => $item, item_type => $item_type });
@@ -47,6 +48,7 @@ sub tags_to_string
 
 sub get_elements_by_tag
 {
+    my $self = shift;
     my $tag = shift;
     my @images;
     my @articles;
@@ -63,6 +65,7 @@ sub get_elements_by_tag
 
 sub save_tags
 {
+    my $self = shift;
     my $string = shift;
     my $item = shift;
     my $item_type = shift;
@@ -83,6 +86,7 @@ sub save_tags
 
 sub get_configured_tags
 {
+    my $self = shift;
     my $category = shift;
     my $t = shift;
     my @types = @{$t};
@@ -135,6 +139,7 @@ sub get_configured_tags_for_template
 
 sub save_configured_tags
 {
+    my $self = shift;
     my $string = shift;
     my $default_tags = shift;
     my $category = shift;
@@ -161,6 +166,7 @@ sub save_configured_tags
 
 sub clean_configured_tags
 {
+    my $self = shift;
     my $category = shift;
     schema->resultset('ConfiguredTag')->search({ category_id => $category })->delete_all();
 }

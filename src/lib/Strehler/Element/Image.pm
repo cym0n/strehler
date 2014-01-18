@@ -90,7 +90,7 @@ sub save_form
         my $lan = $_;
         $img_row->descriptions->create( { title => $form->param_value('title_' . $lan), description => $form->param_value('description_' . $lan), language => $lan }) if($form->param_value('title_' . $lan) || $form->param_value('description_' . $lan));;
     }
-    Strehler::Meta::Tag::save_tags($form->param_value('tags'), $img_row->id, 'image');
+    Strehler::Meta::Tag->save_tags($form->param_value('tags'), $img_row->id, 'image');
     return $img_row->id;     
 }
 
