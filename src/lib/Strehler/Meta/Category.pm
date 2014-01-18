@@ -108,10 +108,10 @@ sub get_attr
     return $self->row->get_column($attr);
 }
 
-#Static helpers
 
 sub make_select
 {
+    my $self = shift;
     my $parent = shift;
     my @category_values = schema->resultset('Category')->search({ parent => $parent });
     my @category_values_for_select;
@@ -125,6 +125,7 @@ sub make_select
 
 sub get_list
 {
+    my $self = shift;
     my $params = shift;
     my %args;
     if($params)
@@ -152,6 +153,7 @@ sub get_list
 }
 sub explode_tree
 {
+    my $self = shift;
     my $cat_param = shift;    
     my $cat = undef;
     my $subcat = undef;
@@ -177,6 +179,7 @@ sub explode_tree
 }
 sub explode_name
 {
+    my $self = shift;
     my $category_path = shift;
     my @cats = split '/', $category_path;
     if(exists $cats[1])
@@ -230,6 +233,7 @@ sub get_form_data
 
 sub save_form
 {
+    my $self = shift;
     my $id = shift;
     my $form = shift;
     my $ents = shift;
