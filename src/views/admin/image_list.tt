@@ -22,7 +22,7 @@
                 <td>[% el.category %]</td>
                 <td>
                     <div class="thumbnail">
-                        <img src="[% el.source %]" alt="">
+                        <img src="[% el.image %]" alt="">
                     </div>
                 </td>
                 <td>

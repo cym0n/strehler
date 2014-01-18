@@ -25,33 +25,6 @@ sub metaclass_data
                          multilang_children => 'descriptions' );
     return $element_conf{$param};
 }
-
-
-sub get_form_data
-{
-    my $self = shift;
-    my $img_row = $self->row;
-    my @descriptions = $img_row->descriptions;
-    my $data;
-    if($img_row->category->parent_category)
-    {
-        $data->{'category'} = $img_row->category->parent_category->id;
-        $data->{'subcategory'} = $img_row->category->id;
-    }
-    else
-    {
-       $data->{'category'} = $img_row->category->id;
-    }
-    for(@descriptions)
-    {
-        my $d = $_;
-        my $lan = $d->language;
-        $data->{'title_' . $lan} = $d->title;
-        $data->{'description_' . $lan} = $d->description;
-    }
-    $data->{'tags'} = Strehler::Meta::Tag::tags_to_string($self->get_attr('id'), 'image');
-    return $data;
-}
 sub main_title
 {
     my $self = shift;
@@ -64,16 +37,6 @@ sub main_title
     {
         return "*** no title ***";
     }
-}
-sub get_basic_data
-{
-    my $self = shift;
-    my %data;
-    $data{'id'} = $self->get_attr('id');
-    $data{'title'} = $self->main_title;
-    $data{'source'} = $self->get_attr('image');
-    $data{'category'} = $self->row->category->category;
-    return %data;
 }
 sub src
 {

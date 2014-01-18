@@ -112,7 +112,7 @@ sub get_tags
 sub get_basic_data
 {
     my $self = shift;
-    my %data;
+    my %data = $self->row->get_columns;
     $data{'id'} = $self->get_attr('id');
     $data{'title'} = $self->main_title;
     if($self->row->can('category'))
