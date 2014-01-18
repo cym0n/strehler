@@ -7,14 +7,13 @@ use Data::Dumper;
 
 extends 'Strehler::Element';
 
-
+#Standar element implementation
 sub BUILDARGS {
    my ( $class, @args ) = @_;
    my $id = shift @args; 
    my $img_row = schema->resultset('Image')->find($id);
    return { row => $img_row };
 };
-
 sub metaclass_data 
 {
     my $self = shift;
@@ -25,6 +24,8 @@ sub metaclass_data
                          multilang_children => 'descriptions' );
     return $element_conf{$param};
 }
+
+#Main title redefined to fetch title from multilang attributes
 sub main_title
 {
     my $self = shift;
@@ -38,15 +39,8 @@ sub main_title
         return "*** no title ***";
     }
 }
-sub src
-{
-    my $self = shift;
-    #just a wrapper for templates
-    return $self->get_attr('image');
-}
 
-#Static helpers
-
+#Save form redefined to manage image upload
 sub save_form
 {
     my $id = shift;
