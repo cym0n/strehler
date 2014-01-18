@@ -96,11 +96,6 @@ sub has_language
         return 0;
     }
 }
-sub category
-{
-    my $self = shift;
-    return $self->row->category->category;
-}
 sub get_tags
 {
     my $self = shift;
@@ -456,7 +451,15 @@ sub get_form_data
     my $el_row = $self->row;
     my %columns = $el_row->get_columns;
     my $data = \%columns;
-    if($self->category) #Is the element categorized?
+    foreach my $attribute (keys %columns)
+    {
+        my $accessor = $self->can($attribute);
+        if($accessor)
+        {
+            $data->{$attribute} = $self->$accessor();
+        }
+    }
+    if($self->row->can('category')) #Is the element categorized?
     {
         if($el_row->category->parent_category)
         {
@@ -528,23 +531,26 @@ sub save_form
         $el_row = schema->resultset($self->ORMObj())->create($el_data);
         $children = $el_row->can($self->multilang_children());
     }
-    my @languages = @{config->{Strehler}->{languages}};
-    foreach my $lang (@languages)
+    if($children)
     {
-        my $to_write = 0;
-        my $multi_el_data;
-        foreach my $multicolumn (schema->resultset($self->ORMObj())->$children->result_source->columns)
+        my @languages = @{config->{Strehler}->{languages}};
+        foreach my $lang (@languages)
         {
-            if($form->param_value($multicolumn . '_' . $lang))
+            my $to_write = 0;
+            my $multi_el_data;
+            foreach my $multicolumn (schema->resultset($self->ORMObj())->$children->result_source->columns)
             {
-                $multi_el_data->{$multicolumn} = $form->param_value($multicolumn . '_' . $lang);
-                $to_write = 1;
-            }    
-        }
-        if($to_write)
-        {
-            $multi_el_data->{'language'} = $lang;
-            $el_row->$children->create( $multi_el_data );   
+                if($form->param_value($multicolumn . '_' . $lang))
+                {
+                    $multi_el_data->{$multicolumn} = $form->param_value($multicolumn . '_' . $lang);
+                    $to_write = 1;
+                }    
+            }
+            if($to_write)
+            {
+                $multi_el_data->{'language'} = $lang;
+                $el_row->$children->create( $multi_el_data );   
+            }
         }
     }
     if($form->param_value('tags'))

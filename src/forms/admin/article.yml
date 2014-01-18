@@ -27,7 +27,7 @@ elements:
             class: text label
     - type: Fieldset
       elements: 
-          - name: order
+          - name: display_order
             id: order
             label: Order
           - type: Block

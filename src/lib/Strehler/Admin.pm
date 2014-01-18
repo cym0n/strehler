@@ -132,7 +132,7 @@ any '/article/add' => sub
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
-        Strehler::Element::Article::save_form(undef, $form);
+        Strehler::Element::Article->save_form(undef, $form);
         redirect dancer_app->prefix . '/article/list';
     }
     my $fake_tags = $form->get_element({ name => 'tags'});
@@ -158,7 +158,7 @@ post '/article/edit/:id' => sub
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
-        Strehler::Element::Article::save_form($id, $form);
+        Strehler::Element::Article->save_form($id, $form);
         redirect dancer_app->prefix . '/article/list';
     }
     template "admin/article", { form => $form->render() }
@@ -672,7 +672,6 @@ sub form_article
     $form = add_multilang_fields($form, \@languages, 'forms/admin/article_multilang.yml'); 
     my $default_language = config->{Strehler}->{default_language};
     $form->constraint({ name => 'title_' . $default_language, type => 'Required' }); 
-    #$form->constraint({ name => 'text_' . $default_language, type => 'Required' }); 
     my $image = $form->get_element({ name => 'image'});
     $image->options(Strehler::Element::Image->make_select());
     my $category = $form->get_element({ name => 'category'});
