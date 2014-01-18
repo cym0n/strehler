@@ -156,7 +156,7 @@ sub get_ext_data
             my $accessor = $self->can($attribute);
             if($accessor)
             {
-                $multilang_data{$attribute} = $self->$accessor();
+                $multilang_data{$attribute} = $self->$accessor($language);
             }
         } 
     }
