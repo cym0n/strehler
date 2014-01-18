@@ -39,9 +39,9 @@ sub publishable
     my $self = shift;
     my $item = $self->metaclass_data('item_type');
     return 1 if($item eq 'article');
-    if(config->{'Strehler'}->{$item}->{'publishable'})
+    if(config->{'Strehler'}->{'extra_menu'}->{$item}->{'publishable'})
     {
-        return config->{'Strehler'}->{$item}->{'publishable'};
+        return config->{'Strehler'}->{'extra_menu'}->{$item}->{'publishable'};
     }
     else
     {
