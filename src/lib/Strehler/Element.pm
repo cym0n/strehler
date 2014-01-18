@@ -34,9 +34,20 @@ sub multilang_children
     my $self = shift;
     return $self->metaclass_data('multilang_children');
 }
-
-
-
+sub publishable
+{
+    my $self = shift;
+    my $item = $self->metaclass_data('item_type');
+    return 1 if($item eq 'article');
+    if(config->{'Strehler'}->{$item}->{'publishable'})
+    {
+        return config->{'Strehler'}->{$item}->{'publishable'};
+    }
+    else
+    {
+        return 0;
+    }
+}
 sub exists
 {
     my $self = shift;
@@ -168,10 +179,20 @@ sub main_title
         return "[". $self->get_attr('id') . "]";
     }
 }
-
-
-
-
+sub publish
+{
+    my $self = shift;
+    return if ! $self->publishable();
+    $self->row->published(1);
+    $self->row->update();
+}
+sub unpublish
+{
+    my $self = shift;
+    return if ! $self->publishable();
+    $self->row->published(0);
+    $self->row->update();
+}
 sub next_in_category_by_order
 {
     my $self = shift;
@@ -179,7 +200,7 @@ sub next_in_category_by_order
     my $category = schema->resultset('Category')->find( { category => $self->category() } );
     my $category_access = $self->category_accessor($category);
     my $criteria = { display_order => { '>', $self->get_attr('display_order') }};
-    if($self->can('publish'))
+    if($self->publishable())
     {
         $criteria->{'published'} = 1;
     }
@@ -205,7 +226,7 @@ sub prev_in_category_by_order
     my $category = schema->resultset('Category')->find( { category => $self->category() } );
     my $category_access = $self->category_accessor($category);
     my $criteria = { display_order => { '<', $self->get_attr('display_order') }};
-    if($self->can('publish'))
+    if($self->publishable())
     {
         $criteria->{'published'} = 1;
     }
@@ -230,7 +251,7 @@ sub next_in_category_by_date
     my $category = schema->resultset('Category')->find( { category => $self->category() } );
     my $category_access = $self->category_accessor($category);
     my $criteria = {publish_date => { '>', $self->get_attr('publish_date') }};
-    if($self->can('publish'))
+    if($self->publishable())
     {
         $criteria->{'published'} = 1;
     }
@@ -255,7 +276,7 @@ sub prev_in_category_by_date
     my $category = schema->resultset('Category')->find( { category => $self->category() } );
     my $category_access = $self->category_accessor($category);
     my $criteria = { publish_date => { '<', $self->get_attr('publish_date') }};
-    if($self->can('publish'))
+    if($self->publishable())
     {
         $criteria->{'published'} = 1;
     }
@@ -281,7 +302,7 @@ sub get_last_by_order
     return undef if(! $category);
     my $category_access = $self->category_accessor($category);
     my $criteria = {};
-    if($self->can('publish'))
+    if($self->publishable())
     {
         $criteria = { published => 1 };
     }
@@ -303,7 +324,7 @@ sub get_last_by_date
     return undef if(! $category);
     my $category_access = $self->category_accessor($category);
     my $criteria = {};
-    if($self->can('publish'))
+    if($self->publishable())
     {
         $criteria = { published => 1 };
     }
@@ -325,7 +346,7 @@ sub get_first_by_order
     return undef if(! $category);
     my $category_access = $self->category_accessor($category);
     my $criteria = {};
-    if($self->can('publish'))
+    if($self->publishable())
     {
         $criteria = { published => 1 };
     }
@@ -347,7 +368,7 @@ sub get_first_by_date
     return undef if(! $category);
     my $category_access = $self->category_accessor($category);
     my $criteria = {};
-    if($self->can('publish'))
+    if($self->publishable())
     {
         $criteria = { published => 1 };
     }
@@ -383,7 +404,7 @@ sub get_list
     }
 
     my $search_criteria = undef;
-    if($self->can('publish'))
+    if($self->publishable())
     {
         if(exists $args{'published'})
         {
