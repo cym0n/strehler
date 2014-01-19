@@ -21,7 +21,7 @@
             <tr>
                 <td>[% el.id %]</td>
                 <td>[% el.title %]</td>
-                [% IF categorized %]<td>[% el.category %]</td>[% END %]
+                [% IF categorized %]<td>[% el.category_name %]</td>[% END %]
                 [% IF publishable %]
                 <td>
                 [% IF el.published == 1 %]

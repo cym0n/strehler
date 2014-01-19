@@ -19,7 +19,7 @@
             <tr>
                 <td>[% el.id %]</td>
                 <td>[% el.title %]</td>
-                <td>[% el.category %]</td>
+                <td>[% el.category_name %]</td>
                 <td>
                     <div class="thumbnail">
                         <img src="[% el.image %]" alt="">

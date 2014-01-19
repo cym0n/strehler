@@ -286,6 +286,17 @@ sub save_form
     }
 }
 
+sub ext_name
+{
+    my $self = shift;
+    my $category = $self->row->category;
+    if($self->row->parent_category)
+    {
+        $category = $self->row->parent_category->category . '/' . $category;
+    }
+    return $category;
+}
+
 
 1;
 

@@ -4,8 +4,7 @@ use Moo;
 use Dancer2;
 use Dancer2::Plugin::DBIC;
 use Strehler::Meta::Tag;
-
-use Data::Dumper;
+use Strehler::Meta::Category;
 
 has row => (
     is => 'ro',
@@ -113,6 +112,21 @@ sub get_tags
     my $tags = Strehler::Meta::Tag->tags_to_string($self->get_attr('id'), $self->item_type());
     return $tags;
 }
+sub get_category_name
+{
+    my $self = shift;
+    if($self->row->can('category'))
+    {
+            my $category = Strehler::Meta::Category->new($self->row->category->id);
+            return $category->ext_name();
+    }
+    else
+    {
+        return undef;
+    }
+}
+
+
 
 
 sub get_basic_data
@@ -137,7 +151,7 @@ sub get_basic_data
             $data{$attribute} = $self->$accessor();
         }
     }
-  
+    $data{'category_name'} = $self->get_category_name();
     return %data;
 }
 sub get_ext_data
