@@ -9,6 +9,20 @@ use Strehler::Meta::Category;
 has row => (
     is => 'ro',
 );
+sub BUILDARGS {
+   my ( $class, @args ) = @_;
+   my $id = shift @args; 
+   my $article;
+   if(! $id)
+   {
+        $article = undef;
+   }
+   else
+   {
+        $article = schema->resultset($class->ORMObj())->find($id);
+   }
+   return { row => $article };
+};
 
 sub category_accessor
 {

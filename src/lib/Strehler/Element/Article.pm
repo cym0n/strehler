@@ -8,20 +8,7 @@ use Dancer2::Plugin::DBIC;
 extends 'Strehler::Element';
 
 #Standard element implementation
-sub BUILDARGS {
-   my ( $class, @args ) = @_;
-   my $id = shift @args; 
-   my $article;
-   if(! $id)
-   {
-        $article = undef;
-   }
-   else
-   {
-        $article = schema->resultset('Article')->find($id);
-   }
-   return { row => $article };
-};
+
 sub metaclass_data 
 {
     my $self = shift;

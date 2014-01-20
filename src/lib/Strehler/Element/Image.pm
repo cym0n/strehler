@@ -8,12 +8,7 @@ use Data::Dumper;
 extends 'Strehler::Element';
 
 #Standard element implementation
-sub BUILDARGS {
-   my ( $class, @args ) = @_;
-   my $id = shift @args; 
-   my $img_row = schema->resultset('Image')->find($id);
-   return { row => $img_row };
-};
+
 sub metaclass_data 
 {
     my $self = shift;
