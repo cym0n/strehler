@@ -9,6 +9,7 @@ use Strehler::Meta::Category;
 has row => (
     is => 'ro',
 );
+
 sub BUILDARGS {
    my ( $class, @args ) = @_;
    my $id = shift @args; 

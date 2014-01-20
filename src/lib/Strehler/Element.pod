@@ -1,0 +1,36 @@
+=encoding utf8
+
+=head1 NAME
+
+Strehler::Element - Base class for Strehler entities management
+
+=head1 DESCRIPTION
+
+Articles, images and every entity you decide to manage in Strehler have to be Strehler::Element subclasses. Strehler::Element is the collection of methods that you can call to (mainly) retrieve the data inserted in the CMS and make it available in your business logic.
+
+=head1 SYNOPSIS
+
+Below, a code example to display an archive (with pagination) with all the articles about a certain category.
+
+    get '/romanzo' => sub {
+        my $entries_per_page = 20;
+        my $page = params->{page} || 1;
+        my $order = params->{order} || 'desc';
+        my $elements = Strehler::Element::Article->get_list({ 
+            page => $page, 
+            entries_per_page => $entries_per_page, 
+            category => 'B<EXAMPLE_CATEGORY>', 
+            language => 'en', 
+            ext => 1, 
+            published => 1, 
+            order => $order});
+        template "archive", { 
+            page_title => 'Archive',
+            articles => $elements->{'to_view'}, 
+            page => $page, 
+            order => $order, 
+            last_page => $elements->{'last_page'} };
+
+    };
+
+=head1 METHODS
