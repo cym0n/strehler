@@ -328,7 +328,7 @@ sub get_last_by_order
     my $self = shift;
     my $cat = shift;
     my $language = shift;
-    my $category = schema->resultset('Category')->find( { category => $cat } );
+    my $category = schema->resultset('Category')->find( { id => $cat } );
     return undef if(! $category);
     my $category_access = $self->category_accessor($category);
     my $criteria = {};
@@ -355,7 +355,7 @@ sub get_last_by_date
     my $self = shift;
     my $cat = shift;
     my $language = shift;
-    my $category = schema->resultset('Category')->find( { category => $cat } );
+    my $category = schema->resultset('Category')->find( { id => $cat } );
     return undef if(! $category);
     my $category_access = $self->category_accessor($category);
     my $criteria = {};
@@ -382,7 +382,7 @@ sub get_first_by_order
     my $self = shift;
     my $cat = shift;
     my $language = shift;
-    my $category = schema->resultset('Category')->find( { category => $cat } );
+    my $category = schema->resultset('Category')->find( { id => $cat } );
     return undef if(! $category);
     my $category_access = $self->category_accessor($category);
     my $criteria = {};
@@ -409,7 +409,7 @@ sub get_first_by_date
     my $self = shift;
     my $cat = shift;
     my $language = shift;
-    my $category = schema->resultset('Category')->find( { category => $cat } );
+    my $category = schema->resultset('Category')->find( { id => $cat } );
     return undef if(! $category);
     my $category_access = $self->category_accessor($category);
     my $criteria = {};
