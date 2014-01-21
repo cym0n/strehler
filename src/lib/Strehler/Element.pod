@@ -19,7 +19,7 @@ Below, a code example to display an archive (with pagination) with all the artic
         my $elements = Strehler::Element::Article->get_list({ 
             page => $page, 
             entries_per_page => $entries_per_page, 
-            category => 'B<EXAMPLE_CATEGORY>', 
+            category => 'EXAMPLE_CATEGORY', 
             language => 'en', 
             ext => 1, 
             published => 1, 
@@ -33,4 +33,129 @@ Below, a code example to display an archive (with pagination) with all the artic
 
     };
 
-=head1 METHODS
+=head1 METHODS TO RETRIEVE INFORMATIONS ABOUT AN ENTITY
+
+=over 4
+
+=item exists
+
+Return Value: $exists
+
+Return 1 if the element is linked to a real row on the database, 0 otherwise.
+
+=item get_attr
+
+Arguments: $attr
+
+Return Value: $attr_value
+
+Return the value for the attribute (the database column) named $attr.
+
+=item get_attr_multilang
+
+Arguments: $attr, $lang
+
+Return Value: $attr_value
+
+Return the value for the multilanguage attribute named $attr in the language $lang
+
+=item has_language
+
+Arguments: $lang
+
+Return Value: $has_language
+
+Return 1 if the Element has multilang attributes for language $lang
+
+=item get_category_name
+
+Return Value: $category
+
+Return the name of the category of the element in the format $parent/$category is category has two levels.
+
+=item get_tags
+
+Return Value: $tags
+
+Return a string composed with all the tags related to the element, separated with commas.
+
+=item get_basic_data
+
+Return Value %data;
+
+Return all the data about the element, except for multilang attributes.
+
+=item get_ext_data
+
+Arguments: $lang
+
+Return Value %data;
+
+Return all the data about the element as C<get_basic_data>, adding all the multilang attributes in the language $lang.
+
+=item main_title
+
+Return Value: $main_title
+
+Return the main title for the element. The standard implementation try for an attribute named B<title> or B<name>. If these attributes are not available return just B<id>.
+
+In Articles and Images it returns the title attribute in the default language.
+
+=back
+
+=head1 METHODS TO MANIPULATE ENTITIES
+
+These methods are used by Strehler backend, so use them carefully.
+
+=over 4
+
+=item delete
+
+Delete the element and all the multilang attributes linked to it.
+
+=item publish
+
+Publish a publishable element
+
+=item unpublish
+
+Unpublish a publishable element
+
+=back
+
+=head1 METHODS TO RETRIEVE ELEMENTS
+
+The most important methods. Some of them are class method. They're wrappers for the queries needed to retrieve data.
+
+=over 4
+
+=item get_list
+
+Arguments: \%query_params
+
+Return Values: \%elements
+
+Main class method to retrieve elements. There're many query_params you can use.
+
+    order => desc|asc # The order of the results. Default is desc
+    order_by => $order_by # The field to order by. Default is id
+    entries_per_page => $entries # How many results retrieve. Default is 20.
+                           # -1 makes the method return ALL results
+    page => $page. Default is 1
+    language => $lang # The language for multilanguage attributes. 
+                      # Default is Strehler configured default language
+    published => $pub # Retrive only published elements (for publishable elements)
+    tag => $tag # Retrieve elements with a certain tag
+    category => $category # Retrieve elements with a certain category
+                          # Category can be written in the form $parent/$cat
+    category_id => $category_id # Retrieve elements with the category with that id
+    ext => 1 # Return elements with al data (get_ext_data is invoked)
+
+All the parameters can be combined togheter.
+
+The method return a pointer to an hash composed by:
+
+    to_view => \@to_view # A pointer to an array of hashes. Every hash contain the data about an element as in get_basic_data or get_ext_data
+    last_page => last available page, to make easy paging logic.    
+
+
