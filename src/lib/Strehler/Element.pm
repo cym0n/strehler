@@ -327,6 +327,7 @@ sub get_last_by_order
 {
     my $self = shift;
     my $cat = shift;
+    my $language = shift;
     my $category = schema->resultset('Category')->find( { category => $cat } );
     return undef if(! $category);
     my $category_access = $self->category_accessor($category);
@@ -338,17 +339,22 @@ sub get_last_by_order
     my @chapters = $category->$category_access->search($criteria , { order_by => { -desc => 'display_order' } });
     if($chapters[0])
     {
-        return $self->new($chapters[0]->id);
+        for(@chapters)
+        {
+            my $el = $self->new($_->id);
+            if($el->has_language($language))
+            {
+                return $el;
+            }
+        }
     }
-    else
-    {
-        return undef;
-    }
+    return undef;
 }
 sub get_last_by_date
 {
     my $self = shift;
     my $cat = shift;
+    my $language = shift;
     my $category = schema->resultset('Category')->find( { category => $cat } );
     return undef if(! $category);
     my $category_access = $self->category_accessor($category);
@@ -360,17 +366,22 @@ sub get_last_by_date
     my @chapters = $category->$category_access->search( $criteria, { order_by => { -desc => 'publish_date' } });
     if($chapters[0])
     {
-        return $self->new($chapters[0]->id);
+        for(@chapters)
+        {
+            my $el = $self->new($_->id);
+            if($el->has_language($language))
+            {
+                return $el;
+            }
+        }
     }
-    else
-    {
-        return undef;
-    }
+    return undef;
 }
 sub get_first_by_order
 {
     my $self = shift;
     my $cat = shift;
+    my $language = shift;
     my $category = schema->resultset('Category')->find( { category => $cat } );
     return undef if(! $category);
     my $category_access = $self->category_accessor($category);
@@ -382,17 +393,22 @@ sub get_first_by_order
     my @chapters = $category->$category_access->search( $criteria, { order_by => { -asc => 'display_order' } });
     if($chapters[0])
     {
-        return $self->new($chapters[0]->id);
+        for(@chapters)
+        {
+            my $el = $self->new($_->id);
+            if($el->has_language($language))
+            {
+                return $el;
+            }
+        }
     }
-    else
-    {
-        return undef;
-    }
+    return undef;
 }
 sub get_first_by_date
 {
     my $self = shift;
     my $cat = shift;
+    my $language = shift;
     my $category = schema->resultset('Category')->find( { category => $cat } );
     return undef if(! $category);
     my $category_access = $self->category_accessor($category);
@@ -404,12 +420,16 @@ sub get_first_by_date
     my @chapters = $category->$category_access->search( $criteria, { order_by => { -asc => 'publish_date' } });
     if($chapters[0])
     {
-        return $self->new($chapters[0]->id);
+        for(@chapters)
+        {
+            my $el = $self->new($_->id);
+            if($el->has_language($language))
+            {
+                return $el;
+            }
+        }
     }
-    else
-    {
-        return undef;
-    }
+    return undef;
 }
 
 sub get_list
