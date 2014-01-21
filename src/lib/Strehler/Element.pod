@@ -155,7 +155,54 @@ All the parameters can be combined togheter.
 
 The method return a pointer to an hash composed by:
 
-    to_view => \@to_view # A pointer to an array of hashes. Every hash contain the data about an element as in get_basic_data or get_ext_data
+    to_view => \@to_view # A pointer to an array of hashes. Every hash contain the data about an element 
+                         # as in get_basic_data or get_ext_data
     last_page => last available page, to make easy paging logic.    
 
+=item next_in_category_by_order/prev_in_category_by_order
 
+Arguments: $language
+
+Return Value: $element
+
+Retrieve the next/previous element of the same category using the display_order as ordering field.
+Language is needed because a element could exists in a language but not in another.
+Returns a Strehler::Element.
+
+=item next_in_category_by_date/prev_in_category_by_date
+
+Arguments: $language
+
+Return Value: $element
+
+Same as previous method, but using the publish_date to order elements.
+
+=item get_last_by_order/get_first_by_order
+
+Arguments: $category_id, $language
+
+Return Value: $element
+
+Class method. Retrieve the last/first element in the category with category id $category_id. Ordering using display_order.
+Language considered as in the previous methods.
+Returns a Strehler::Element.
+
+=item get_first_by_date/get_last_by_date
+
+Arguments: $category_id, $language
+
+Return Value: $element
+
+Same as get_first_by_order/get_last_by_order, using publish_date to order elements.
+
+=item get_by_slug
+
+Arguments: $slug, $language
+
+Return Value: $element
+
+Available only for articles. Retrive the Article $element using the slug generated in automatic by CMS.
+
+=back
+
+=cut
