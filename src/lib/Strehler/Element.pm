@@ -657,7 +657,7 @@ sub save_form
                     my $accessor = $self->can('save_' . $multicolumn);
                     if($accessor)
                     {
-                        $multi_el_data->{$multicolumn} = $self->$accessor($id, $form, $lang);
+                        $multi_el_data->{$multicolumn} = $self->$accessor($el_row->id, $form, $lang);
                     }
                 }
             }
