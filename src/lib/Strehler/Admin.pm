@@ -181,14 +181,22 @@ any '/user/add' => sub
     my $form = form_user('add');
     my $params_hashref = params;
     $form->process($params_hashref);
+    my $message = "";
     if($form->submitted_and_valid)
     {
         my $id = Strehler::Element::User->save_form(undef, $form);
-        Strehler::Element::Log->write(session->read('user'), 'add', 'user', $id);
-        redirect dancer_app->prefix . '/user/list';
+        if($id == -1)
+        {
+            $message = "Username already in use";
+        }
+        else
+        {
+            Strehler::Element::Log->write(session->read('user'), 'add', 'user', $id);
+            redirect dancer_app->prefix . '/user/list';
+        }
     }
     $form = bootstrap_divider($form);
-    template "admin/user", { form => $form->render() }
+    template "admin/user", { form => $form->render(), message => $message }
 };
 
 get '/user/edit/:id' => sub {
@@ -216,13 +224,23 @@ post '/user/edit/:id' => sub
     my $id = params->{id};
     my $params_hashref = params;
     $form->process($params_hashref);
+    my $message;
     if($form->submitted_and_valid)
     {
-        Strehler::Element::User->save_form($id, $form);
+        my $return_id = Strehler::Element::User->save_form($id, $form);
+        if($return_id == -1)
+        {
+            $message = "Username already in use";
+        }
+        else
+        {
+            Strehler::Element::Log->write(session->read('user'), 'add', 'user', $id);
+            redirect dancer_app->prefix . '/user/list';
+        }
         Strehler::Element::Log->write(session->read('user'), 'edit', 'user', $id);
         redirect dancer_app->prefix . '/user/list';
     }
-    template "admin/user", { form => $form->render() }
+    template "admin/user", { form => $form->render(), message => $message }
 };
 
 #Categories

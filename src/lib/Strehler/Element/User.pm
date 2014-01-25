@@ -63,14 +63,16 @@ sub save_form
                 cost => 8, salt_random => 1,
                 passphrase => $clean_password);
     my $user_data ={ user => $form->param_value('user'), password_hash => $ppr->hash_base64, password_salt => $ppr->salt_base64, role => $form->param_value('role') };
+    my $already_user = schema->resultset($self->ORMObj())->find({user => $form->param_value('user')});
+    return -1 if($already_user);
     if($id)
     {
-        $user_row = schema->resultset('User')->find($id);
+        $user_row = schema->resultset($self->ORMObj())->find($id);
         $user_row->update($user_data);
     }
     else
     {
-        $user_row = schema->resultset('User')->create($user_data);
+        $user_row = schema->resultset($self->ORMObj())->create($user_data);
     }
     return $user_row->id;  
 }

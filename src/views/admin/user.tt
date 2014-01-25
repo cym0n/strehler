@@ -2,6 +2,11 @@
     <h1>Users</h1>
 </div>
 <div class="content article span9">
+   [% IF message %]
+    <div class="alert alert-error">
+        [% message %]
+    </div>
+    [% END %]
     <div>
     [% form %]
     </div>
