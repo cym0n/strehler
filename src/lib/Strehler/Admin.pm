@@ -397,7 +397,7 @@ ajax '/category/tagform/:type/:id?' => sub
 
 get '/:entity' => sub
 {
-    my ($entity, $label, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    my $entity = params->{entity};
     if($entity)
     {
         if (! check_role($entity))
@@ -415,8 +415,9 @@ get '/:entity' => sub
 
 any '/:entity/list' => sub
 {
-    my ($entity, $label, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
-    if(! $entity)
+    my $entity = params->{entity};
+    my %entity_data = get_entity_data($entity);
+    if(! $entity_data{'auto'})
     {
         return pass;
     }
@@ -425,7 +426,12 @@ any '/:entity/list' => sub
         send_error("Access denied", 403);
         return;
     }
-    $custom_list_view ||= 'admin/generic_list';
+
+    my $custom_list_view = $entity_data{'custom_list_view'} || 'admin/generic_list';
+    my $class = $entity_data{'class'};
+    my $label = $entity_data{'label'};
+    my $categorized = $entity_data{'categorized'};
+    my $publishable = $entity_data{'publishable'};
     
     my $page = exists params->{'page'} ? params->{'page'} : session $entity . '-page';
     my $cat_param = exists params->{'cat'} ? params->{'cat'} : session $entity . '-cat-filter';
@@ -447,12 +453,13 @@ any '/:entity/list' => sub
 };
 get '/:entity/turnon/:id' => sub
 {
-    my ($entity, $label, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
-    if(! $entity)
+    my $entity = params->{entity};
+    my %entity_data = get_entity_data($entity);
+    if(! $entity_data{'auto'})
     {
         return pass;
     }
-    if(! $publishable)
+    if(! $entity_data{'publishable'})
     {
         return pass;
     }
@@ -461,6 +468,7 @@ get '/:entity/turnon/:id' => sub
         send_error("Access denied", 403);
         return;
     }
+    my $class = $entity_data{'class'};
     my $id = params->{id};
     eval "require $class";
     my $obj = $class->new($id);
@@ -469,12 +477,13 @@ get '/:entity/turnon/:id' => sub
 };
 get '/:entity/turnoff/:id' => sub
 {
-    my ($entity, $label, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
-    if(! $entity)
+    my $entity = params->{entity};
+    my %entity_data = get_entity_data($entity);
+    if(! $entity_data{'auto'})
     {
         return pass;
     }
-    if(! $publishable)
+    if(! $entity_data{'publishable'})
     {
         return pass;
     }
@@ -483,6 +492,7 @@ get '/:entity/turnoff/:id' => sub
         send_error("Access denied", 403);
         return;
     }
+    my $class = $entity_data{'class'};
     my $id = params->{id};
     eval "require $class";
     my $obj = $class->new($id);
@@ -491,8 +501,8 @@ get '/:entity/turnoff/:id' => sub
 };
 get '/:entity/delete/:id' => sub
 {
-    my ($entity, $label, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
-    if(! $entity)
+    my $entity = params->{entity};
+    if(! get_entity_attr($entity, 'auto'))
     {
         return pass;
     }
@@ -501,7 +511,13 @@ get '/:entity/delete/:id' => sub
         send_error("Access denied", 403);
         return;
     }
+    if (! get_entity_attr($entity, 'deletable'))
+    {
+        send_error("Access denied", 403);
+        return;
+    }
     my $id = params->{id};
+    my $class = get_entity_attr($entity, 'class')
     eval "require $class";
     my $obj = $class->new($id);
     my %el = $obj->get_basic_data();
@@ -509,8 +525,8 @@ get '/:entity/delete/:id' => sub
 };
 post '/:entity/delete/:id' => sub
 {
-    my ($entity, $label, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
-    if(! $entity)
+    my $entity = params->{entity};
+    if(! get_entity_attr($entity, 'auto'))
     {
         return pass;
     }
@@ -519,7 +535,13 @@ post '/:entity/delete/:id' => sub
         send_error("Access denied", 403);
         return;
     }
+    if (! get_entity_attr($entity, 'deletable'))
+    {
+        send_error("Access denied", 403);
+        return;
+    }
     my $id = params->{id};
+    my $class = get_entity_attr($entity, 'class');
     eval "require $class";
     my $obj = $class->new($id);
     $obj->delete();
@@ -527,15 +549,16 @@ post '/:entity/delete/:id' => sub
 };
 ajax '/:entity/tagform/:id?' => sub
 {
-    my ($entity, $label, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
-    if(! $entity)
+    my $entity = params->{entity};
+    if(! get_entity_attr($entity, 'auto'))
     {
         return pass;
     }
-    if(! $categorized)
+    if(! get_entity_attr($entity, 'categorized'))
     {
         return pass;
     }
+    my $class = get_entity_attr($entity, 'class');
     if(params->{id})
     {
         eval "require $class";
@@ -569,8 +592,18 @@ ajax '/:entity/tagform/:id?' => sub
 
 any '/:entity/add' => sub
 {
-    my ($entity, $label, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
-    my $form = form_generic(config->{'Strehler'}->{'extra_menu'}->{$entity}->{form}, config->{'Strehler'}->{'extra_menu'}->{$entity}->{multilang_form}, 'add'); 
+    my $entity = params->{entity};
+    if(! get_entity_attr($entity, 'auto'))
+    {
+        return pass;
+    }
+    if(! get_entity_attr($entity, 'creatable'))
+    {
+        return pass;
+    }
+    my $class = get_entity_attr($entity, 'class'),
+    my $label = get_entity_attr($entity, 'label'),
+    my $form = form_generic(get_entity_attr($entity, 'form'), get_entity_attr($entity, 'multilang_form'), 'add'); 
     my $params_hashref = params;
     $form = Strehler::Admin::tags_for_form($form, $params_hashref);
     if(! $form)
@@ -591,11 +624,21 @@ any '/:entity/add' => sub
 };
 get '/:entity/edit/:id' => sub {
     my $id = params->{id};
-    my ($entity, $label, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
+    my $entity = params->{entity};
+    if(! get_entity_attr($entity, 'auto'))
+    {
+        return pass;
+    }
+    if(! get_entity_attr($entity, 'editable'))
+    {
+        return pass;
+    }
+    my $class = get_entity_attr($entity, 'class'),
+    my $label = get_entity_attr($entity, 'label'),
     eval "require $class";
     my $el = $class->new($id);
     my $form_data = $el->get_form_data();
-    my $form = form_generic(config->{'Strehler'}->{'extra_menu'}->{$entity}->{form}, config->{'Strehler'}->{'extra_menu'}->{$entity}->{multilang_form}, 'edit', $form_data->{'category'});
+    my $form = form_generic(get_entity_attr($entity, 'form'), get_entity_attr($entity, 'multilang_form'), 'edit', $form_data->{'category'});
     if(! $form)
     {
         return pass;
@@ -606,13 +649,23 @@ get '/:entity/edit/:id' => sub {
 };
 post '/:entity/edit/:id' => sub
 {
-    my ($entity, $label, $class, $categorized, $publishable, $custom_list_view) = get_entity_data(params->{entity});
-    my $form = form_generic(config->{'Strehler'}->{'extra_menu'}->{$entity}->{form}, config->{'Strehler'}->{'extra_menu'}->{$entity}->{multilang_form}, 'edit');
+    my $id = params->{id};
+    my $entity = params->{entity};
+    if(! get_entity_attr($entity, 'auto'))
+    {
+        return pass;
+    }
+    if(! get_entity_attr($entity, 'editable'))
+    {
+        return pass;
+    }
+    my $class = get_entity_attr($entity, 'class'),
+    my $label = get_entity_attr($entity, 'label'),
+    my $form = form_generic(get_entity_attr($entity, 'form'), get_entity_attr($entity, 'multilang_form'), 'edit', $form_data->{'category'});
     if(! $form)
     {
         return pass;
     }
-    my $id = params->{id};
     my $params_hashref = params;
     $form = Strehler::Admin::tags_for_form($form, $params_hashref);
     $form->process($params_hashref);
@@ -622,11 +675,8 @@ post '/:entity/edit/:id' => sub
         $class->save_form($id, $form);
         redirect dancer_app->prefix . '/' . $entity . '/list';
     }
-    template "myadmin/wine", { entity => $entity, label => $label, id => $id, form => $form->render() }
+    template "admin/generic_add", { entity => $entity, label => $label, id => $id, form => $form->render() }
 };
-
-
-
 
 ##### Helpers #####
 # They only manipulate forms rendering and manage login
@@ -845,61 +895,99 @@ sub get_categorized_entities
 sub get_entity_data
 {
     my $entity = shift;
-    my $label = undef;
-    my $class = undef;
-    my $categorized = undef;
-    my $publishable = undef;
-    my $custom_list_view = undef;
+    my %data;
     if($entity eq 'article')
     {
-        $label = 'Articles';
-        $class = 'Strehler::Element::Article';
-        $categorized = 1;
-        $publishable = 1;
+        %data = ( 'auto' => 1,
+                  'label' => 'Articles',
+                  'class' => 'Strehler::Element::Article',
+                  'creatable' => 1,
+                  'updatable' => 1,
+                  'deletable' => 1,
+                  'categorized' => 1,
+                  'publishable' => 1,
+                  'custom_list_view' => undef,
+                  'form' => undef,
+                  'multilang_form' => undef,
+                  'role' => undef );
     }
     elsif($entity eq 'image')
     {
-        $label = 'Images';
-        $class = 'Strehler::Element::Image';
-        $categorized = 1;
-        $publishable = 1;
-        $custom_list_view = 'admin/image_list';
+        %data = ( 'auto' => 1,
+                  'label' => 'Images',
+                  'class' => 'Strehler::Element::Image',
+                  'creatable' => 1,
+                  'updatable' => 1,
+                  'deletable' => 1,
+                  'categorized' => 1,
+                  'publishable' => 0,
+                  'custom_list_view' => 'admin/image_list',
+                  'form' => undef,
+                  'multilang_form' => undef,
+                  'role' => undef );
     }
     elsif($entity eq 'user')
     {
-        $label = 'Users';
-        $class = 'Strehler::Element::User';
-        $categorized = 0;
-        $publishable = 0;
+        %data = ( 'auto' => 1,
+                  'label' => 'Users',
+                  'class' => 'Strehler::Element::User',
+                  'creatable' => 1,
+                  'updatable' => 1,
+                  'deletable' => 1,
+                  'categorized' => 0,
+                  'publishable' => 0,
+                  'custom_list_view' => undef,
+                  'form' => undef,
+                  'multilang_form' => undef,
+                  'role' => 'admin' );
     }
-  
+    elsif($entity eq 'category')
+    {
+        %data = ( 'auto' => 0,
+                  'role' => 'admin' );
+    }
     elsif(config->{'Strehler'}->{'extra_menu'}->{$entity})
     {
-        if(config->{'Strehler'}->{'extra_menu'}->{$entity}->{auto})
-        {
-            $label = config->{'Strehler'}->{'extra_menu'}->{$entity}->{label};
-            $class = config->{'Strehler'}->{'extra_menu'}->{$entity}->{class};
-            $categorized = config->{'Strehler'}->{'extra_menu'}->{$entity}->{categorized};
-            $publishable = config->{'Strehler'}->{'extra_menu'}->{$entity}->{publishable};
-            $custom_list_view = config->{'Strehler'}->{'extra_menu'}->{$entity}->{custom_list_view}; 
-        }
-        else
-        {
-            $entity = undef;
-        }
+        %data = ( 'auto' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{auto},
+                  'label' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{label},
+                  'class' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{class},
+                  'creatable' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{creatable} || 1,
+                  'updatable' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{updatable} || 1,
+                  'deletable' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{deletable} || 1,
+                  'categorized' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{categorized} || 0,
+                  'publishable' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{publishable} || 0,
+                  'custom_list_view' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{custom_list_view},
+                  'form' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{form},
+                  'multilang_form' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{multilang_form},
+                  'role' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{role} );
     }
     else
     {
-        $entity = undef;
+        return undef;
     }
-    return ($entity, $label, $class, $categorized, $publishable, $custom_list_view);
+    return %data;
+}
+sub entity_attr
+{
+    my $entity = shift;
+    my $attr = shift;
+    my %entity_data = get_entity_data($entity);
+    if(%entity_data)
+    {
+        return $entity_data($attr);
+    }
+    else
+    {
+        return undef;
+    }
 }
 sub check_role
 {
     my $entity = shift;
-    if($entity eq 'user' || $entity eq 'category')
+    my %entity_data = get_entity_data($entity);
+    if($entity_data{'role'})
     {
-        if(session->read('role') && session->read('role') eq 'admin')
+        if(session->read('role') eq $entity_data{'role'})
         {
             return 1;
         }
