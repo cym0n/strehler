@@ -8,5 +8,9 @@ then
 fi
 
 for f in `ls -a *.sql`; do
-  cat $f >> $GLOBAL_SCRIPT
+  if [[ "$f" =~ ^[0-9] ]]
+  then
+      echo "Adding $f"
+      cat $f >> $GLOBAL_SCRIPT
+  fi
 done
