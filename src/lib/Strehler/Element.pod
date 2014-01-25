@@ -177,7 +177,7 @@ Return Value: $element
 
 Same as previous method, but using the publish_date to order elements.
 
-=item get_last_by_order/get_first_by_order
+=item get_first_by_order/get_last_by_order
 
 Arguments: $category_id, $language
 
