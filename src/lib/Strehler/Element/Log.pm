@@ -19,3 +19,16 @@ sub metaclass_data
     return $element_conf{$param};
 }
 
+
+sub write
+{
+    my $self = shift;
+    my $user = shift;
+    my $action = shift;
+    my $entity_type = shift;
+    my $entity_id = shift;
+    my $log_row = schema->resultset($self->ORMObj())->create({ user => $user, action => $action, entity_type => $entity_type, entity_id => $entity_id });
+}
+
+1;
+

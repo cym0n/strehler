@@ -13,6 +13,7 @@ use Strehler::Meta::Tag;
 use Strehler::Element::Image;
 use Strehler::Element::Article;
 use Strehler::Element::User;
+use Strehler::Element::Log;
 use Strehler::Meta::Category;
 
 
@@ -80,6 +81,7 @@ any '/image/add' => sub
     {
         my $img = request->upload('photo');
         my $id = Strehler::Element::Image->save_form(undef, $img, $form);
+        Strehler::Element::Log->write(session->read('user'), 'add', 'image', $id);
         redirect dancer_app->prefix . '/image/edit/' . $id;
     }
     $form = bootstrap_divider($form);
@@ -108,6 +110,7 @@ post '/image/edit/:id' => sub
     {
         my $img = request->upload('photo');
         Strehler::Element::Image->save_form($id, $img, $form);
+        Strehler::Element::Log->write(session->read('user'), 'edit', 'image', $id);
         redirect dancer_app->prefix . '/image/list';
     }
     my $img = Strehler::Element::Image->new($id);
@@ -132,7 +135,8 @@ any '/article/add' => sub
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
-        Strehler::Element::Article->save_form(undef, $form);
+        my $id = Strehler::Element::Article->save_form(undef, $form);
+        Strehler::Element::Log->write(session->read('user'), 'add', 'article', $id);
         redirect dancer_app->prefix . '/article/list';
     }
     my $fake_tags = $form->get_element({ name => 'tags'});
@@ -159,6 +163,7 @@ post '/article/edit/:id' => sub
     if($form->submitted_and_valid)
     {
         Strehler::Element::Article->save_form($id, $form);
+        Strehler::Element::Log->write(session->read('user'), 'edit', 'article', $id);
         redirect dancer_app->prefix . '/article/list';
     }
     template "admin/article", { form => $form->render() }
@@ -179,6 +184,7 @@ any '/user/add' => sub
     if($form->submitted_and_valid)
     {
         my $id = Strehler::Element::User->save_form(undef, $form);
+        Strehler::Element::Log->write(session->read('user'), 'add', 'user', $id);
         redirect dancer_app->prefix . '/user/list';
     }
     $form = bootstrap_divider($form);
@@ -213,6 +219,7 @@ post '/user/edit/:id' => sub
     if($form->submitted_and_valid)
     {
         Strehler::Element::User->save_form($id, $form);
+        Strehler::Element::Log->write(session->read('user'), 'edit', 'user', $id);
         redirect dancer_app->prefix . '/user/list';
     }
     template "admin/user", { form => $form->render() }
@@ -250,7 +257,8 @@ any '/category/list' => sub
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
-        my $new_category = Strehler::Meta::Category->save_form(undef, $form, \@entities);
+        my $id = Strehler::Meta::Category->save_form(undef, $form, \@entities);
+        Strehler::Element::Log->write(session->read('user'), 'add', 'category', $id);
         redirect dancer_app->prefix . '/category/list';
     }
     template "admin/category_list", { categories => $to_view, form => $form };
@@ -269,7 +277,8 @@ any '/category/add' => sub
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
-        Strehler::Meta::Category->save_form(undef, $form, \@entities);
+        my $id = Strehler::Meta::Category->save_form(undef, $form, \@entities);
+        Strehler::Element::Log->write(session->read('user'), 'add', 'category', $id);
         redirect dancer_app->prefix . '/category/list'; 
     }
     $form = bootstrap_divider($form);
@@ -305,6 +314,7 @@ post '/category/edit/:id' => sub
     if($form->submitted_and_valid)
     {
         Strehler::Meta::Category->save_form($id, $form, \@entities);
+        Strehler::Element::Log->write(session->read('user'), 'edit', 'category', $id);
         redirect dancer_app->prefix . '/category/list';
     }
     template "admin/category", { form => $form->render() }
@@ -341,6 +351,7 @@ post '/category/delete/:id' => sub
     my $id = params->{id};
     my $category = Strehler::Meta::Category->new($id);
     $category->delete();
+    Strehler::Element::Log->write(session->read('user'), 'delete', 'category', $id);
     redirect dancer_app->prefix . '/category/list';
 };
 
@@ -476,6 +487,7 @@ get '/:entity/turnon/:id' => sub
     eval "require $class";
     my $obj = $class->new($id);
     $obj->publish();
+    Strehler::Element::Log->write(session->read('user'), 'publish', $entity, $id);
     redirect dancer_app->prefix . '/'. $entity . '/list';
 };
 get '/:entity/turnoff/:id' => sub
@@ -500,6 +512,7 @@ get '/:entity/turnoff/:id' => sub
     eval "require $class";
     my $obj = $class->new($id);
     $obj->unpublish();
+    Strehler::Element::Log->write(session->read('user'), 'unpublish', $entity, $id);
     redirect dancer_app->prefix . '/'. $entity . '/list';
 };
 get '/:entity/delete/:id' => sub
@@ -549,6 +562,7 @@ post '/:entity/delete/:id' => sub
     eval "require $class";
     my $obj = $class->new($id);
     $obj->delete();
+    Strehler::Element::Log->write(session->read('user'), 'delete', $entity, $id);
     redirect dancer_app->prefix . '/' . $entity . '/list';
 };
 ajax '/:entity/tagform/:id?' => sub
@@ -618,7 +632,8 @@ any '/:entity/add' => sub
     if($form->submitted_and_valid)
     {
         eval "require $class";
-        $class->save_form(undef, $form);
+        my $id = $class->save_form(undef, $form);
+        Strehler::Element::Log->write(session->read('user'), 'add', $entity, $id);
         redirect dancer_app->prefix . '/' . $entity . '/list';
     }
     my $fake_tags = $form->get_element({ name => 'tags'});
@@ -677,6 +692,7 @@ post '/:entity/edit/:id' => sub
     {
         eval "require $class";
         $class->save_form($id, $form);
+        Strehler::Element::Log->write(session->read('user'), 'edit', $entity, $id);
         redirect dancer_app->prefix . '/' . $entity . '/list';
     }
     template "admin/generic_add", { entity => $entity, label => $label, id => $id, form => $form->render() }

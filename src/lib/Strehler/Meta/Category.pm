@@ -284,6 +284,7 @@ sub save_form
             }
         }
     }
+    return $new_category->id;
 }
 
 sub ext_name
