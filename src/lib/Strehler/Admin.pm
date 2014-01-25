@@ -976,7 +976,7 @@ sub get_entity_data
                   'deletable' => 0,
                   'categorized' => 0,
                   'publishable' => 0,
-                  'custom_list_view' => undef,
+                  'custom_list_view' => 'admin/log_list',
                   'form' => undef,
                   'multilang_form' => undef,
                   'role' => 'admin' );

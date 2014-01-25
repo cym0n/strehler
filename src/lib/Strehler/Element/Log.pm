@@ -3,6 +3,7 @@ package Strehler::Element::Log;
 use Moo;
 use Dancer2;
 use Dancer2::Plugin::DBIC;
+use DateTime::Format::Strptime;
 
 extends 'Strehler::Element';
 
@@ -28,6 +29,23 @@ sub write
     my $entity_type = shift;
     my $entity_id = shift;
     my $log_row = schema->resultset($self->ORMObj())->create({ user => $user, action => $action, entity_type => $entity_type, entity_id => $entity_id });
+}
+
+sub main_title
+{
+    my $self = shift;
+    return "[" . $self->timestamp() . "] " . $self->get_attr('action') . " " . $self->get_attr('entity_type');
+}
+sub timestamp
+{
+    my $self = shift;
+    my $strp = DateTime::Format::Strptime->new(
+        pattern   => '%d/%m/%Y %T',
+        locale    => 'it_IT',
+        time_zone => 'Europe/Rome',
+    );
+    return $self->row->timestamp->set_formatter($strp);
+
 }
 
 1;
