@@ -34,7 +34,7 @@ sub BUILDARGS {
         my $main = schema->resultset('Category')->find({ category => $hash_args{'parent'}, parent => undef });
         if($main)
         {
-            $category = $main->subcategories->find({ category => $hash_args{'category'}});
+            $category = $main->categories->find({ category => $hash_args{'category'}});
         }
         else
         {
@@ -48,7 +48,7 @@ sub subcategories
 {
     my $self = shift;
     my @subs;
-    for($self->row->subcategories)
+    for($self->row->categories)
     {
         push @subs, Strehler::Meta::Category->new('row', $_);
     }
@@ -290,9 +290,9 @@ sub ext_name
 {
     my $self = shift;
     my $category = $self->row->category;
-    if($self->row->parent_category)
+    if($self->row->parent)
     {
-        $category = $self->row->parent_category->category . '/' . $category;
+        $category = $self->row->parent->category . '/' . $category;
     }
     return $category;
 }

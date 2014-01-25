@@ -556,9 +556,9 @@ sub get_form_data
     }
     if($self->row->can('category')) #Is the element categorized?
     {
-        if($el_row->category->parent_category)
+        if($el_row->category->parent)
         {
-            $data->{'category'} = $el_row->category->parent_category->id;
+            $data->{'category'} = $el_row->category->parent->id;
             $data->{'subcategory'} = $el_row->category->id;
         }
         else
