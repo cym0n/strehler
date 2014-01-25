@@ -6,7 +6,11 @@
         [% IF categorized %]
             [% INCLUDE categoryfilter %]
         [% END %]
-        [% INCLUDE pager %]
+        [% IF creatable %]
+            [% INCLUDE pager %]
+        [% ELSE %]
+            [% INCLUDE pager_no_new %]
+        [% END %]
         <table class="table table-striped">
         <thead>
             <tr>
@@ -33,8 +37,12 @@
                 [% END %]
                 <td>
                     <div class="btn-group span2 offset1">
+                        [% IF updatable %]
                         <a href="/admin/[% entity %]/edit/[% el.id %]" class="btn">Edit</a>
+                        [% END %]
+                        [% IF deletable %]
                         <a href="/admin/[% entity %]/delete/[% el.id %]" class="btn">Delete</a>
+                        [% END %]
                         [% IF publishable %]
                         [% IF el.published == 1 %]
                             <a href="/admin/[% entity %]/turnoff/[% el.id %]" class="btn">Offline</a>
@@ -48,7 +56,11 @@
             [% END %]
         </tbody>
         </table>
-        [% INCLUDE pager %]
+        [% IF creatable %]
+            [% INCLUDE pager %]
+        [% ELSE %]
+            [% INCLUDE pager_no_new %]
+        [% END %]
 </div>
 [% INCLUDE filterscripts %]
 

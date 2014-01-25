@@ -432,6 +432,9 @@ any '/:entity/list' => sub
     my $label = $entity_data{'label'};
     my $categorized = $entity_data{'categorized'};
     my $publishable = $entity_data{'publishable'};
+    my $creatable = $entity_data{'creatable'};
+    my $updatable = $entity_data{'updatable'};
+    my $deletable = $entity_data{'deletable'};
     
     my $page = exists params->{'page'} ? params->{'page'} : session $entity . '-page';
     my $cat_param = exists params->{'cat'} ? params->{'cat'} : session $entity . '-cat-filter';
@@ -449,7 +452,7 @@ any '/:entity/list' => sub
     my $elements = $class->get_list({ page => $page, entries_per_page => $entries_per_page, category_id => $cat_param});
     session $entity . '-page' => $page;
     session $entity . '-cat-filter' => $cat_param;
-    template $custom_list_view, { entity => $entity, label => $label, elements => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, last_page => $elements->{'last_page'}, categorized => $categorized, publishable => $publishable };
+    template $custom_list_view, { entity => $entity, label => $label, elements => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, last_page => $elements->{'last_page'}, categorized => $categorized, publishable => $publishable, creatable => $creatable, 'updatable' => $updatable, 'deletable' => $deletable };
 };
 get '/:entity/turnon/:id' => sub
 {
@@ -517,7 +520,8 @@ get '/:entity/delete/:id' => sub
         return;
     }
     my $id = params->{id};
-    my $class = get_entity_attr($entity, 'class')
+    my $class = get_entity_attr($entity, 'class');
+    my $label = get_entity_attr($entity, 'label');
     eval "require $class";
     my $obj = $class->new($id);
     my %el = $obj->get_basic_data();
@@ -633,8 +637,8 @@ get '/:entity/edit/:id' => sub {
     {
         return pass;
     }
-    my $class = get_entity_attr($entity, 'class'),
-    my $label = get_entity_attr($entity, 'label'),
+    my $class = get_entity_attr($entity, 'class');
+    my $label = get_entity_attr($entity, 'label');
     eval "require $class";
     my $el = $class->new($id);
     my $form_data = $el->get_form_data();
@@ -659,9 +663,9 @@ post '/:entity/edit/:id' => sub
     {
         return pass;
     }
-    my $class = get_entity_attr($entity, 'class'),
-    my $label = get_entity_attr($entity, 'label'),
-    my $form = form_generic(get_entity_attr($entity, 'form'), get_entity_attr($entity, 'multilang_form'), 'edit', $form_data->{'category'});
+    my $class = get_entity_attr($entity, 'class');
+    my $label = get_entity_attr($entity, 'label');
+    my $form = form_generic(get_entity_attr($entity, 'form'), get_entity_attr($entity, 'multilang_form'), 'edit');
     if(! $form)
     {
         return pass;
@@ -946,6 +950,22 @@ sub get_entity_data
         %data = ( 'auto' => 0,
                   'role' => 'admin' );
     }
+    elsif($entity eq 'log')
+    {
+        %data = ( 'auto' => 1,
+                  'label' => 'Logs',
+                  'class' => 'Strehler::Element::Log',
+                  'creatable' => 0,
+                  'updatable' => 0,
+                  'deletable' => 0,
+                  'categorized' => 0,
+                  'publishable' => 0,
+                  'custom_list_view' => undef,
+                  'form' => undef,
+                  'multilang_form' => undef,
+                  'role' => 'admin' );
+    }
+
     elsif(config->{'Strehler'}->{'extra_menu'}->{$entity})
     {
         %data = ( 'auto' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{auto},
@@ -967,14 +987,14 @@ sub get_entity_data
     }
     return %data;
 }
-sub entity_attr
+sub get_entity_attr
 {
     my $entity = shift;
     my $attr = shift;
     my %entity_data = get_entity_data($entity);
     if(%entity_data)
     {
-        return $entity_data($attr);
+        return $entity_data{$attr};
     }
     else
     {
@@ -983,6 +1003,10 @@ sub entity_attr
 }
 sub check_role
 {
+    if(! config->{Strehler}->{admin_secured})
+    {
+        return 1;
+    }
     my $entity = shift;
     my %entity_data = get_entity_data($entity);
     if($entity_data{'role'})

@@ -36,8 +36,16 @@ on_plugin_import {
             $navbar{$tab} = 'active';
             $tokens->{'navbar'} = \%navbar;
             $tokens->{'extramenu'} = $dsl->config->{Strehler}->{'extra_menu'};
-            $tokens->{'role'} = $dsl->context->session->read('role');
-            $tokens->{'user'} = $dsl->context->session->read('user');
+            if(! $dsl->config->{Strehler}->{admin_secured})
+            {
+                $tokens->{'role'} = 'admin';
+                $tokens->{'user'} = 'admin';
+            }
+            else
+            {
+                $tokens->{'role'} = $dsl->context->session->read('role');
+                $tokens->{'user'} = $dsl->context->session->read('user');
+            }
         }));
     };
     

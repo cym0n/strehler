@@ -1,5 +1,4 @@
-[% BLOCK pager %]
-    <div class="row">
+[% BLOCK pages %]
         [% IF page > 1 %]
             <a href="[% request.path %]?page=[% page - 1 %]" class="span1 btn">&lt;</a>
         [% ELSE %]
@@ -10,7 +9,16 @@
         [% ELSE %]
             <span class="span1">&nbsp;</span>
         [% END %]
+[% END %]
+[% BLOCK pager %]
+    <div class="row">
+        [% INCLUDE pages %]
         <a href="add" class="span1 offset8 btn btn-primary">New</a>
+    </div>
+[% END %]
+[% BLOCK pager_no_new %]
+    <div class="row">
+        [% INCLUDE pages %]
     </div>
 [% END %]
 [% BLOCK categoryfilter %]
