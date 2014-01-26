@@ -3,7 +3,7 @@ package Strehler::Meta::Category;
 use Moo;
 use Dancer2;
 use Dancer2::Plugin::DBIC;
-use Data::Dumper;
+use Strehler::Helpers;
 
 has row => (
     is => 'ro',
@@ -83,7 +83,14 @@ sub has_elements
 {
     my $self = shift;
     my $category_row = $self->row;
-    return $category_row->images->count() > 0 || $category_row->articles->count() > 0
+    for my $e (Strehler::Helpers::get_categorized_entities())
+    {
+        my $class = Strehler::Helpers::get_entity_attr($e, 'class');
+        eval "require $class";
+        my $accessor = $class->category_accessor($category_row);
+        return 1 if($category_row->$accessor->count() > 0);
+    }
+    return 0;
 }
 sub max_article_order
 {
