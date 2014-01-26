@@ -92,6 +92,11 @@ sub has_elements
     }
     return 0;
 }
+sub is_parent
+{
+   my $self = shift;
+   return $self->row->categories->count() > 0;  
+}
 sub max_article_order
 {
     my $self = shift;

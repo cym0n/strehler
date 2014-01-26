@@ -350,6 +350,12 @@ get '/category/delete/:id' => sub
         my $return = dancer_app->prefix . "/category/list";
         template "admin/message", { message => $message, backlink => $return };
     }
+    elsif($category->is_parent())
+    {
+        my $message = "Category " . $category->get_attr('category') . " has subcategories! Deletion is impossible.";    
+        my $return = dancer_app->prefix . "/category/list";
+        template "admin/message", { message => $message, backlink => $return };
+    }
     else
     {
         my %data = $category->get_basic_data();
