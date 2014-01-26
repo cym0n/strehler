@@ -107,10 +107,8 @@ sub max_article_order
 sub delete
 {
     my $self = shift;
+    $self->row->configured_tags->delete_all();
     $self->row->delete();
-    $self->row->images->update( { category => undef } );
-    $self->row->articles->update( { category => undef } );
-
 }
 
 sub get_attr
