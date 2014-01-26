@@ -64,7 +64,7 @@ sub save_form
                 passphrase => $clean_password);
     my $user_data ={ user => $form->param_value('user'), password_hash => $ppr->hash_base64, password_salt => $ppr->salt_base64, role => $form->param_value('role') };
     my $already_user = schema->resultset($self->ORMObj())->find({user => $form->param_value('user')});
-    return -1 if($already_user);
+    return -1 if($already_user && ! $id);
     if($id)
     {
         $user_row = schema->resultset($self->ORMObj())->find($id);

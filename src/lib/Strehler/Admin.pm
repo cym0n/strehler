@@ -234,11 +234,9 @@ post '/user/edit/:id' => sub
         }
         else
         {
-            Strehler::Element::Log->write(session->read('user'), 'add', 'user', $id);
+            Strehler::Element::Log->write(session->read('user'), 'edit', 'user', $id);
             redirect dancer_app->prefix . '/user/list';
         }
-        Strehler::Element::Log->write(session->read('user'), 'edit', 'user', $id);
-        redirect dancer_app->prefix . '/user/list';
     }
     template "admin/user", { form => $form->render(), message => $message }
 };
