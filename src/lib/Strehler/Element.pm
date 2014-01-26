@@ -5,6 +5,7 @@ use Dancer2;
 use Dancer2::Plugin::DBIC;
 use Strehler::Meta::Tag;
 use Strehler::Meta::Category;
+use Data::Dumper;
 
 has row => (
     is => 'ro',
@@ -548,10 +549,9 @@ sub get_form_data
     my $data = \%columns;
     foreach my $attribute (keys %columns)
     {
-        my $accessor = $self->can($attribute);
-        if($accessor)
+        if($el_row->result_source->column_info($attribute)->{'data_type'} eq 'timestamp')
         {
-            $data->{$attribute} = $self->$accessor();
+            $data->{$attribute} = $el_row->$attribute;
         }
     }
     if($self->row->can('category')) #Is the element categorized?
@@ -577,7 +577,19 @@ sub get_form_data
             {
                 if($k ne 'id' && $k ne $self->item_type() && $k ne 'language')
                 {
-                    $data->{$k . '_' . $ml_columns{'language'}} = $ml_columns{$k};
+                    foreach my $attribute (keys %columns)
+                    {
+                        my $data_to_save;
+                        if($ml->result_source->column_info($k)->{'data_type'} eq 'timestamp')
+                        {
+                            $data_to_save = $ml->$attribute;
+                        }
+                        else
+                        {
+                            $data_to_save = $ml_columns{$k};
+                        }
+                        $data->{$k . '_' . $ml_columns{'language'}} = $data_to_save;
+                    }
                 }
             }
         }

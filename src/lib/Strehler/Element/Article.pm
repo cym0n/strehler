@@ -38,11 +38,6 @@ sub main_title
 }
 
 #Ad hoc accessors and hooks
-sub publish_date
-{
-    my $self = shift;
-    return $self->row->publish_date;
-}
 sub image
 {
     my $self = shift;
