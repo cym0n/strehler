@@ -671,6 +671,7 @@ sub save_form
                     {
                         $multi_el_data->{$multicolumn} = $self->$accessor($el_row->id, $form, $lang);
                     }
+                    $to_write = 1 if $multi_el_data->{$multicolumn};
                 }
             }
             if($to_write)
