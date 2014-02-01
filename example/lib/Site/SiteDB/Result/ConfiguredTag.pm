@@ -50,6 +50,7 @@ __PACKAGE__->table("CONFIGURED_TAGS");
 =head2 category_id
 
   data_type: 'integer'
+  is_foreign_key: 1
   is_nullable: 1
 
 =head2 item_type
@@ -71,7 +72,7 @@ __PACKAGE__->add_columns(
   "tag",
   { data_type => "varchar", is_nullable => 1, size => 120 },
   "category_id",
-  { data_type => "integer", is_nullable => 1 },
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "item_type",
   { data_type => "varchar", is_nullable => 1, size => 20 },
   "default_tag",
@@ -90,9 +91,31 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("id");
 
+=head1 RELATIONS
 
-# Created by DBIx::Class::Schema::Loader v0.07037 @ 2013-11-10 16:49:44
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:dI+u11Kcv0pGtRLO8QXlMw
+=head2 category
+
+Type: belongs_to
+
+Related object: L<Site::SiteDB::Result::Category>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "category",
+  "Site::SiteDB::Result::Category",
+  { id => "category_id" },
+  {
+    is_deferrable => 1,
+    join_type     => "LEFT",
+    on_delete     => "RESTRICT",
+    on_update     => "RESTRICT",
+  },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07037 @ 2014-01-27 00:45:49
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:xQcYYKhIWAzsHNZXPJtiKA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

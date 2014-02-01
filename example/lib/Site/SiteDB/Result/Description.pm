@@ -44,6 +44,7 @@ __PACKAGE__->table("DESCRIPTIONS");
 =head2 image
 
   data_type: 'integer'
+  is_foreign_key: 1
   is_nullable: 1
 
 =head2 title
@@ -69,7 +70,7 @@ __PACKAGE__->add_columns(
   "id",
   { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
   "image",
-  { data_type => "integer", is_nullable => 1 },
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "title",
   { data_type => "varchar", is_nullable => 1, size => 50 },
   "description",
@@ -90,12 +91,15 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("id");
 
+=head1 RELATIONS
 
-# Created by DBIx::Class::Schema::Loader v0.07036 @ 2013-08-25 11:46:09
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ZBr46ohU2Ps8hZsYdtNTqw
+=head2 image
 
+Type: belongs_to
 
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
+Related object: L<Site::SiteDB::Result::Image>
+
+=cut
 
 __PACKAGE__->belongs_to(
   "image",
@@ -104,8 +108,15 @@ __PACKAGE__->belongs_to(
   {
     is_deferrable => 1,
     join_type     => "LEFT",
-    on_delete     => "CASCADE",
-    on_update     => "CASCADE",
+    on_delete     => "RESTRICT",
+    on_update     => "RESTRICT",
   },
 );
+
+
+# Created by DBIx::Class::Schema::Loader v0.07037 @ 2014-01-25 12:20:54
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:g0LrGVYQS3kDrnLk8tvJ0g
+
+
+# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

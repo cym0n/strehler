@@ -50,6 +50,7 @@ __PACKAGE__->table("IMAGES");
 =head2 category
 
   data_type: 'integer'
+  is_foreign_key: 1
   is_nullable: 1
 
 =cut
@@ -60,7 +61,7 @@ __PACKAGE__->add_columns(
   "image",
   { data_type => "varchar", is_nullable => 1, size => 50 },
   "category",
-  { data_type => "integer", is_nullable => 1 },
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -75,19 +76,15 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("id");
 
+=head1 RELATIONS
 
-# Created by DBIx::Class::Schema::Loader v0.07036 @ 2013-08-25 11:46:09
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:LwmkRwz4NJ9YUvEgS/qQpQ
+=head2 category
 
+Type: belongs_to
 
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
+Related object: L<Site::SiteDB::Result::Category>
 
-__PACKAGE__->has_many(
-  "descriptions",
-  "Site::SiteDB::Result::Description",
-  { "foreign.image" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
+=cut
 
 __PACKAGE__->belongs_to(
   "category",
@@ -96,8 +93,30 @@ __PACKAGE__->belongs_to(
   {
     is_deferrable => 1,
     join_type     => "LEFT",
-    on_delete     => undef,
-    on_update     => undef,
+    on_delete     => "RESTRICT",
+    on_update     => "RESTRICT",
   },
 );
+
+=head2 descriptions
+
+Type: has_many
+
+Related object: L<Site::SiteDB::Result::Description>
+
+=cut
+
+__PACKAGE__->has_many(
+  "descriptions",
+  "Site::SiteDB::Result::Description",
+  { "foreign.image" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07037 @ 2014-01-25 12:20:54
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:1KgpRmW8x0mL5AxsWRqhEg
+
+
+# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;
