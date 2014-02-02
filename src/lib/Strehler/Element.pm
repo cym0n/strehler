@@ -79,8 +79,8 @@ sub delete
 {
     my $self = shift;
     my $children = $self->row->can($self->multilang_children());
-    $self->row->delete();
     $self->row->$children->delete_all() if($children);
+    $self->row->delete();
 }
 
 sub get_attr
