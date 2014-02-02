@@ -1,0 +1,6 @@
+elements:
+    - name: story
+      label: Story
+    - name: description
+      label: Description
+

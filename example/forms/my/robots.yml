@@ -1,0 +1,51 @@
+attributes:
+    class: well 
+elements:
+    - type: Select
+      id: category_selector
+      name: category
+      label: categoria
+      constraints:
+        type: Required
+        message: 'Categoria necessaria<br />'
+    - type: Select
+      name: subcategory
+      label: sottocategoria
+      id: subcat
+    - type: Block
+      tag: div
+      id: tags-place
+      attributes:
+        class: text label
+    - name: name
+      label: Name
+      attributes: 
+        class: span8
+      constraints:
+        type: Required
+        message: 'Name required<br />'
+    - name: pilot
+      label: Pilot
+      attributes: 
+        class: span8
+    - name: strenght
+      label: Strength
+      attributes: 
+        class: span8
+    - name: speed
+      label: Speed
+      attributes: 
+        class: span8
+    - name: defence
+      label: Defence
+      attributes: 
+        class: span8
+    - name: save
+      type: Block
+      tag: button
+      content: Submit
+      attributes:
+        type: submit
+        class: btn btn-primary
+
+  
