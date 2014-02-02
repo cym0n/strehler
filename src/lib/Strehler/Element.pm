@@ -183,10 +183,17 @@ sub get_ext_data
         my %multilang_data = $multilang_row->get_columns;
         foreach my $attribute (keys %multilang_data)
         {
-            my $accessor = $self->can($attribute);
-            if($accessor)
+            if($attribute ne 'id' && $attribute ne $self->item_type() && $attribute ne 'language')
             {
-                $multilang_data{$attribute} = $self->$accessor($language);
+                my $accessor = $self->can($attribute);
+                if($accessor)
+                {
+                    $data{$attribute} = $self->$accessor($language);
+                }
+                else
+                {
+                    $data{$attribute} = $multilang_data{$attribute};
+                }
             }
         } 
     }
