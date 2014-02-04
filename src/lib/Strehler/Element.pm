@@ -141,6 +141,15 @@ sub get_category_name
         return undef;
     }
 }
+sub max_category_order
+{
+    my $self = shift;
+    my $category_id = shift;
+    my $category = Strehler::Meta::Category->new($category_id);
+    my $category_accessor = $self->category_accessor($category->row);
+    my $max = $category->row->$category_accessor->search()->get_column('display_order')->max();
+    return $max;
+}
 
 
 

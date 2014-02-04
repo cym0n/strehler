@@ -40,7 +40,7 @@
         if(category)
         {
             var request = $.ajax({
-                    url: "/admin/category/last/"+category,
+                    url: "/admin/article/lastchapter/"+category,
                     dataType: 'text',
                 });
                 request.done(function(msg) {

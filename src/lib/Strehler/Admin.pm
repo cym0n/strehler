@@ -376,12 +376,6 @@ post '/category/delete/:id' => sub
     redirect dancer_app->prefix . '/category/list';
 };
 
-ajax '/category/last/:id' => sub
-{
-    my $id = params->{id};
-    my $category = Strehler::Meta::Category->new($id);
-    return $category->max_article_order() + 1;
-};
 ajax '/category/select/:id' => sub
 {
     my $id = params->{id};
@@ -627,6 +621,14 @@ ajax '/:entity/tagform/:id?' => sub
     {
            template 'admin/open_tags';
     }
+};
+ajax '/:entity/lastchapter/:id' => sub
+{
+    my $entity = params->{entity};
+    my $id = params->{id};
+    my $class = Strehler::Helpers::get_entity_attr($entity, 'class');
+    eval "require $class";
+    return $class->max_category_order($id) +1;
 };
 
 any '/:entity/add' => sub
