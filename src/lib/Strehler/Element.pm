@@ -144,16 +144,18 @@ sub max_category_order
 {
     my $self = shift;
     my $category_id = shift;
+    my $max;
     if($category_id)
     {
         my $category = Strehler::Meta::Category->new($category_id);
         my $category_accessor = $self->category_accessor($category->row);
-        return $category->row->$category_accessor->search()->get_column('display_order')->max();
+        $max = $category->row->$category_accessor->search()->get_column('display_order')->max();
     }
     else
     {
-        return schema->resultset($self->ORMObj())->search()->get_column('display_order')->max();
+        $max = schema->resultset($self->ORMObj())->search()->get_column('display_order')->max();
     }
+    return $max || 0;
 }
 
 

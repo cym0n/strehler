@@ -454,13 +454,6 @@ any '/:entity/list' => sub
     }
 
     my $custom_list_view = $entity_data{'custom_list_view'} || 'admin/generic_list';
-    my $class = $entity_data{'class'};
-    my $label = $entity_data{'label'};
-    my $categorized = $entity_data{'categorized'};
-    my $publishable = $entity_data{'publishable'};
-    my $creatable = $entity_data{'creatable'};
-    my $updatable = $entity_data{'updatable'};
-    my $deletable = $entity_data{'deletable'};
     
     my $page = exists params->{'page'} ? params->{'page'} : session $entity . '-page';
     my $cat_param = exists params->{'cat'} ? params->{'cat'} : session $entity . '-cat-filter';
@@ -474,11 +467,12 @@ any '/:entity/list' => sub
     my $subcat = undef;
     ($cat, $subcat) = Strehler::Meta::Category->explode_tree($cat_param);
     my $entries_per_page = 20;
+    my $class = $entity_data{'class'};
     eval "require $class";
     my $elements = $class->get_list({ page => $page, entries_per_page => $entries_per_page, category_id => $cat_param});
     session $entity . '-page' => $page;
     session $entity . '-cat-filter' => $cat_param;
-    template $custom_list_view, { entity => $entity, label => $label, elements => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, last_page => $elements->{'last_page'}, categorized => $categorized, publishable => $publishable, creatable => $creatable, 'updatable' => $updatable, 'deletable' => $deletable };
+    template $custom_list_view, { (entity => $entity, elements => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, last_page => $elements->{'last_page'}), %entity_data };
 };
 get '/:entity/turnon/:id' => sub
 {

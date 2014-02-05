@@ -17,6 +17,7 @@
                 <th>ID</th>
                 <th>Title</th>
                 [% IF categorized %]<th>Category</th>[% END %]
+                [% IF ordered %]<th>Order</th>[% END %]
                 [% IF publishable %]<th>Status</th>[% END %]
             </tr>
         </thead>
@@ -26,6 +27,7 @@
                 <td>[% el.id %]</td>
                 <td>[% el.title %]</td>
                 [% IF categorized %]<td>[% el.category_name %]</td>[% END %]
+                [% IF ordered %]<td>[% el.display_order %]</td>[% END %]
                 [% IF publishable %]
                 <td>
                 [% IF el.published == 1 %]
