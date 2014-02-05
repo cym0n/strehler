@@ -165,8 +165,6 @@ sub get_basic_data
 {
     my $self = shift;
     my %data = $self->row->get_columns;
-    $data{'id'} = $self->get_attr('id');
-    $data{'title'} = $self->main_title;
     if($self->row->can('category'))
     {
         $data{'category'} = $self->row->category->category;
@@ -177,12 +175,17 @@ sub get_basic_data
     }
     foreach my $attribute (keys %data)
     {
+        if($self->row->result_source->column_info($attribute)->{'data_type'} eq 'timestamp')
+        {
+            $data{$attribute} = $self->row->$attribute;
+        }
         my $accessor = $self->can($attribute);
         if($accessor)
         {
             $data{$attribute} = $self->$accessor();
         }
     }
+    $data{'title'} = $self->main_title;
     $data{'category_name'} = $self->get_category_name();
     return %data;
 }
@@ -201,14 +204,14 @@ sub get_ext_data
         {
             if($attribute ne 'id' && $attribute ne $self->item_type() && $attribute ne 'language')
             {
+                if($multilang_row->result_source->column_info($attribute)->{'data_type'} eq 'timestamp')
+                {
+                    $data{$attribute} = $$multilang_row->$attribute;
+                }
                 my $accessor = $self->can($attribute);
                 if($accessor)
                 {
                     $data{$attribute} = $self->$accessor($language);
-                }
-                else
-                {
-                    $data{$attribute} = $multilang_data{$attribute};
                 }
             }
         } 
