@@ -352,15 +352,15 @@ sub get_last_by_order
     my $self = shift;
     my $cat = shift;
     my $language = shift;
-    my $category = schema->resultset('Category')->find( { id => $cat } );
-    return undef if(! $category);
-    my $category_access = $self->category_accessor($category);
+    my $category = Strehler::Meta::Category->explode_name($cat);
+    return undef if(! $category->exists());
+    my $category_access = $self->category_accessor($category->row);
     my $criteria = {};
     if($self->publishable())
     {
         $criteria = { published => 1 };
     }
-    my @chapters = $category->$category_access->search($criteria , { order_by => { -desc => 'display_order' } });
+    my @chapters = $category->row->$category_access->search($criteria , { order_by => { -desc => 'display_order' } });
     if($chapters[0])
     {
         for(@chapters)
@@ -379,15 +379,15 @@ sub get_last_by_date
     my $self = shift;
     my $cat = shift;
     my $language = shift;
-    my $category = schema->resultset('Category')->find( { id => $cat } );
-    return undef if(! $category);
-    my $category_access = $self->category_accessor($category);
+    my $category = Strehler::Meta::Category->explode_name($cat);
+    return undef if(! $category->exists());
+    my $category_access = $self->category_accessor($category->row);
     my $criteria = {};
     if($self->publishable())
     {
         $criteria = { published => 1 };
     }
-    my @chapters = $category->$category_access->search( $criteria, { order_by => { -desc => 'publish_date' } });
+    my @chapters = $category->row->$category_access->search( $criteria, { order_by => { -desc => 'publish_date' } });
     if($chapters[0])
     {
         for(@chapters)
@@ -406,15 +406,15 @@ sub get_first_by_order
     my $self = shift;
     my $cat = shift;
     my $language = shift;
-    my $category = schema->resultset('Category')->find( { id => $cat } );
-    return undef if(! $category);
-    my $category_access = $self->category_accessor($category);
+    my $category = Strehler::Meta::Category->explode_name($cat);
+    return undef if(! $category->exists());
+    my $category_access = $self->category_accessor($category->row);
     my $criteria = {};
     if($self->publishable())
     {
         $criteria = { published => 1 };
     }
-    my @chapters = $category->$category_access->search( $criteria, { order_by => { -asc => 'display_order' } });
+    my @chapters = $category->row->$category_access->search( $criteria, { order_by => { -asc => 'display_order' } });
     if($chapters[0])
     {
         for(@chapters)
@@ -433,15 +433,15 @@ sub get_first_by_date
     my $self = shift;
     my $cat = shift;
     my $language = shift;
-    my $category = schema->resultset('Category')->find( { id => $cat } );
-    return undef if(! $category);
-    my $category_access = $self->category_accessor($category);
+    my $category = Strehler::Meta::Category->explode_name($cat);
+    return undef if(! $category->exists());
+    my $category_access = $self->category_accessor($category->row);
     my $criteria = {};
     if($self->publishable())
     {
         $criteria = { published => 1 };
     }
-    my @chapters = $category->$category_access->search( $criteria, { order_by => { -asc => 'publish_date' } });
+    my @chapters = $category->row->$category_access->search( $criteria, { order_by => { -asc => 'publish_date' } });
     if($chapters[0])
     {
         for(@chapters)
