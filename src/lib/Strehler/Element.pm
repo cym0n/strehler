@@ -204,14 +204,21 @@ sub get_ext_data
         {
             if($attribute ne 'id' && $attribute ne $self->item_type() && $attribute ne 'language')
             {
-                if($multilang_row->result_source->column_info($attribute)->{'data_type'} eq 'timestamp')
-                {
-                    $data{$attribute} = $$multilang_row->$attribute;
-                }
                 my $accessor = $self->can($attribute);
                 if($accessor)
                 {
                     $data{$attribute} = $self->$accessor($language);
+                }
+                else
+                {
+                    if($multilang_row->result_source->column_info($attribute)->{'data_type'} eq 'timestamp')
+                    {
+                        $data{$attribute} = $$multilang_row->$attribute;
+                    }
+                    else
+                    {
+                        $data{$attribute} = $multilang_data{$attribute};
+                    }
                 }
             }
         } 
