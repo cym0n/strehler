@@ -626,6 +626,15 @@ ajax '/:entity/lastchapter/:id' => sub
 {
     my $entity = params->{entity};
     my $id = params->{id};
+    my %entity_data = Strehler::Helpers::get_entity_data($entity);
+    if(! $entity_data{'auto'})
+    {
+        return pass;
+    }
+    if(! $entity_data{'ordered'})
+    {
+        return pass;
+    }
     my $class = Strehler::Helpers::get_entity_attr($entity, 'class');
     eval "require $class";
     return $class->max_category_order($id) +1;

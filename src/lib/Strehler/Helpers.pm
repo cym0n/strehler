@@ -112,6 +112,7 @@ sub get_entity_data
                   'updatable' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{updatable} || 1,
                   'deletable' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{deletable} || 1,
                   'categorized' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{categorized} || 0,
+                  'ordered' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{ordered} || 0,
                   'publishable' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{publishable} || 0,
                   'custom_list_view' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{custom_list_view},
                   'form' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{form},
