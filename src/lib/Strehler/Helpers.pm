@@ -47,6 +47,7 @@ sub get_entity_data
                   'deletable' => 1,
                   'categorized' => 1,
                   'publishable' => 1,
+                  'ordered' => 1,
                   'custom_list_view' => undef,
                   'form' => undef,
                   'multilang_form' => undef,
@@ -61,6 +62,7 @@ sub get_entity_data
                   'updatable' => 1,
                   'deletable' => 1,
                   'categorized' => 1,
+                  'ordered' => 0,
                   'publishable' => 0,
                   'custom_list_view' => 'admin/image_list',
                   'form' => undef,
@@ -76,6 +78,7 @@ sub get_entity_data
                   'updatable' => 1,
                   'deletable' => 1,
                   'categorized' => 0,
+                  'ordered' => 0,
                   'publishable' => 0,
                   'custom_list_view' => undef,
                   'form' => undef,
@@ -96,13 +99,13 @@ sub get_entity_data
                   'updatable' => 0,
                   'deletable' => 0,
                   'categorized' => 0,
+                  'ordered' => 0,
                   'publishable' => 0,
                   'custom_list_view' => 'admin/log_list',
                   'form' => undef,
                   'multilang_form' => undef,
                   'role' => 'admin' );
     }
-
     elsif(config->{'Strehler'}->{'extra_menu'}->{$entity})
     {
         %data = ( 'auto' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{auto},
