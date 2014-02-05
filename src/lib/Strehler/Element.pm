@@ -5,7 +5,6 @@ use Dancer2;
 use Dancer2::Plugin::DBIC;
 use Strehler::Meta::Tag;
 use Strehler::Meta::Category;
-use Data::Dumper;
 
 has row => (
     is => 'ro',
