@@ -67,8 +67,6 @@ sub get_by_slug
     my $slug = shift;
     my $language = shift;
     my $chapter = schema->resultset('Content')->find({ slug => $slug, language => $language });
-    print "$slug - $language";
-    print Dumper($chapter);
     if($chapter)
     {
         return Strehler::Element::Article->new($chapter->article->id);
