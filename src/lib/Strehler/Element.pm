@@ -260,7 +260,7 @@ sub next_in_category_by_order
 {
     my $self = shift;
     my $language = shift;
-    my $category = schema->resultset('Category')->find( { category => $self->category() } );
+    my $category = schema->resultset('Category')->find( { category => $self->get_category_name() } );
     my $category_access = $self->category_accessor($category);
     my $criteria = { display_order => { '>', $self->get_attr('display_order') }};
     if($self->publishable())
@@ -286,7 +286,7 @@ sub prev_in_category_by_order
 {
     my $self = shift;
     my $language = shift;
-    my $category = schema->resultset('Category')->find( { category => $self->category() } );
+    my $category = schema->resultset('Category')->find( { category => $self->get_category_name() } );
     my $category_access = $self->category_accessor($category);
     my $criteria = { display_order => { '<', $self->get_attr('display_order') }};
     if($self->publishable())
@@ -311,7 +311,7 @@ sub next_in_category_by_date
 {
     my $self = shift;
     my $language = shift;
-    my $category = schema->resultset('Category')->find( { category => $self->category() } );
+    my $category = schema->resultset('Category')->find( { category => $self->get_category_name() } );
     my $category_access = $self->category_accessor($category);
     my $criteria = {publish_date => { '>', $self->get_attr('publish_date') }};
     if($self->publishable())
@@ -336,7 +336,7 @@ sub prev_in_category_by_date
 {
     my $self = shift;
     my $language = shift;
-    my $category = schema->resultset('Category')->find( { category => $self->category() } );
+    my $category = schema->resultset('Category')->find( { category => $self->get_category_name() } );
     my $category_access = $self->category_accessor($category);
     my $criteria = { publish_date => { '<', $self->get_attr('publish_date') }};
     if($self->publishable())
