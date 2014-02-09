@@ -69,7 +69,7 @@ sub get_by_slug
     my $chapter = schema->resultset('Content')->find({ slug => $slug, language => $language });
     if($chapter)
     {
-        return Strehler::Element::Article->new($chapter->article->id);
+        return $self->new($chapter->article->id);
     }
     else
     {
