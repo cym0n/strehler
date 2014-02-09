@@ -45,6 +45,7 @@
         category_init();
         tags_init([% id %]);
         $("#last").on("click", get_last_chapter);
+        $("#date_of_pub").datepicker({ format: "dd/mm/yyyy" });
     });
 </script>
 

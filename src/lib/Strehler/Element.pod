@@ -168,6 +168,7 @@ Return Value: $element
 Retrieve the next/previous element of the same category of the element used to call it using the display_order as ordering field.
 Language is needed because a element could exists in a language but not in another.
 Returns a Strehler::Element.
+You can use this only on elements with a display_order field (like articles). Configure the entity as ordered.
 
 =item next_in_category_by_date/prev_in_category_by_date
 
@@ -176,6 +177,7 @@ Arguments: $language
 Return Value: $element
 
 Same as previous method, but using the publish_date to order elements.
+You can use this only on elements with a publish_date field (like articles). Configure the entity as dated.
 
 =item get_first_by_order/get_last_by_order
 
@@ -186,6 +188,7 @@ Return Value: $element
 Class method. Retrieve the last/first element in the category with category name $category (child categories must be written as parent/child). Order using display_order.
 Language considered as in the previous methods.
 Returns a Strehler::Element.
+You can use this only on elements with a display_order field (like articles). Configure the entity as ordered.
 
 =item get_first_by_date/get_last_by_date
 
@@ -194,6 +197,7 @@ Arguments: $category, $language
 Return Value: $element
 
 Same as get_first_by_order/get_last_by_order, using publish_date to order elements.
+You can use this only on elements with a publish_date field (like articles). Configure the entity as dated.
 
 =item get_by_slug
 
