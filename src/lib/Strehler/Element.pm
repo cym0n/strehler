@@ -182,7 +182,7 @@ sub get_basic_data
         my $accessor = $self->can($attribute);
         if($accessor)
         {
-            $data{$attribute} = $self->$accessor();
+            $data{$attribute} = $self->$accessor($self->row->$attribute);
         }
     }
     $data{'title'} = $self->main_title;
@@ -207,13 +207,13 @@ sub get_ext_data
                 my $accessor = $self->can($attribute);
                 if($accessor)
                 {
-                    $data{$attribute} = $self->$accessor($language);
+                    $data{$attribute} = $self->$accessor($multilang_data{$attribute}, $language);
                 }
                 else
                 {
                     if($multilang_row->result_source->column_info($attribute)->{'data_type'} eq 'timestamp')
                     {
-                        $data{$attribute} = $$multilang_row->$attribute;
+                        $data{$attribute} = $multilang_row->$attribute;
                     }
                     else
                     {
