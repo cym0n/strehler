@@ -514,7 +514,7 @@ sub get_list
     elsif(exists $args{'category'} && $args{'category'})
     {
         my $category;
-        my $category_obj = Strehler::Meta::Category::explode_name($args{'category'});
+        my $category_obj = Strehler::Meta::Category->explode_name($args{'category'});
         if(! $category_obj->exists())
         {
             return {'to_view' => [], 'last_page' => 1 };
