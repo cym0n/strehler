@@ -33,15 +33,15 @@
       <li class="[% navbar.home %]"><a href="/admin">Home</a></li>
       <li class="[% navbar.image %]"><a href="/admin/image">Images</a></li>
       <li class="[% navbar.article %]"><a href="/admin/article">Articles</a></li>
-      [% IF role == 'admin' %]
-      <li class="[% navbar.category %]"><a href="/admin/category">Categories</a></li>
-      <li class="[% navbar.user %]"><a href="/admin/user">Users</a></li>
-      <li class="[% navbar.log %]"><a href="/admin/log">Logs</a></li>
-      [% END %]
       [% FOREACH k in extramenu.keys %]
           [% menuname = extramenu.$k.label %]
           [% menulink = k %]
           <li class="[% navbar.${menulink} %]"><a href="/admin/[% menulink %]">[% menuname %]</a></li>
+      [% END %]
+      [% IF role == 'admin' %]
+      <li class="[% navbar.category %] first-admin"><a href="/admin/category">Categories</a></li>
+      <li class="[% navbar.user %]"><a href="/admin/user">Users</a></li>
+      <li class="[% navbar.log %]"><a href="/admin/log">Logs</a></li>
       [% END %]
     </ul>
 

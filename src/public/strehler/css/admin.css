@@ -2,6 +2,10 @@
 {
     border-right: 2px solid;
 }
+.navbar .navbar-inner .nav .first-admin
+{
+    border-left: 2px solid;
+}
 .navbar .navbar-inner .nav .user .user-toggle
 {
     color: #ed0000;
