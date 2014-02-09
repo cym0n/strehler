@@ -19,10 +19,6 @@ sub BUILDARGS {
    }
    elsif($#args == 1)
    {
-       if($args[0] eq 'name')
-       {
-            $category = schema->resultset('Category')->find({ category => $args[1] });
-       }
        if($args[0] eq 'row')
        {
             $category = $args[1];
@@ -31,14 +27,21 @@ sub BUILDARGS {
    else
    {
         my %hash_args =  @args;
-        my $main = schema->resultset('Category')->find({ category => $hash_args{'parent'}, parent => undef });
-        if($main)
+        if($hash_args{'parent'})
         {
-            $category = $main->categories->find({ category => $hash_args{'category'}});
+            my $main = schema->resultset('Category')->find({ category => $hash_args{'parent'}, parent => undef });
+            if($main)
+            {
+                $category = $main->categories->find({ category => $hash_args{'category'}});
+            }
+            else
+            {
+                $category = undef;
+            }
         }
         else
         {
-            $category = undef;
+            $category = schema->resultset('Category')->find({ category => $hash_args{'category'}, parent => undef });
         }
    }
    return { row => $category };
@@ -198,7 +201,7 @@ sub explode_name
     }
     else
     {
-        return Strehler::Meta::Category->new(name => $cats[0]);
+        return Strehler::Meta::Category->new(category => $cats[0], parent => undef);
     }
 }
   

@@ -7,6 +7,9 @@ elements:
         - type: Regex
           regex: '^[^\/]*$'
           message: 'Invalid character'
+      validators:
+        - type: Strehler::CategoryUnique
+          message: 'Category already exists'
     - type: Select
       id: category_selector
       name: parent
