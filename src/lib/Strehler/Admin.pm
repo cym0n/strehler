@@ -457,15 +457,34 @@ any '/:entity/list' => sub
     
     my $page = exists params->{'page'} ? params->{'page'} : session $entity . '-page';
     my $cat_param = exists params->{'cat'} ? params->{'cat'} : session $entity . '-cat-filter';
+    my $wanted_cat = undef;
     if(exists params->{'catname'})
     {
-        my $wanted_cat = Strehler::Meta::Category->explode_name(params->{'catname'});
+        $wanted_cat = Strehler::Meta::Category->explode_name(params->{'catname'});
         $cat_param = $wanted_cat->get_attr('id');
     }
-    $page ||= 1;
+    else
+    {
+        if($cat_param)
+        {
+            $wanted_cat = Strehler::Meta::Category->new($cat_param);
+        }
+    }
     my $cat = undef;
     my $subcat = undef;
-    ($cat, $subcat) = Strehler::Meta::Category->explode_tree($cat_param);
+    if($wanted_cat)
+    {
+        if($wanted_cat->row->parent)
+        {
+            $cat = $wanted_cat->row->parent->id;
+            $subcat = $wanted_cat->row->id;
+        }
+        else
+        {
+            $cat = $wanted_cat->row->id;
+        }
+    }
+    $page ||= 1;
     my $entries_per_page = 20;
     my $class = $entity_data{'class'};
     eval "require $class";

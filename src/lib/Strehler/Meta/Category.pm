@@ -164,32 +164,6 @@ sub get_list
     }
     return  \@to_view;
 }
-sub explode_tree
-{
-    my $self = shift;
-    my $cat_param = shift;    
-    my $cat = undef;
-    my $subcat = undef;
-    if($cat_param)
-    {
-        my $category = Strehler::Meta::Category->new($cat_param);
-        my $parent = $category->get_attr('parent'); 
-        if($parent)
-        {
-            $subcat = $cat_param;
-            $cat = $parent;
-        }
-        else
-        {
-            $cat = $cat_param;
-        }
-        return ($cat, $subcat);
-    }
-    else
-    {
-        return (undef, undef);
-    }
-}
 sub explode_name
 {
     my $self = shift;
@@ -204,9 +178,6 @@ sub explode_name
         return Strehler::Meta::Category->new(category => $cats[0], parent => undef);
     }
 }
-  
-
-
 
 sub exists
 {
