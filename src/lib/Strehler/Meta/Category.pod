@@ -1,0 +1,42 @@
+=encoding utf8
+
+=head1 NAME
+
+Strehler::Meta::Category - Strehler Category class. Best tool to organize contents.
+
+=head1 DESCRIPTION
+
+You can use categories in Strehler to organize contents of the site and to assign to different sections of your site different bunch of articles, images or whatever you have categorized.
+
+=head1 SYNOPSIS
+
+You can refer to categories in queries using Strehler::Element get_list. They come useful also in methods like next/prev_in_category_by...
+
+Usually categories represent site sections (sometimes also the site navigation tree) and putting articles and stuff in them give you opportunity to have complete control on publishin things.
+
+=head1 OBTAINING CATEGORY OBJECT
+
+You can obtain a category object (referrend to a real category) using the class constructor.
+
+You can call it just passing a category ID:
+
+    my $cat = Strehler::Meta::Category->new($id)
+
+You can call it with a DBIx::Class::Result already retrieved from db:
+
+    my $category_row = schema->resultset('Category')->find($id);
+    my $cat = Strehler::Meta::Category->new(row => $category_row);
+
+These two methods are mainly used by internal methods and Strehler libraries. They're probably useless while developing your site.
+
+If you know category name and eventually the name of its parent you can call the constructor as:
+
+    my $cat = Strehler::Meta::Category->new(category => $category_name, parent => $parent_name);
+
+explode_name is a shortcut for this, easier to use:
+
+    my $cat = Strehler::Meta:Category->explode_name("$parent/$category");
+
+All these methods return a Strehler::Meta::Category object, also in case the id (or the name) of the category in not present in the DB. In this case the object will be empty. You can test it with the exists method
+
+    $cat->exists();
