@@ -52,6 +52,7 @@ Many category methods are similar to Strehler::Element methods because category 
 Return Value: %data
 
 Return category info. They are:
+
 * id: database id
 * name: just the name of the category, with no path
 * ext_name: name of the category with path. If the category has no parent it's equal to name.
@@ -78,6 +79,7 @@ Arguments $params
 Return Value: $to_view
 
 Similar to the Strehler::Element->get_list method. Only parameters available are:
+
 * order: asc|desc
 * order_by: field to use to order
 * parent: id of the parent, to obtain only its subcategories
