@@ -53,10 +53,17 @@ Return Value: %data
 
 Return category info. They are:
 
-* id: database id
-* name: just the name of the category, with no path
-* ext_name: name of the category with path. If the category has no parent it's equal to name.
-* subcategories: an array with the info (recursive call to get_besic_data) about all the subcategories this cateogry has.
+=over 8
+
+=item * id: database id
+
+=item * name: just the name of the category, with no path
+
+=item * ext_name: name of the category with path. If the category has no parent it's equal to name.
+
+=item * subcategories: an array with the info (recursive call to get_besic_data) about all the subcategories this cateogry has.
+
+=back
 
 ext_name can also been obtined using ext_name method.
 
@@ -80,9 +87,15 @@ Return Value: $to_view
 
 Similar to the Strehler::Element->get_list method. Only parameters available are:
 
-* order: asc|desc
-* order_by: field to use to order
-* parent: id of the parent, to obtain only its subcategories
+=over 8
+
+=item * order: asc|desc
+
+=item * order_by: field to use to order
+
+=item * parent: id of the parent, to obtain only its subcategories
+
+=back
 
 Return a pointer to an array containing all the hashes from the get_basic_data for all the selected categories.
 
@@ -94,7 +107,7 @@ Method used to initialize a form in edit mode. Used by Strhler libraries.
 
 Method used to save category forms. Used by Strehler libraries.
 
-=cut
+=back
 
 =head1 EXTRA INFO METHODS
 
@@ -117,6 +130,10 @@ Return true if some entity object is linked to this category
 Return Value: $is_parent
 
 Return true if category has subcategories.
+
+=back
+
+=cut
 
 
 
