@@ -65,7 +65,7 @@ Return category info. They are:
 
 =back
 
-ext_name can also been obtined using ext_name method.
+ext_name can also been obteined using ext_name method.
 
 =item delete
 
