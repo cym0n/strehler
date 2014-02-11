@@ -64,8 +64,8 @@ sub get_basic_data
     my $self = shift;
     my %data;
     $data{'id'} = $self->get_attr('id');
-    $data{'title'} = $self->get_attr('category'); #For compatibility with the views shared with images and articles
     $data{'name'} = $self->get_attr('category');
+    $data{'ext_name'} = $self->ext_name;
     if(! $self->get_attr('parent'))
     {
         my @subs = $self->subcategories();

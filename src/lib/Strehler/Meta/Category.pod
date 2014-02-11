@@ -40,3 +40,81 @@ explode_name is a shortcut for this, easier to use:
 All these methods return a Strehler::Meta::Category object, also in case the id (or the name) of the category in not present in the DB. In this case the object will be empty. You can test it with the exists method
 
     $cat->exists();
+
+=head1 STANDARD ENTITY METHODS
+
+Many category methods are similar to Strehler::Element methods because category are managed through Strehler backend too.
+
+=over 4
+
+=item get_basic_data
+
+Return Value: %data
+
+Return category info. They are:
+* id: database id
+* name: just the name of the category, with no path
+* ext_name: name of the category with path. If the category has no parent it's equal to name.
+* subcategories: an array with the info (recursive call to get_besic_data) about all the subcategories this cateogry has.
+
+ext_name can also been obtined using ext_name method.
+
+=item delete
+
+Delete the category. A category can't be deleted if it has subcategories but the check about this is done admin-level. Calling the delete directly on the object category a SQL exception will rise if it has subcategories.
+
+=item get_attr
+
+Arguments: $attr
+
+Return Value: $attr_value
+
+Return the value for the attribute (the database column) named $attr.
+
+=item get_list
+
+Arguments $params
+
+Return Value: $to_view
+
+Similar to the Strehler::Element->get_list method. Only parameters available are:
+* order: asc|desc
+* order_by: field to use to order
+* parent: id of the parent, to obtain only its subcategories
+
+Return a pointer to an array containing all the hashes from the get_basic_data for all the selected categories.
+
+=item get_form_data
+
+Method used to initialize a form in edit mode. Used by Strhler libraries.
+
+=item save_form
+
+Method used to save category forms. Used by Strehler libraries.
+
+=cut
+
+=head1 EXTRA INFO METHODS
+
+=over 4
+
+=item subcategories
+
+Return Value: @subs
+
+Return an array of Strehler::Meta:Category containing all the subcategories of the category itself.
+
+=item has_elements
+
+Return Value: $has_elements
+
+Return true if some entity object is linked to this category
+
+=item is_parent
+
+Return Value: $is_parent
+
+Return true if category has subcategories.
+
+
+
