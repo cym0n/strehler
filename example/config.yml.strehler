@@ -2,6 +2,7 @@ Strehler:
     admin_secured: 0
     languages: ['it', 'en']
     default_language: 'it'
+    timezone: 'Europe/Rome'
     extra_menu:
         path1:
             auto: 1
