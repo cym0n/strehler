@@ -108,7 +108,7 @@ sub get_attr
     {
         if($self->row->result_source->has_column($attribute))
         {
-            if($self->row->result_source->column_info($attribute)->{'data_type'} eq 'timestamp' || $self->row->result_source->column_info($attribute)->{'data_type'} eq 'date')
+            if($self->row->result_source->column_info($attribute)->{'data_type'} eq 'timestamp' || $self->row->result_source->column_info($attribute)->{'data_type'} eq 'date' || $self->row->result_source->column_info($attribute)->{'data_type'} eq 'datetime')
             {
                 my $ts = $self->row->$attribute;
                 $ts->set_time_zone(config->{'Strehler'}->{'timezone'});
@@ -143,7 +143,7 @@ sub get_attr_multilang
             {
                 return $self->$accessor($content->$attribute. $lang);
             }
-            if($content->result_source->column_info($attribute)->{'data_type'} eq 'timestamp')
+            if($content->result_source->column_info($attribute)->{'data_type'} eq 'timestamp' || $content->result_source->column_info($attribute)->{'data_type'} eq 'date' || $content->result_source->column_info($attribute)->{'data_type'} eq 'datetime')
             {
                 my $ts = $content->$attribute;
                 $ts->set_time_zone(config->{'Strehler'}->{'timezone'});
@@ -608,7 +608,7 @@ sub get_form_data
     my $data = \%columns;
     foreach my $attribute (keys %columns)
     {
-        if($el_row->result_source->column_info($attribute)->{'data_type'} eq 'timestamp' || $el_row->result_source->column_info($attribute)->{'data_type'} eq 'date')
+        if($el_row->result_source->column_info($attribute)->{'data_type'} eq 'timestamp' || $el_row->result_source->column_info($attribute)->{'data_type'} eq 'date' || $el_row->result_source->column_info($attribute)->{'data_type'} eq 'datetime')
         {
             $data->{$attribute} = $el_row->$attribute;
         }
@@ -639,7 +639,7 @@ sub get_form_data
                     foreach my $attribute (keys %columns)
                     {
                         my $data_to_save;
-                        if($ml->result_source->column_info($k)->{'data_type'} eq 'timestamp' || $ml->result_source->column_info($k)->{'data_type'} eq 'date')
+                        if($ml->result_source->column_info($k)->{'data_type'} eq 'timestamp' || $ml->result_source->column_info($k)->{'data_type'} eq 'date' || $ml->result_source->column_info($k)->{'data_type'} eq 'datetime')
                         {
                             $data_to_save = $ml->$attribute;
                         }
