@@ -111,6 +111,7 @@ sub get_attr
             if($self->row->result_source->column_info($attribute)->{'data_type'} eq 'timestamp' || $self->row->result_source->column_info($attribute)->{'data_type'} eq 'date' || $self->row->result_source->column_info($attribute)->{'data_type'} eq 'datetime')
             {
                 my $ts = $self->row->$attribute;
+                $ts->set_time_zone('UTC');
                 $ts->set_time_zone(config->{'Strehler'}->{'timezone'});
                 return $ts;
             }
@@ -146,6 +147,7 @@ sub get_attr_multilang
             if($content->result_source->column_info($attribute)->{'data_type'} eq 'timestamp' || $content->result_source->column_info($attribute)->{'data_type'} eq 'date' || $content->result_source->column_info($attribute)->{'data_type'} eq 'datetime')
             {
                 my $ts = $content->$attribute;
+                $ts->set_time_zone('UTC');
                 $ts->set_time_zone(config->{'Strehler'}->{'timezone'});
                 return $ts;
             }
