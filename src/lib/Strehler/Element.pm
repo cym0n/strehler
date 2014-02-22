@@ -5,6 +5,7 @@ use Dancer2;
 use Dancer2::Plugin::DBIC;
 use Strehler::Meta::Tag;
 use Strehler::Meta::Category;
+use Data::Dumper;
 
 has row => (
     is => 'ro',
@@ -107,7 +108,7 @@ sub get_attr
     {
         if($self->row->result_source->has_column($attribute))
         {
-            if($self->row->result_source->column_info($attribute)->{'data_type'} eq 'timestamp')
+            if($self->row->result_source->column_info($attribute)->{'data_type'} eq 'timestamp' || $self->row->result_source->column_info($attribute)->{'data_type'} eq 'date')
             {
                 my $ts = $self->row->$attribute;
                 $ts->set_time_zone(config->{'Strehler'}->{'timezone'});
@@ -607,7 +608,7 @@ sub get_form_data
     my $data = \%columns;
     foreach my $attribute (keys %columns)
     {
-        if($el_row->result_source->column_info($attribute)->{'data_type'} eq 'timestamp')
+        if($el_row->result_source->column_info($attribute)->{'data_type'} eq 'timestamp' || $el_row->result_source->column_info($attribute)->{'data_type'} eq 'date')
         {
             $data->{$attribute} = $el_row->$attribute;
         }
@@ -638,7 +639,7 @@ sub get_form_data
                     foreach my $attribute (keys %columns)
                     {
                         my $data_to_save;
-                        if($ml->result_source->column_info($k)->{'data_type'} eq 'timestamp')
+                        if($ml->result_source->column_info($k)->{'data_type'} eq 'timestamp' || $ml->result_source->column_info($k)->{'data_type'} eq 'date')
                         {
                             $data_to_save = $ml->$attribute;
                         }
@@ -669,7 +670,16 @@ sub save_form
         {
             if($form->param_value($column))
             {
-                $el_data->{$column} = $form->param_value($column);
+                if(ref $form->param_value($column) eq 'DateTime')
+                {
+                    my $ts = $form->param_value($column);
+                    $ts->set_time_zone('UTC');
+                    $el_data->{$column} = $ts;
+                }
+                else
+                {
+                    $el_data->{$column} = $form->param_value($column);
+                }
             }
             else
             {
@@ -719,9 +729,18 @@ sub save_form
             {
                 if($form->param_value($multicolumn . '_' . $lang))
                 {
-                    $multi_el_data->{$multicolumn} = $form->param_value($multicolumn . '_' . $lang);
-                    $to_write = 1;
-                }    
+                    if(ref $form->param_value($multicolumn . '_' . $lang) eq 'DateTime')
+                    {
+                        my $ts = $form->param_value($multicolumn . '_' . $lang);
+                        $ts->set_time_zone('UTC');
+                        $multi_el_data->{$multicolumn} = $ts;
+                    }
+                    else
+                    {
+                        $multi_el_data->{$multicolumn} = $form->param_value($multicolumn . '_' . $lang);
+                        $to_write = 1;
+                    }    
+                }
                 else
                 {
                     my $accessor = $self->can('save_' . $multicolumn);
