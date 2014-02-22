@@ -109,8 +109,9 @@ sub get_attr
         {
             if($self->row->result_source->column_info($attribute)->{'data_type'} eq 'timestamp')
             {
-                #TODO: Configure timezone here
-                return $self->row->$attribute;
+                my $ts = $self->row->$attribute;
+                $ts->set_time_zone(config->{'Strehler'}->{'timezone'});
+                return $ts;
             }
             else
             {
@@ -142,8 +143,9 @@ sub get_attr_multilang
         {
             if($content->result_source->column_info($attribute)->{'data_type'} eq 'timestamp')
             {
-                #TODO: Configure timezone here
-                return $content->$attribute;
+                my $ts = $content->$attribute;
+                $ts->set_time_zone(config->{'Strehler'}->{'timezone'});
+                return $ts;
             }
             else
             {
@@ -220,7 +222,7 @@ sub get_basic_data
 {
     my $self = shift;
     my %data;
-    foreach my $c ($self->row->reslt_source->columns)
+    foreach my $c ($self->row->result_source->columns)
     {
         $data{$c} = $self->get_attr($c);
     }
@@ -237,7 +239,7 @@ sub get_ext_data
     my $children = $self->row->can($self->multilang_children());
     if($children)
     {
-        foreach my $c ($self->row->$children->reslt_source->columns)
+        foreach my $c ($self->row->$children->result_source->columns)
         {
             if($c ne 'id' && $c ne $self->item_type() && $c ne 'language')
             {
@@ -251,11 +253,11 @@ sub get_ext_data
 sub main_title
 {
     my $self = shift;
-    if($self->row->result_source->has_column('title'))
+    if($self->get_attr('title'))
     {
         return $self->get_attr('title');
     }
-    elsif($self->row->result_source->has_column('name'))
+    elsif($self->get_attr('name'))
     {
         return $self->get_attr('name');
     }   

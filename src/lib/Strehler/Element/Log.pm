@@ -34,18 +34,7 @@ sub write
 sub main_title
 {
     my $self = shift;
-    return "[" . $self->timestamp() . "] " . $self->get_attr('action') . " " . $self->get_attr('entity_type');
-}
-sub timestamp
-{
-    my $self = shift;
-    my $strp = DateTime::Format::Strptime->new(
-        pattern   => '%d/%m/%Y %T',
-        locale    => 'it_IT',
-        time_zone => 'Europe/Rome',
-    );
-    return $self->row->timestamp->set_formatter($strp);
-
+    return "[" . $self->get_attr('timestamp') . "] " . $self->get_attr('action') . " " . $self->get_attr('entity_type');
 }
 
 1;

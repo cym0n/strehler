@@ -41,7 +41,7 @@ sub main_title
 sub image
 {
     my $self = shift;
-    my $image = Strehler::Element::Image->new($self->get_attr('image'));
+    my $image = Strehler::Element::Image->new($self->row->image);
     if($image->exists())
     {
        return $image->get_attr('image');

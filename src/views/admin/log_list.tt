@@ -18,7 +18,7 @@
             [% FOREACH el IN elements %]
             <tr>
                 <td>[% el.id %]</td>
-                <td>[% el.timestamp %]</td>
+                <td>[% el.timestamp.strftime('%d-%m-%Y %T') %]</td>
                 <td>[% el.user %]</td>
                 <td>[% el.action %] [% el.entity_type %]</td>
                 <td>
