@@ -86,6 +86,11 @@ sub get_attr
 {
     my $self = shift;
     my $attribute = shift;
+    my $accessor = $self->can($attribute);
+    if($accessor)
+    {
+        return $self->$accessor($self->row->$attribute);
+    }
     if($attribute eq 'category')
     {
         return $self->row->category->category;
@@ -97,11 +102,6 @@ sub get_attr
     if($attribute eq 'category-name')
     {
         return $self->get_category_name();
-    }
-    my $accessor = $self->can($attribute);
-    if($accessor)
-    {
-        return $self->$accessor($self->row->$attribute);
     }
     else
     {
@@ -129,18 +129,19 @@ sub get_attr_multilang
     my $self = shift;
     my $attribute = shift;
     my $lang = shift;
+    my $bare = shift;
     my $children = $self->row->can($self->multilang_children());
     return undef if not $children;
-    my $accessor = $self->can($attribute);
-    if($accessor)
-    {
-        return $self->$accessor($self->row->$attribute. $lang);
-    }
     my $content = $self->row->$children->find({'language' => $lang});
     if($content)
     {
         if($content->result_source->has_column($attribute))
         {
+            my $accessor = $self->can($attribute);
+            if($accessor && ! $bare)
+            {
+                return $self->$accessor($content->$attribute. $lang);
+            }
             if($content->result_source->column_info($attribute)->{'data_type'} eq 'timestamp')
             {
                 my $ts = $content->$attribute;
