@@ -751,7 +751,7 @@ sub login_valid
     my $user = shift;
     my $password = shift;
     my $rs = schema->resultset('User')->find({'user' => $user});
-    if($rs)
+    if($rs && $rs->user eq $user)
     {
         my $ppr = Authen::Passphrase::BlowfishCrypt->new(
                   cost => 8, salt_base64 => $rs->password_salt,
