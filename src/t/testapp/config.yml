@@ -1,0 +1,11 @@
+app:
+    config: ok
+
+views: '../../views'
+
+Strehler:
+    admin_secured: 1
+    languages: ['it', 'en']
+    default_language: 'it'
+    timezone: 'Europe/Rome'
+
