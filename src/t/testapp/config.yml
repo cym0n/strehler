@@ -1,7 +1,23 @@
-app:
-    config: ok
+appname: "Testapp"
+
+charset: "UTF-8"
+
+logger: "console"
+log_level: "debug"
+warnings: 1
+
+engines:
+    template_toolkit:
+        ENCODING: utf8
+        DEFAULT: 'no.tt'
 
 views: '../../views'
+
+plugins:
+  DBIC:
+    default:
+      dsn: dbi:SQLite:dbname=test.sqlite
+      schema_class: TestDB
 
 Strehler:
     admin_secured: 1
