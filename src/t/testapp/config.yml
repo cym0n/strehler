@@ -16,7 +16,7 @@ views: '../../views'
 plugins:
   DBIC:
     default:
-      dsn: dbi:SQLite:dbname=test.sqlite
+      dsn: dbi:SQLite:dbname=t/testapp/test.sqlite
       schema_class: TestDB
 
 Strehler:

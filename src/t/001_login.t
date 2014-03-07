@@ -18,6 +18,8 @@ Test::TCP::test_tcp(
         push @{ $ua->requests_redirectable }, 'POST';
         my $res = $ua->get($site . "/admin");
         ok($res->is_success, "Calling Strehler home with non-logged user redirect to login page");
+        $res = $ua->post($site . "/admin/login", { user => 'admin', password => 'wrongpassword' });
+        like($res->decoded_content, qr/Authentication failed!/, "Inserting wrong credentials at login gives an error");
         $res = $ua->post($site . "/admin/login", { user => 'admin', password => 'admin' });
         like($res->decoded_content, qr/<b class="icon-user"><\/b>.*admin/, "Inserting correct credentials at login leads to Strehler homepage");
 
