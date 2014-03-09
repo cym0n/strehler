@@ -512,7 +512,16 @@ sub get_list
 {
     my $self = shift;
     my $params = shift;
-    my %args = %{ $params };
+    my %args;
+    if($params)
+    {
+        %args = %{ $params };
+    }
+    else
+    {
+        %args = ();
+    }
+
     $args{'order'} ||= 'desc';
     $args{'order_by'} ||= 'id';
     $args{'entries_per_page'} ||= 20;
