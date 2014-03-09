@@ -17,7 +17,7 @@ Test::TCP::test_tcp(
         $ua->cookie_jar({file => "cookies.txt"});
         push @{ $ua->requests_redirectable }, 'POST';
         my $res = $ua->get($site . "/admin");
-        ok($res->is_success, "Calling Strehler home with non-logged user redirect to login page");
+        is($res->base, $site . "/admin/login", "Calling Strehler home with non-logged user redirect on login page");
         $res = $ua->post($site . "/admin/login", { user => 'admin', password => 'wrongpassword' });
         like($res->decoded_content, qr/Authentication failed!/, "Inserting wrong credentials at login gives an error");
         $res = $ua->post($site . "/admin/login", { user => 'admin', password => 'admin' });
@@ -27,13 +27,7 @@ Test::TCP::test_tcp(
     server => sub {
         my $port = shift;
         use Dancer2;
-        set(show_errors  => 1,
-            startup_info => 1,
-            port         => $port,
-            logger       => 'capture',
-            log          => 'debug',
-        );
-        Site->runner->server->port($port);
+        Dancer2->runner->server->port($port);
         start;
     },
 );

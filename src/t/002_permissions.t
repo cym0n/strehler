@@ -29,13 +29,7 @@ Test::TCP::test_tcp(
     server => sub {
         my $port = shift;
         use Dancer2;
-        set(show_errors  => 1,
-            startup_info => 1,
-            port         => $port,
-            logger       => 'capture',
-            log          => 'debug',
-        );
-        Site->runner->server->port($port);
+        Dancer2->runner->server->port($port);
         start;
     },
 );

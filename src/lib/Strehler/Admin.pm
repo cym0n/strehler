@@ -16,6 +16,7 @@ use Strehler::Element::Log;
 use Strehler::Meta::Category;
 
 
+
 my @languages = @{config->{Strehler}->{languages}};
 
 ##### Homepage #####
@@ -408,7 +409,7 @@ ajax '/category/tagform/:type/:id?' => sub
         my @tags = Strehler::Meta::Tag->get_configured_tags_for_template(params->{id}, params->{type});
         if($#tags > -1)
         {
-           template 'admin/configured_tags', { tags => \@tags };
+           template 'admin/configured_tags', { tags => \@tags }, { layout => undef };
         }
         else
         {
