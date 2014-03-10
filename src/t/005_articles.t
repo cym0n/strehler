@@ -46,7 +46,6 @@ Test::TCP::test_tcp(
                            'tags' => undef,
                            'display_order' => 14,
                            'publish_date' => '12/03/2014',
-                           'display_order' => 14,
                            'title_it' => 'Automatic test - title - IT',
                            'text_it' => 'Automatic test - body - IT',
                            'title_en' => 'Automatic test - title - EN',
