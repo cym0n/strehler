@@ -3,7 +3,7 @@ package Strehler::Admin;
 use Dancer2;
 use Dancer2::Plugin::DBIC;
 use Dancer2::Plugin::Ajax;
-use Dancer2::Plugin::Strehler;
+use Strehler::Dancer2::Plugin;
 use HTML::FormFu;
 use HTML::FormFu::Element::Block;
 use Authen::Passphrase::BlowfishCrypt;

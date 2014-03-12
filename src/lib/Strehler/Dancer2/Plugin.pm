@@ -1,6 +1,5 @@
-package Dancer2::Plugin::Strehler;
+package Strehler::Dancer2::Plugin;
 use Dancer2::Plugin;
-use Data::Dumper;
 
 on_plugin_import {
     my $dsl = shift;
