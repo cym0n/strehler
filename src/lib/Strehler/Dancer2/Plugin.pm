@@ -1,4 +1,7 @@
 package Strehler::Dancer2::Plugin;
+{
+    $Strehler::Dancer2::Plugin::VERSION = '1.0.0';
+}
 use Dancer2::Plugin;
 
 on_plugin_import {
