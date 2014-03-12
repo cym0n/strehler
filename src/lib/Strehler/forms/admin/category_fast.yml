@@ -8,7 +8,7 @@ elements:
           regex: '^[^\/]*$'
           message: 'Invalid character'
       validators:
-        - type: Strehler::CategoryUnique
+        - type: '+Strehler::FormFu::Validator::CategoryUnique'
           message: 'Category already exists'
     - type: Select
       id: category_selector

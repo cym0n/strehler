@@ -1,9 +1,8 @@
-package HTML::FormFu::Validator::Strehler::CategoryUnique;
+package Strehler::FormFu::Validator::CategoryUnique;
 
 use strict;
 use warnings;
 use Moose;
-use Data::Dumper;
 use Strehler::Meta::Category;
 
 

@@ -1,8 +1,7 @@
-package HTML::FormFu::Element::Strehler::EntitySelect;
+package Strehler::FormFu::Element::EntitySelect;
 use Moose;
 extends 'HTML::FormFu::Element::Select';
 
-use Data::Dumper;
 use Carp qw( croak );
 
 has _element => (
