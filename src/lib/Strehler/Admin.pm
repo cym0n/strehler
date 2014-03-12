@@ -16,7 +16,17 @@ use Strehler::Element::Log;
 use Strehler::Meta::Category;
 use Data::Dumper;
 
-my @languages = @{config->{Strehler}->{languages}};
+
+my @languages;
+
+if(config->{Strehler}->{languages})
+{
+    @languages = @{config->{Strehler}->{languages}};
+}
+else
+{
+    @languages = ('en');
+}
 
 my $root_path = __FILE__;
 $root_path =~ s/Admin\.pm//;

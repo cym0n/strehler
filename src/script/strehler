@@ -3,7 +3,6 @@
 use Cwd;
 use File::Copy::Recursive 'dircopy';
 use Strehler::Admin;
-
 my $strehler_root = $INC{'Strehler/Admin.pm'};
 $strehler_root =~ s/\/Admin\.pm//;
 
@@ -16,5 +15,12 @@ if($command eq 'statics')
     my $destination = $directory . '/public';
     print "Copying statics from $origin to $destination\n";
     dircopy($strehler_root . '/public', $directory . '/public/');
-    print $!;
+    if($!)
+    {
+        print "COPY FAILED! A problem occured: $!\n";
+    }
+    else
+    {
+        print "SUCCESS!\n";
+    }
 }
