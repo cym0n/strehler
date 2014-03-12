@@ -1,0 +1,20 @@
+#!/usr/bin/env perl
+
+use Cwd;
+use File::Copy::Recursive 'dircopy';
+use Strehler::Admin;
+
+my $strehler_root = $INC{'Strehler/Admin.pm'};
+$strehler_root =~ s/\/Admin\.pm//;
+
+my $command = shift;
+
+if($command eq 'statics')
+{
+    my $directory = getcwd();
+    my $origin = $strehler_root . '/public/strehler';
+    my $destination = $directory . '/public';
+    print "Copying statics from $origin to $destination\n";
+    dircopy($strehler_root . '/public', $directory . '/public/');
+    print $!;
+}

@@ -14,10 +14,17 @@ use Strehler::Element::Article;
 use Strehler::Element::User;
 use Strehler::Element::Log;
 use Strehler::Meta::Category;
-
-
+use Data::Dumper;
 
 my @languages = @{config->{Strehler}->{languages}};
+
+my $root_path = __FILE__;
+$root_path =~ s/Admin\.pm//;
+
+my $form_path = $root_path . '/forms';
+my $public_path = $root_path . '/public/strehler';
+
+set views => $root_path . '/views';
 
 ##### Homepage #####
 
@@ -31,7 +38,7 @@ get '/' => sub {
 
 any '/login' => sub {
     my $form = HTML::FormFu->new;
-    $form->load_config_file( 'forms/admin/login.yml' );
+    $form->load_config_file( $form_path . '/admin/login.yml' );
     my $params_hashref = params;
     $form->process($params_hashref);
     my $message;
@@ -266,7 +273,7 @@ any '/category/list' => sub
     #THE FORM
     my $form = HTML::FormFu->new;
     my @entities = Strehler::Helpers::get_categorized_entities();
-    $form->load_config_file( 'forms/admin/category_fast.yml' );
+    $form->load_config_file( $form_path . '/admin/category_fast.yml' );
     my $parent = $form->get_element({ name => 'parent'});
     $parent->options(Strehler::Meta::Category->make_select());
     my $params_hashref = params;
@@ -770,8 +777,8 @@ sub form_image
     my $action = shift;
     my $has_sub = shift;
     my $form = HTML::FormFu->new;
-    $form->load_config_file( 'forms/admin/image.yml' );
-    $form = add_multilang_fields($form, \@languages, 'forms/admin/image_multilang.yml'); 
+    $form->load_config_file( $form_path . '/admin/image.yml' );
+    $form = add_multilang_fields($form, \@languages, $form_path . '/admin/image_multilang.yml'); 
     $form->constraint({ name => 'photo', type => 'Required' }) if $action eq 'add';
     my $category = $form->get_element({ name => 'category'});
     $category->options(Strehler::Meta::Category->make_select());
@@ -784,8 +791,8 @@ sub form_article
 {
     my $has_sub = shift;
     my $form = HTML::FormFu->new;
-    $form->load_config_file( 'forms/admin/article.yml' );
-    $form = add_multilang_fields($form, \@languages, 'forms/admin/article_multilang.yml'); 
+    $form->load_config_file( $form_path . '/admin/article.yml' );
+    $form = add_multilang_fields($form, \@languages, $form_path . '/admin/article_multilang.yml'); 
     my $default_language = config->{Strehler}->{default_language};
     $form->constraint({ name => 'title_' . $default_language, type => 'Required' }); 
     my $image = $form->get_element({ name => 'image'});
@@ -800,7 +807,7 @@ sub form_article
 sub form_category
 {
     my $form = HTML::FormFu->new;
-    $form->load_config_file( 'forms/admin/category.yml' );
+    $form->load_config_file( $form_path . '/admin/category.yml' );
     my $category = $form->get_element({ name => 'parent'});
     $category->options(Strehler::Meta::Category->make_select());
     $form = add_dynamic_fields_for_category($form); 
@@ -811,7 +818,7 @@ sub form_user
 {
     my $action = shift;
     my $form = HTML::FormFu->new;
-    $form->load_config_file( 'forms/admin/user.yml' );
+    $form->load_config_file( $form_path . '/admin/user.yml' );
     if($action eq 'add')
     {
         $form->constraint({ name => 'password', type => 'Required' }); 
@@ -915,7 +922,7 @@ sub add_multilang_fields
 sub add_dynamic_fields_for_category
 {
     my $form = shift;
-    my $config = 'forms/admin/category_dynamic.yml';
+    my $config = $form_path . '/admin/category_dynamic.yml';
     my $position = $form->get_element({ name => 'save' });
     for(Strehler::Helpers::get_categorized_entities())
     {
