@@ -2,25 +2,68 @@
 
 use Cwd;
 use File::Copy::Recursive 'dircopy';
-use Strehler::Admin;
-my $strehler_root = $INC{'Strehler/Admin.pm'};
-$strehler_root =~ s/\/Admin\.pm//;
+use Strehler;
+
+my $strehler_root = $INC{'Strehler.pm'};
+$strehler_root =~ s/\.pm$//;
+my %available_commands = ('commands' => 'show available commands',
+                          'statics' => 'copy of static resources needed by Strehler to Dancer2 App');
+
+
 
 my $command = shift;
+my @parameters = @ARGV;
+
+print "\n### Strehler CMS Manager ###\n\n";
+print "Strehler Version: " . $Strehler::VERSION . "\n\n";
 
 if($command eq 'statics')
 {
-    my $directory = getcwd();
-    my $origin = $strehler_root . '/public/strehler';
-    my $destination = $directory . '/public';
-    print "Copying statics from $origin to $destination\n";
-    dircopy($strehler_root . '/public', $directory . '/public/');
+    print "-statics- command: $available_commands{'statics'}\n\n";
+
+    my $origin = $strehler_root . '/public';
+
+    my $app_directory = getcwd();
+    my $public_dir  = shift @parameters || 'public';
+    my $destination = $app_directory . '/' . $public_dir;
+
+    if(! -d $destination)
+    {
+        print "Directory $destination doesn't exists!\n";
+        if($public_dir eq 'public')
+        {
+            print "\"public\" directory used as standard dancer static files directory. Different from yours? Pass your directory as second parameter to the script\n";
+        }
+        print "\n\n";
+        exit();
+    }
+
+    print "Copying statics from $origin to $destination...\n";
+    dircopy($origin, $destination);
     if($!)
     {
-        print "COPY FAILED! A problem occured: $!\n";
+        print "\nCOPY FAILED! A problem occured: $!\n\n";
     }
     else
     {
-        print "SUCCESS!\n";
+        print "\nSUCCESS! Files copied in your Dancer2 App!\n\n";
     }
 }
+else
+{
+    if($command eq 'commands')
+    {
+        print "-commands- command: $available_commands{'commands'}\n\n";
+    }
+    else
+    {
+        print "Wrong command provided. I'll show you available commands\n\n";
+    }
+    for(keys %available_commands)
+    {
+        print $_ . " => " . $available_commands{$_} . "\n";
+    }
+    print "\n\n";
+    
+}
+
