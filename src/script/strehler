@@ -3,13 +3,14 @@
 use Cwd;
 use File::Copy::Recursive 'dircopy';
 use Strehler;
+use Strehler::Schema;
+use Term::ReadKey;
 
 my $strehler_root = $INC{'Strehler.pm'};
 $strehler_root =~ s/\.pm$//;
 my %available_commands = ('commands' => 'show available commands',
-                          'statics' => 'copy of static resources needed by Strehler to Dancer2 App');
-
-
+                          'statics' => 'copy of static resources needed by Strehler to Dancer2 App',
+                          'initdb' => 'generate strehler tables on the wanted database');
 
 my $command = shift;
 my @parameters = @ARGV;
@@ -48,6 +49,53 @@ if($command eq 'statics')
     {
         print "\nSUCCESS! Files copied in your Dancer2 App!\n\n";
     }
+}
+elsif($command eq 'initdb')
+{
+    use Dancer2;
+    print "-initdb- command: $available_commands{'statics'}\n\n";
+    if(! config->{'plugins'}->{'DBIC'})
+    {
+        print "Can't read config.yml or no DBIC plugin configured in it\n";
+    }
+    my $wanted_schema = shift @parameters;
+    my $schema_name = $wanted_schema || 'default';
+    if(! config->{'plugins'}->{'DBIC'}->{$schema_name} && $wanted_schema)
+    {
+        print "Schema $wanted_schema doesn't exists in the config.yml file we're using!\n";
+        exit();
+    }
+    if(! $wanted_schema && ! config->{'plugins'}->{'DBIC'}->{'default'})
+    {
+        my @availables = keys %{config->{'plugins'}->{'DBIC'}};
+        $schema_name = $availables[0];
+    }
+    my $dsn = config->{'plugins'}->{'DBIC'}->{$schema_name}->{'dsn'};
+    my $user = config->{'plugins'}->{'DBIC'}->{$schema_name}->{'user'};
+    my $password = config->{'plugins'}->{'DBIC'}->{$schema_name}->{'password'};
+    print "Schema: $schema_name\n\n";
+    print "Database data:\n";
+    print "DSN: $dsn\n";
+    print "User: $user\n";
+    print "Password: $password\n";
+    my $continue = "";
+    while($continue ne 'Y' && $continue ne 'N')
+    {
+        ReadMode(1, *STDIN);
+        print "\nWARNING: this script will ERASE (DROP TABLE) all the tables with a name used by Strehler tables. Are you sure you want to continue? (y/n)\n";
+        $continue = <STDIN>;
+        ReadMode(0);
+        chomp $continue;
+        $continue = uc($continue);
+    }
+    if($continue eq 'N')
+    {
+        print "NO DEPLOY. Exiting...\n\n";
+        exit();
+    }
+    my $schema = Strehler::Schema->connect($dsn, $user, $password);
+    $schema->deploy( { add_drop_table => 1 } );
+    print "Database deploy COMPLETED!\n\n";
 }
 else
 {
