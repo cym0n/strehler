@@ -15,7 +15,7 @@ sub BUILDARGS {
    if($#args == 0)
    {
         my $id = shift @args; 
-        $category = schema->resultset('Category')->find($id);
+        $category = $class->get_schema()->resultset('Category')->find($id);
    }
    elsif($#args == 1)
    {
@@ -29,7 +29,7 @@ sub BUILDARGS {
         my %hash_args =  @args;
         if($hash_args{'parent'})
         {
-            my $main = schema->resultset('Category')->find({ category => $hash_args{'parent'}, parent => undef });
+            my $main = $class->get_schema()->resultset('Category')->find({ category => $hash_args{'parent'}, parent => undef });
             if($main)
             {
                 $category = $main->categories->find({ category => $hash_args{'category'}});
@@ -41,11 +41,23 @@ sub BUILDARGS {
         }
         else
         {
-            $category = schema->resultset('Category')->find({ category => $hash_args{'category'}, parent => undef });
+            $category = $class->get_schema()->resultset('Category')->find({ category => $hash_args{'category'}, parent => undef });
         }
    }
    return { row => $category };
 };
+
+sub get_schema
+{
+    if(config->{'Strehler'}->{'schema'})
+    {
+        return schema config->{'Strehler'}->{'schema'};
+    }
+    else
+    {
+        return schema;
+    }
+}
 
 sub subcategories
 {
@@ -126,7 +138,7 @@ sub make_select
 {
     my $self = shift;
     my $parent = shift;
-    my @category_values = schema->resultset('Category')->search({ parent => $parent });
+    my @category_values = $self->get_schema()->resultset('Category')->search({ parent => $parent });
     my @category_values_for_select;
     push @category_values_for_select, { value => undef, label => "-- select --" }; 
     for(@category_values)
@@ -155,7 +167,7 @@ sub get_list
     my $search_criteria = undef;
 
     my @to_view;
-    my $rs = schema->resultset('Category')->search({parent => $args{'parent'}}, { order_by => { '-' . $args{'order'} => $args{'order_by'} }});
+    my $rs = $self->get_schema()->resultset('Category')->search({parent => $args{'parent'}}, { order_by => { '-' . $args{'order'} => $args{'order_by'} }});
     for($rs->all())
     {
         my $cat = Strehler::Meta::Category->new($_->id);
@@ -225,7 +237,7 @@ sub save_form
     my $new_category;
     if($id)
     {
-        $new_category = schema->resultset('Category')->find($id);
+        $new_category = $self->get_schema()->resultset('Category')->find($id);
         if($form->param_value('parent'))
         {
             $new_category->update({category => $form->param_value('category'), parent => $form->param_value('parent')});
@@ -239,11 +251,11 @@ sub save_form
     {
         if($form->param_value('parent'))
         {
-            $new_category = schema->resultset('Category')->create({category => $form->param_value('category'), parent => $form->param_value('parent')});
+            $new_category = $self->get_schema()->resultset('Category')->create({category => $form->param_value('category'), parent => $form->param_value('parent')});
         }
         else
         {
-            $new_category = schema->resultset('Category')->create({category => $form->param_value('category')});
+            $new_category = $self->get_schema()->resultset('Category')->create({category => $form->param_value('category')});
         }
     }
     if($form->param_value('tags-all'))

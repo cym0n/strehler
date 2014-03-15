@@ -5,7 +5,6 @@ use Dancer2;
 use Dancer2::Plugin::DBIC;
 use Strehler::Meta::Tag;
 use Strehler::Meta::Category;
-use Data::Dumper;
 
 has row => (
     is => 'ro',
@@ -21,7 +20,7 @@ sub BUILDARGS {
    }
    else
    {
-        $article = schema->resultset($class->ORMObj())->find($id);
+        $article = $class->get_schema()->resultset($class->ORMObj())->find($id);
    }
    return { row => $article };
 };
@@ -49,6 +48,18 @@ sub multilang_children
     my $self = shift;
     return $self->metaclass_data('multilang_children');
 }
+sub get_schema
+{
+    if(config->{'Strehler'}->{'schema'})
+    {
+        return schema config->{'Strehler'}->{'schema'};
+    }
+    else
+    {
+        return schema;
+    }
+}
+
 sub publishable
 {
     my $self = shift;
@@ -228,7 +239,7 @@ sub max_category_order
     }
     else
     {
-        $max = schema->resultset($self->ORMObj())->search()->get_column('display_order')->max();
+        $max = $self->get_schema()->resultset($self->ORMObj())->search()->get_column('display_order')->max();
     }
     return $max || 0;
 }
@@ -302,7 +313,7 @@ sub next_in_category_by_order
 {
     my $self = shift;
     my $language = shift;
-    my $category = schema->resultset('Category')->find( { category => $self->get_category_name() } );
+    my $category = $self->get_schema()->resultset('Category')->find( { category => $self->get_category_name() } );
     my $category_access = $self->category_accessor($category);
     my $criteria = { display_order => { '>', $self->get_attr('display_order') }};
     if($self->publishable())
@@ -328,7 +339,7 @@ sub prev_in_category_by_order
 {
     my $self = shift;
     my $language = shift;
-    my $category = schema->resultset('Category')->find( { category => $self->get_category_name() } );
+    my $category = $self->get_schema()->resultset('Category')->find( { category => $self->get_category_name() } );
     my $category_access = $self->category_accessor($category);
     my $criteria = { display_order => { '<', $self->get_attr('display_order') }};
     if($self->publishable())
@@ -353,7 +364,7 @@ sub next_in_category_by_date
 {
     my $self = shift;
     my $language = shift;
-    my $category = schema->resultset('Category')->find( { category => $self->get_category_name() } );
+    my $category = $self->get_schema()->resultset('Category')->find( { category => $self->get_category_name() } );
     my $category_access = $self->category_accessor($category);
     my $criteria = {publish_date => { '>', $self->get_attr('publish_date') }};
     if($self->publishable())
@@ -378,7 +389,7 @@ sub prev_in_category_by_date
 {
     my $self = shift;
     my $language = shift;
-    my $category = schema->resultset('Category')->find( { category => $self->get_category_name() } );
+    my $category = $self->get_schema()->resultset('Category')->find( { category => $self->get_category_name() } );
     my $category_access = $self->category_accessor($category);
     my $criteria = { publish_date => { '<', $self->get_attr('publish_date') }};
     if($self->publishable())
@@ -547,14 +558,14 @@ sub get_list
     }
     if(exists $args{'tag'} && $args{'tag'})
     {
-        my $ids = schema->resultset('Tag')->search({tag => $args{'tag'}, item_type => $self->item_type()})->get_column('item_id');
+        my $ids = $self->get_schema()->resultset('Tag')->search({tag => $args{'tag'}, item_type => $self->item_type()})->get_column('item_id');
         $search_criteria->{'id'} = { -in => $ids->as_query };
     }
 
     my $rs;
     if(exists $args{'category_id'} && $args{'category_id'})
     {
-        my $category = schema->resultset('Category')->find( { id => $args{'category_id'} } );
+        my $category = $self->get_schema()->resultset('Category')->find( { id => $args{'category_id'} } );
         if(! $category)
         {
             return {'to_view' => [], 'last_page' => 1 };
@@ -579,7 +590,7 @@ sub get_list
     }
     else
     {
-        $rs = schema->resultset($self->ORMObj())->search($search_criteria, { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => $default_page, rows => $args{'entries_per_page'}});
+        $rs = $self->get_schema()->resultset($self->ORMObj())->search($search_criteria, { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => $default_page, rows => $args{'entries_per_page'}});
     }
     my $elements;
     my $last_page;
@@ -689,7 +700,7 @@ sub save_form
     
     my $el_row;
     my $el_data;
-    foreach my $column (schema->resultset($self->ORMObj())->result_source->columns)
+    foreach my $column ($self->get_schema()->resultset($self->ORMObj())->result_source->columns)
     {
         if($column ne 'category' && $column ne 'id' && $column ne 'published')
         {
@@ -733,14 +744,14 @@ sub save_form
     my $children;
     if($id)
     {
-        $el_row = schema->resultset($self->ORMObj())->find($id);
+        $el_row = $self->get_schema()->resultset($self->ORMObj())->find($id);
         $el_row->update($el_data);
         $children = $el_row->can($self->multilang_children());
         $el_row->$children->delete_all() if($children);
     }
     else
     {
-        $el_row = schema->resultset($self->ORMObj())->create($el_data);
+        $el_row = $self->get_schema()->resultset($self->ORMObj())->create($el_data);
         $children = $el_row->can($self->multilang_children());
     }
     if($children)
@@ -750,7 +761,7 @@ sub save_form
         {
             my $to_write = 0;
             my $multi_el_data;
-            foreach my $multicolumn (schema->resultset($self->ORMObj())->$children->result_source->columns)
+            foreach my $multicolumn ($self->get_schema()->resultset($self->ORMObj())->$children->result_source->columns)
             {
                 if($form->param_value($multicolumn . '_' . $lang))
                 {

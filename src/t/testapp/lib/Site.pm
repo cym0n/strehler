@@ -9,14 +9,15 @@ use Strehler::Admin;
 
 sub reset_database
 {
-    schema->resultset('ActivityLog')->delete_all();
-    schema->resultset('Article')->delete_all();
-    schema->resultset('Category')->delete_all();
-    schema->resultset('ConfiguredTag')->delete_all();
-    schema->resultset('Content')->delete_all();
-    schema->resultset('Description')->delete_all();
-    schema->resultset('Image')->delete_all();
-    schema->resultset('Tag')->delete_all();
+    my $schema = config->{'Strehler'}->{'schema'} ? schema config->{'Strehler'}->{'schema'} : schema;
+    $schema->resultset('ActivityLog')->delete_all();
+    $schema->resultset('Article')->delete_all();
+    $schema->resultset('Category')->delete_all();
+    $schema->resultset('ConfiguredTag')->delete_all();
+    $schema->resultset('Content')->delete_all();
+    $schema->resultset('Description')->delete_all();
+    $schema->resultset('Image')->delete_all();
+    $schema->resultset('Tag')->delete_all();
 }
 
 get '/:lang/get-last-by-order/:cat' => sub {

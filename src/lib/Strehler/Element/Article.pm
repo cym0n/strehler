@@ -66,7 +66,7 @@ sub get_by_slug
     my $self = shift;
     my $slug = shift;
     my $language = shift;
-    my $chapter = schema->resultset('Content')->find({ slug => $slug, language => $language });
+    my $chapter = $self->get_schema()->resultset('Content')->find({ slug => $slug, language => $language });
     if($chapter)
     {
         return $self->new($chapter->article->id);

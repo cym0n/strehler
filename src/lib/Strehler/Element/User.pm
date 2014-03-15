@@ -7,21 +7,6 @@ use Authen::Passphrase::BlowfishCrypt;
 
 extends 'Strehler::Element';
 
-#Standard element implementation
-sub BUILDARGS {
-   my ( $class, @args ) = @_;
-   my $id = shift @args; 
-   my $user;
-   if(! $id)
-   {
-        $user = undef;
-   }
-   else
-   {
-        $user = schema->resultset('User')->find($id);
-   }
-   return { row => $user };
-};
 sub metaclass_data 
 {
     my $self = shift;
@@ -63,16 +48,16 @@ sub save_form
                 cost => 8, salt_random => 1,
                 passphrase => $clean_password);
     my $user_data ={ user => $form->param_value('user'), password_hash => $ppr->hash_base64, password_salt => $ppr->salt_base64, role => $form->param_value('role') };
-    my $already_user = schema->resultset($self->ORMObj())->find({user => $form->param_value('user')});
+    my $already_user = $self->get_schema()->resultset($self->ORMObj())->find({user => $form->param_value('user')});
     return -1 if($already_user && ! $id);
     if($id)
     {
-        $user_row = schema->resultset($self->ORMObj())->find($id);
+        $user_row = $self->get_schema()->resultset($self->ORMObj())->find($id);
         $user_row->update($user_data);
     }
     else
     {
-        $user_row = schema->resultset($self->ORMObj())->create($user_data);
+        $user_row = $self->get_schema()->resultset($self->ORMObj())->create($user_data);
     }
     return $user_row->id;  
 }
@@ -82,7 +67,7 @@ sub valid_login
     my $self = shift;
     my $user = shift;
     my $password = shift;
-    my $rs = schema->resultset($self->ORMObj())->find({'user' => $user});
+    my $rs = $self->get_schema()->resultset($self->ORMObj())->find({'user' => $user});
     if($rs && $rs->user eq $user)
     {
         my $ppr = Authen::Passphrase::BlowfishCrypt->new(

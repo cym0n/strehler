@@ -64,7 +64,7 @@ sub save_form
 
     if($id)
     {
-        $img_row = schema->resultset('Image')->find($id);
+        $img_row = $self->get_schema()->resultset('Image')->find($id);
         if($img)
         {
             $img_row->update({ image => $ref, category => $category });
@@ -77,7 +77,7 @@ sub save_form
     }
     else
     {
-        $img_row = schema->resultset('Image')->create({ image => $ref, category => $category });
+        $img_row = $self->get_schema()->resultset('Image')->create({ image => $ref, category => $category });
     }
     my @languages = @{config->{Strehler}->{languages}};
     for(@languages)

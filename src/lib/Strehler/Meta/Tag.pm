@@ -15,13 +15,13 @@ sub BUILDARGS {
    if($#args == 0)
    {
         my $id = shift @args; 
-        $tag = schema->resultset('Tag')->find($id);
+        $tag = $class->get_schema()->resultset('Tag')->find($id);
    }
    elsif($#args == 1)
    {
        if($args[0] eq 'tag')
        {
-            $tag = schema->resultset('Tag')->find({ tag => $args[1] });
+            $tag = $class->get_schema()->resultset('Tag')->find({ tag => $args[1] });
        }
        if($args[0] eq 'row')
        {
@@ -30,13 +30,25 @@ sub BUILDARGS {
    }
    return { row => $tag };
 };
+sub get_schema
+{
+    if(config->{'Strehler'}->{'schema'})
+    {
+        return schema config->{'Strehler'}->{'schema'};
+    }
+    else
+    {
+        return schema;
+    }
+}
+
 
 sub tags_to_string
 {
     my $self = shift;
     my $item = shift;
     my $item_type = shift;
-    my @tags = schema->resultset('Tag')->search({ item_id => $item, item_type => $item_type });
+    my @tags = $self->get_schema()->resultset('Tag')->search({ item_id => $item, item_type => $item_type });
     my $out = "";
     for(@tags)
     {
@@ -52,11 +64,11 @@ sub get_elements_by_tag
     my $tag = shift;
     my @images;
     my @articles;
-    foreach(schema->resultset('Tag')->search({tag => $tag, item_type => 'image'}))
+    foreach($self->get_schema()->resultset('Tag')->search({tag => $tag, item_type => 'image'}))
     {
         push @images, Strehler::Element::Image->new($_->item_id);
     }
-    for(schema->resultset('Tag')->search({tag => $tag, item_type => 'article'}))
+    for($self->get_schema()->resultset('Tag')->search({tag => $tag, item_type => 'article'}))
     {
         push @articles, Strehler::Element::Article->new($_->item_id);
     }
@@ -72,14 +84,14 @@ sub save_tags
     $string ||= '';
     $string =~ s/( +)?,( +)?/,/g;
     my @tags = split(',', $string);
-    schema->resultset('Tag')->search({item_id => $item, item_type => $item_type})->delete_all();
+    $self->get_schema()->resultset('Tag')->search({item_id => $item, item_type => $item_type})->delete_all();
     my %already;
     for(@tags)
     {
         if(! $already{$_})
         {
             $already{$_} = 1;
-            my $new_tag = schema->resultset('Tag')->create({tag => $_, item_id => $item, item_type => $item_type});
+            my $new_tag = $self->get_schema()->resultset('Tag')->create({tag => $_, item_id => $item, item_type => $item_type});
         }
     }
 }
@@ -93,7 +105,7 @@ sub get_configured_tags
     my $out;
     foreach my $t (@types)
     {
-        my @tags = schema->resultset('ConfiguredTag')->search({category_id => $category, item_type => $t});
+        my @tags = $self->get_schema()->resultset('ConfiguredTag')->search({category_id => $category, item_type => $t});
         my $string = '';
         my $default = '';
         for(@tags)
@@ -125,14 +137,14 @@ sub get_configured_tags_for_template
     my $self = shift;
     my $category = shift;
     my $type = shift;
-    my @tags = schema->resultset('ConfiguredTag')->search({category_id => $category, item_type => 'all'});
+    my @tags = $self->get_schema()->resultset('ConfiguredTag')->search({category_id => $category, item_type => 'all'});
     if($#tags > -1)
     {
         return @tags;
     }
     else
     {
-        @tags = schema->resultset('ConfiguredTag')->search({category_id => $category, item_type => $type});
+        @tags = $self->get_schema()->resultset('ConfiguredTag')->search({category_id => $category, item_type => $type});
         return @tags;
     }
 }
@@ -159,7 +171,7 @@ sub save_configured_tags
             if (grep {$_ eq $t} @dtags) {
                 $default = 1;
             }
-            schema->resultset('ConfiguredTag')->create({tag => $t, category_id => $category, item_type => $type, default_tag => $default});
+            $self->get_schema()->resultset('ConfiguredTag')->create({tag => $t, category_id => $category, item_type => $type, default_tag => $default});
         }
     }
 }
@@ -168,7 +180,7 @@ sub clean_configured_tags
 {
     my $self = shift;
     my $category = shift;
-    schema->resultset('ConfiguredTag')->search({ category_id => $category })->delete_all();
+    $self->get_schema()->resultset('ConfiguredTag')->search({ category_id => $category })->delete_all();
 }
 
 

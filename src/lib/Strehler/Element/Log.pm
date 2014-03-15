@@ -28,7 +28,7 @@ sub write
     my $action = shift;
     my $entity_type = shift;
     my $entity_id = shift;
-    my $log_row = schema->resultset($self->ORMObj())->create({ user => $user, action => $action, entity_type => $entity_type, entity_id => $entity_id, timestamp => DateTime->now() });
+    my $log_row = $self->get_schema()->resultset($self->ORMObj())->create({ user => $user, action => $action, entity_type => $entity_type, entity_id => $entity_id, timestamp => DateTime->now() });
 }
 
 sub main_title
