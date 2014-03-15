@@ -77,4 +77,23 @@ sub save_form
     return $user_row->id;  
 }
 
+sub valid_login
+{
+    my $self = shift;
+    my $user = shift;
+    my $password = shift;
+    my $rs = schema->resultset($self->ORMObj())->find({'user' => $user});
+    if($rs && $rs->user eq $user)
+    {
+        my $ppr = Authen::Passphrase::BlowfishCrypt->new(
+                  cost => 8, salt_base64 => $rs->password_salt,
+                  hash_base64 => $rs->password_hash);
+        if($ppr->match($password))
+        {
+            return Strehler::Element::User->new($rs->id);
+        }
+    }
+    return undef;
+}
+
 1;

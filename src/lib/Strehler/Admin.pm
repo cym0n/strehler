@@ -14,8 +14,6 @@ use Strehler::Element::Article;
 use Strehler::Element::User;
 use Strehler::Element::Log;
 use Strehler::Meta::Category;
-use Data::Dumper;
-
 
 my @languages;
 
@@ -54,11 +52,11 @@ any '/login' => sub {
     my $message;
     if($form->submitted_and_valid)
     {
-        my $role = login_valid($params_hashref->{'user'}, $params_hashref->{'password'});
-        if($role)
+        my $user = Strehler::Element::User->valid_login($params_hashref->{'user'}, $params_hashref->{'password'});
+        if($user)
         {
-            session 'user' => $params_hashref->{'user'};
-            session 'role' => $role;
+            session 'user' => $user->get_attr('user');
+            session 'role' => $user->get_attr('role');
             if( session 'redir_url' )
             {
                 my $redir = redirect(session 'redir_url');
@@ -763,24 +761,6 @@ post '/:entity/edit/:id' => sub
 
 ##### Helpers #####
 # They only manipulate forms rendering and manage login
-
-sub login_valid
-{
-    my $user = shift;
-    my $password = shift;
-    my $rs = schema->resultset('User')->find({'user' => $user});
-    if($rs && $rs->user eq $user)
-    {
-        my $ppr = Authen::Passphrase::BlowfishCrypt->new(
-                  cost => 8, salt_base64 => $rs->password_salt,
-                  hash_base64 => $rs->password_hash);
-        if($ppr->match($password))
-        {
-            return $rs->role;
-        }
-    }
-    return undef;
-}
 
 sub form_image
 {
