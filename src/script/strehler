@@ -1,10 +1,12 @@
 #!/usr/bin/env perl
 
+use v5.10;
 use Cwd;
 use File::Copy::Recursive 'dircopy';
 use Strehler;
 use Strehler::Schema;
 use Term::ReadKey;
+use Authen::Passphrase::BlowfishCrypt;
 
 my $strehler_root = $INC{'Strehler.pm'};
 $strehler_root =~ s/\.pm$//;
@@ -30,7 +32,7 @@ if($command eq 'statics')
 
     if(! -d $destination)
     {
-        print "Directory $destination doesn't exists!\n";
+        say "Directory $destination doesn't exists!";
         if($public_dir eq 'public')
         {
             print "\"public\" directory used as standard dancer static files directory. Different from yours? Pass your directory as second parameter to the script\n";
@@ -39,7 +41,7 @@ if($command eq 'statics')
         exit();
     }
 
-    print "Copying statics from $origin to $destination...\n";
+    say "Copying statics from $origin to $destination...";
     dircopy($origin, $destination);
     if($!)
     {
@@ -56,13 +58,14 @@ elsif($command eq 'initdb')
     print "-initdb- command: $available_commands{'statics'}\n\n";
     if(! config->{'plugins'}->{'DBIC'})
     {
-        print "Can't read config.yml or no DBIC plugin configured in it\n";
+        say "Can't read config.yml or no DBIC plugin configured in it\n";
+        exit();
     }
     my $wanted_schema = shift @parameters;
     my $schema_name = $wanted_schema || 'default';
     if(! config->{'plugins'}->{'DBIC'}->{$schema_name} && $wanted_schema)
     {
-        print "Schema $wanted_schema doesn't exists in the config.yml file we're using!\n";
+        say "Schema $wanted_schema doesn't exists in the config.yml file we're using!\n";
         exit();
     }
     if(! $wanted_schema && ! config->{'plugins'}->{'DBIC'}->{'default'})
@@ -74,15 +77,14 @@ elsif($command eq 'initdb')
     my $user = config->{'plugins'}->{'DBIC'}->{$schema_name}->{'user'};
     my $password = config->{'plugins'}->{'DBIC'}->{$schema_name}->{'password'};
     print "Schema: $schema_name\n\n";
-    print "Database data:\n";
-    print "DSN: $dsn\n";
-    print "User: $user\n";
-    print "Password: $password\n";
+    say "DSN: $dsn";
+    say "User: $user";
+    say "Password: $password";
     my $continue = "";
     while($continue ne 'Y' && $continue ne 'N')
     {
         ReadMode(1, *STDIN);
-        print "\nWARNING: this script will ERASE (DROP TABLE) all the tables with a name used by Strehler tables. Are you sure you want to continue? (y/n)\n";
+        say "\nWARNING: this script will ERASE (DROP TABLE) all the tables with a name used by Strehler tables. Are you sure you want to continue? (y/n)";
         $continue = <STDIN>;
         ReadMode(0);
         chomp $continue;
@@ -95,6 +97,26 @@ elsif($command eq 'initdb')
     }
     my $schema = Strehler::Schema->connect($dsn, $user, $password);
     $schema->deploy( { add_drop_table => 1 } );
+    ReadMode(2, *STDIN);
+    say "Enter password for admin:";
+    my $user_password = <STDIN>;
+    say "Re-type password:";
+    my $user_password_confirm = <STDIN>;
+    ReadMode(0);
+    if(! ($user_password eq $user_password_confirm))
+    {
+        say "Password inputs don't match!";
+        exit(0);
+    }
+    chomp $user_password;
+    my $ppr = Authen::Passphrase::BlowfishCrypt->new(
+                    cost => 8, salt_random => 1,
+                    passphrase => $user_password);
+    my $hash = $ppr->hash_base64;
+    my $salt = $ppr->salt_base64;
+    $schema->populate('User', [[qw/user password_hash password_salt role/],
+                              ['admin', $hash, $salt, 'admin']]);
+
     print "Database deploy COMPLETED!\n\n";
 }
 else
@@ -109,7 +131,7 @@ else
     }
     for(keys %available_commands)
     {
-        print $_ . " => " . $available_commands{$_} . "\n";
+        say $_ . " => " . $available_commands{$_};
     }
     print "\n\n";
     
