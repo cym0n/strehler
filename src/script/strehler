@@ -12,6 +12,7 @@ my $strehler_root = $INC{'Strehler.pm'};
 $strehler_root =~ s/\.pm$//;
 my %available_commands = ('commands' => 'show available commands',
                           'statics' => 'copy of static resources needed by Strehler to Dancer2 App',
+                          'demo' => 'create a complete Dancer2 App with Strehler already configured, for trial purpose',
                           'initdb' => 'generate strehler tables on the wanted database');
 
 my $command = shift;
@@ -118,6 +119,69 @@ elsif($command eq 'initdb')
                               ['admin', $hash, $salt, 'admin']]);
 
     print "Database deploy COMPLETED!\n\n";
+}
+elsif($command eq 'demo')
+{
+    print "-demo- command: $available_commands{'demo'}\n\n";
+    my $app  = shift @parameters || 'StrehlerDemo';
+    say "STEP 1: Creating Dancer App... $app";
+    system("dancer2 -a $app");
+    print "\n\n";
+    say "STEP 2: Modifying config.yml...";
+    open($config, ">> $app/config.yml");
+    my $dsn = 'dbi:SQLite:dbname=demo.sqlite';
+    print {$config} <<"Configurations";
+template: template_toolkit
+engines:
+    template_toolkit:
+        ENCODING: utf8
+        DEFAULT: 'no.tt'
+    
+plugins:
+    DBIC:
+      default:
+        dsn: $dsn
+        schema_class: Strehler::Schema
+
+Strehler:
+    admin_secured: 1
+    languages: ['it', 'en']
+    default_language: 'it'
+    timezone: 'Europe/Rome'
+Configurations
+    close($config);
+    chdir $app;
+    my $origin = $strehler_root . '/public';
+    my $app_directory = getcwd();
+    my $destination = $app_directory . '/public';
+    say "STEP 3 - Copying statics from $origin to $destination...";
+    dircopy($origin, $destination);
+    say "STEP 4 - Deploying database: $dsn";
+    my $schema = Strehler::Schema->connect($dsn);
+    $schema->deploy( { add_drop_table => 1 } );
+    $schema->populate('User', [[qw/user password_hash password_salt role/],
+                              ['admin', 'SnbwVypRtNBehDfZrMMUKEIVfCEDZcW', 'AdFvGp4nXVVfj984NWlYI.', 'admin']]);
+    say "STEP 5 - Changing bin/app.pl...";
+    open(APPFILE, "< " . $app_directory . '/bin/app.pl');
+    my $new_bin = "";
+    for(<APPFILE>)
+    {
+        if($_ =~ /use $app/)
+        {
+            $new_bin .=  $_ . "use Strehler::Admin;\n";
+        }
+        else
+        {
+            $new_bin .= $_;
+        }
+    }
+    close(APPFILE);
+    open(NEWAPPFILE, "> " . $app_directory . '/bin/app.pl');
+    print {NEWAPPFILE} $new_bin;
+    close(NEWAPPFILE);
+    print "\n\n";
+    say "Demo SUCCESSFULLY DEPLOYED!";
+    say "Run Dancer2 devserver under $app, go to ADDRESS:PORT/admin, insert admin as user and as password and ENJOY!\n\n";
 }
 else
 {
