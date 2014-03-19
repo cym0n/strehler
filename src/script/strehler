@@ -2,6 +2,7 @@
 
 use v5.10;
 use Cwd;
+use File::Copy;
 use File::Copy::Recursive 'dircopy';
 use Strehler;
 use Strehler::Schema;
@@ -13,7 +14,9 @@ $strehler_root =~ s/\.pm$//;
 my %available_commands = ('commands' => 'show available commands',
                           'statics' => 'copy of static resources needed by Strehler to Dancer2 App',
                           'demo' => 'create a complete Dancer2 App with Strehler already configured, for trial purpose',
-                          'initdb' => 'generate strehler tables on the wanted database');
+                          'initdb' => 'generate strehler tables on the wanted database',
+                          'layout' => 'import Strehler Admin layout, mandatory for admin interface extension',
+                      );
 
 my $command = shift;
 my @parameters = @ARGV;
@@ -119,6 +122,39 @@ elsif($command eq 'initdb')
                               ['admin', $hash, $salt, 'admin']]);
 
     print "Database deploy COMPLETED!\n\n";
+}
+elsif($command eq 'layout')
+{
+    print "-layout- command: $available_commands{'layout'}\n\n";
+    my $origin = $strehler_root . '/views/layouts/admin.tt';
+
+    my $app_directory = getcwd();
+    my $views_dir  = shift @parameters || 'views';
+    my $destination = $app_directory . '/' . $views_dir . '/layouts';
+
+    if(! -d $destination)
+    {
+        say "Directory $destination doesn't exists!";
+        if($views_dir eq 'views')
+        {
+            print "\"views\" directory used as standard dancer views files directory. Different from yours? Pass your directory as second parameter to the script\n";
+        }
+        print "\n\n";
+        exit();
+    }
+
+    say "Copying layout from $origin to $destination...";
+    copy($origin, $destination . '/admin.tt');
+    if($!)
+    {
+        print "\nCOPY FAILED! A problem occured: $!\n\n";
+    }
+    else
+    {
+        print "\nSUCCESS! Files copied in your Dancer2 App!\n\n";
+    }
+
+
 }
 elsif($command eq 'demo')
 {
