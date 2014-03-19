@@ -2,11 +2,7 @@
     <h1>Home</h1>
 </div>
 <div class="content homepage">
-[% TRY %]
-[% INCLUDE 'strehler-home.tt' %]
-[% CATCH %]
 <p class="lead span10 text-center">
     Select an entity from the navbar
 </p>
-[% END %]
 </div>

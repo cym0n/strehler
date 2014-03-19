@@ -26,12 +26,58 @@ print "Strehler Version: " . $Strehler::VERSION . "\n\n";
 
 if($command eq 'statics')
 {
+    statics(@parameters);
+}
+elsif($command eq 'initdb')
+{
+    initdb(@parameters);
+}
+elsif($command eq 'layout')
+{
+
+    layout(@parameters);
+}
+elsif($command eq 'demo')
+{
+    print "-demo- command: $available_commands{'demo'}\n\n";
+    my $app  = shift @parameters || 'StrehlerDemo';
+    say "STEP 1: Creating Dancer App... $app";
+    system("dancer2 -a $app");
+    print "\n\n";
+    chdir $app;
+    demo_components();
+    statics();
+    initdb(undef, 1);
+    layout();
+    say "Demo SUCCESSFULLY DEPLOYED!";
+    say "Run Dancer2 devserver under $app, go to ADDRESS:PORT/admin, insert admin as user and as password and ENJOY!\n\n";
+}
+else
+{
+    if($command eq 'commands')
+    {
+        print "-commands- command: $available_commands{'commands'}\n\n";
+    }
+    else
+    {
+        print "Wrong command provided. I'll show you available commands\n\n";
+    }
+    for(keys %available_commands)
+    {
+        say $_ . " => " . $available_commands{$_};
+    }
+    print "\n\n";
+}
+
+sub statics
+{
+    my $public_dir = shift || 'public';
+
     print "-statics- command: $available_commands{'statics'}\n\n";
 
     my $origin = $strehler_root . '/public';
 
     my $app_directory = getcwd();
-    my $public_dir  = shift @parameters || 'public';
     my $destination = $app_directory . '/' . $public_dir;
 
     if(! -d $destination)
@@ -55,64 +101,90 @@ if($command eq 'statics')
     {
         print "\nSUCCESS! Files copied in your Dancer2 App!\n\n";
     }
+    mkdir 'public/upload';
 }
-elsif($command eq 'initdb')
+
+sub initdb
 {
-    use Dancer2;
-    print "-initdb- command: $available_commands{'statics'}\n\n";
-    if(! config->{'plugins'}->{'DBIC'})
+    my $wanted_schema = shift; 
+    my $demo = shift || 0;
+
+    print "-initdb- command: $available_commands{'initdb'}\n\n";
+
+    my $dsn;
+    my $user;
+    my $password;
+
+    if(! $demo)
     {
-        say "Can't read config.yml or no DBIC plugin configured in it\n";
-        exit();
+        use Dancer2;
+        if(! config->{'plugins'}->{'DBIC'})
+        {
+            say "Can't read config.yml or no DBIC plugin configured in it\n";
+            exit();
+        }
+        my $schema_name = $wanted_schema || 'default';
+        if(! config->{'plugins'}->{'DBIC'}->{$schema_name} && $wanted_schema)
+        {
+            say "Schema $wanted_schema doesn't exists in the config.yml file we're using!\n";
+            exit();
+        }
+        if(! $wanted_schema && ! config->{'plugins'}->{'DBIC'}->{'default'})
+        {
+            my @availables = keys %{config->{'plugins'}->{'DBIC'}};
+            $schema_name = $availables[0];
+        }
+        $dsn = config->{'plugins'}->{'DBIC'}->{$schema_name}->{'dsn'};
+        $user = config->{'plugins'}->{'DBIC'}->{$schema_name}->{'user'};
+        $password = config->{'plugins'}->{'DBIC'}->{$schema_name}->{'password'};
+        print "Schema: $schema_name\n\n";
+        say "DSN: $dsn";
+        say "User: $user";
+        say "Password: $password";
+        my $continue = "";
+        while($continue ne 'Y' && $continue ne 'N')
+        {
+            ReadMode(1, *STDIN);
+            say "\nWARNING: this script will ERASE (DROP TABLE) all the tables with a name used by Strehler tables. Are you sure you want to continue? (y/n)";
+            $continue = <STDIN>;
+            ReadMode(0);
+            chomp $continue;
+            $continue = uc($continue);
+        }
+        if($continue eq 'N')
+        {
+            print "NO DEPLOY. Exiting...\n\n";
+            exit();
+        }
     }
-    my $wanted_schema = shift @parameters;
-    my $schema_name = $wanted_schema || 'default';
-    if(! config->{'plugins'}->{'DBIC'}->{$schema_name} && $wanted_schema)
+    else
     {
-        say "Schema $wanted_schema doesn't exists in the config.yml file we're using!\n";
-        exit();
-    }
-    if(! $wanted_schema && ! config->{'plugins'}->{'DBIC'}->{'default'})
-    {
-        my @availables = keys %{config->{'plugins'}->{'DBIC'}};
-        $schema_name = $availables[0];
-    }
-    my $dsn = config->{'plugins'}->{'DBIC'}->{$schema_name}->{'dsn'};
-    my $user = config->{'plugins'}->{'DBIC'}->{$schema_name}->{'user'};
-    my $password = config->{'plugins'}->{'DBIC'}->{$schema_name}->{'password'};
-    print "Schema: $schema_name\n\n";
-    say "DSN: $dsn";
-    say "User: $user";
-    say "Password: $password";
-    my $continue = "";
-    while($continue ne 'Y' && $continue ne 'N')
-    {
-        ReadMode(1, *STDIN);
-        say "\nWARNING: this script will ERASE (DROP TABLE) all the tables with a name used by Strehler tables. Are you sure you want to continue? (y/n)";
-        $continue = <STDIN>;
-        ReadMode(0);
-        chomp $continue;
-        $continue = uc($continue);
-    }
-    if($continue eq 'N')
-    {
-        print "NO DEPLOY. Exiting...\n\n";
-        exit();
+        $dsn = "dbi:SQLite:dbname=demo.sqlite";
+        $user = undef;
+        $password = undef;
     }
     my $schema = Strehler::Schema->connect($dsn, $user, $password);
     $schema->deploy( { add_drop_table => 1 } );
-    ReadMode(2, *STDIN);
-    say "Enter password for admin:";
-    my $user_password = <STDIN>;
-    say "Re-type password:";
-    my $user_password_confirm = <STDIN>;
-    ReadMode(0);
-    if(! ($user_password eq $user_password_confirm))
+    my $user_password;
+    if(! $demo)
     {
-        say "Password inputs don't match!";
-        exit(0);
+        ReadMode(2, *STDIN);
+        say "Enter password for admin:";
+        $user_password = <STDIN>;
+        say "Re-type password:";
+        my $user_password_confirm = <STDIN>;
+        ReadMode(0);
+        if(! ($user_password eq $user_password_confirm))
+        {
+            say "Password inputs don't match!";
+            exit(0);
+        }
+        chomp $user_password;
     }
-    chomp $user_password;
+    else
+    {
+        $user_password = 'admin';
+    }
     my $ppr = Authen::Passphrase::BlowfishCrypt->new(
                     cost => 8, salt_random => 1,
                     passphrase => $user_password);
@@ -123,13 +195,14 @@ elsif($command eq 'initdb')
 
     print "Database deploy COMPLETED!\n\n";
 }
-elsif($command eq 'layout')
+
+sub layout
 {
+    my $views_dir  = shift  || 'views';
     print "-layout- command: $available_commands{'layout'}\n\n";
     my $origin = $strehler_root . '/views/layouts/admin.tt';
 
     my $app_directory = getcwd();
-    my $views_dir  = shift @parameters || 'views';
     my $destination = $app_directory . '/' . $views_dir . '/layouts';
 
     if(! -d $destination)
@@ -153,87 +226,21 @@ elsif($command eq 'layout')
     {
         print "\nSUCCESS! Files copied in your Dancer2 App!\n\n";
     }
-
-
 }
-elsif($command eq 'demo')
-{
-    print "-demo- command: $available_commands{'demo'}\n\n";
-    my $app  = shift @parameters || 'StrehlerDemo';
-    say "STEP 1: Creating Dancer App... $app";
-    system("dancer2 -a $app");
-    print "\n\n";
-    say "STEP 2: Modifying config.yml...";
-    open($config, ">> $app/config.yml");
-    my $dsn = 'dbi:SQLite:dbname=demo.sqlite';
-    print {$config} <<"Configurations";
-template: template_toolkit
-engines:
-    template_toolkit:
-        ENCODING: utf8
-        DEFAULT: 'no.tt'
-    
-plugins:
-    DBIC:
-      default:
-        dsn: $dsn
-        schema_class: Strehler::Schema
 
-Strehler:
-    admin_secured: 1
-    languages: ['it', 'en']
-    default_language: 'it'
-    timezone: 'Europe/Rome'
-Configurations
-    close($config);
-    chdir $app;
-    my $origin = $strehler_root . '/public';
+sub demo_components
+{
+    my $origin = $strehler_root . '/demo';
     my $app_directory = getcwd();
-    my $destination = $app_directory . '/public';
-    say "STEP 3 - Copying statics from $origin to $destination...";
-    dircopy($origin, $destination);
-    say "STEP 4 - Deploying database: $dsn";
-    my $schema = Strehler::Schema->connect($dsn);
-    $schema->deploy( { add_drop_table => 1 } );
-    $schema->populate('User', [[qw/user password_hash password_salt role/],
-                              ['admin', 'SnbwVypRtNBehDfZrMMUKEIVfCEDZcW', 'AdFvGp4nXVVfj984NWlYI.', 'admin']]);
-    say "STEP 5 - Changing bin/app.pl...";
-    open(APPFILE, "< " . $app_directory . '/bin/app.pl');
-    my $new_bin = "";
-    for(<APPFILE>)
-    {
-        if($_ =~ /use $app/)
-        {
-            $new_bin .=  $_ . "use Strehler::Admin;\n";
-        }
-        else
-        {
-            $new_bin .= $_;
-        }
-    }
-    close(APPFILE);
-    open(NEWAPPFILE, "> " . $app_directory . '/bin/app.pl');
-    print {NEWAPPFILE} $new_bin;
-    close(NEWAPPFILE);
-    print "\n\n";
-    say "Demo SUCCESSFULLY DEPLOYED!";
-    say "Run Dancer2 devserver under $app, go to ADDRESS:PORT/admin, insert admin as user and as password and ENJOY!\n\n";
+    my $destination = $app_directory;
+    say "Demo resources will be injected in the app...";
+    say "$origin -> $destination";
+    say "Config.yml...";
+    copy($origin . "/config.yml", $destination . '/config.yml');
+    say "Demo.pm...";
+    copy($origin . "/Demo.pm", $destination . '/lib/Demo.pm');
+    say "app.pl...";
+    copy($origin . "/app.pl", $destination . '/bin/app.pl');
+    say "strehler-home.tt...";
+    copy($origin . "/strehler-home.tt", $destination . '/views/strehler-home.tt');
 }
-else
-{
-    if($command eq 'commands')
-    {
-        print "-commands- command: $available_commands{'commands'}\n\n";
-    }
-    else
-    {
-        print "Wrong command provided. I'll show you available commands\n\n";
-    }
-    for(keys %available_commands)
-    {
-        say $_ . " => " . $available_commands{$_};
-    }
-    print "\n\n";
-    
-}
-

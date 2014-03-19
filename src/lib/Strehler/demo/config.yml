@@ -1,0 +1,24 @@
+appname: "StrehlerDemo"
+
+layout: "main"
+
+charset: "UTF-8"
+
+template: template_toolkit
+engines:
+    template_toolkit:
+        ENCODING: utf8
+        DEFAULT: 'no.tt'
+    
+plugins:
+    DBIC:
+      default:
+        dsn: dbi:SQLite:dbname=demo.sqlite
+        schema_class: Strehler::Schema
+
+#This is a Strehler minimal configuration
+Strehler:
+    admin_secured: 1
+    languages: ['it', 'en']
+    default_language: 'it'
+    timezone: 'Europe/Rome'
