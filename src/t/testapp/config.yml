@@ -11,8 +11,6 @@ engines:
         ENCODING: utf8
         DEFAULT: 'no.tt'
 
-views: '../../views'
-
 plugins:
   DBIC:
     default:
