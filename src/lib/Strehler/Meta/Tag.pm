@@ -1,7 +1,7 @@
 package Strehler::Meta::Tag;
 
 use Moo;
-use Dancer2;
+use Dancer2 0.11;
 use Dancer2::Plugin::DBIC;
 use Data::Dumper;
 

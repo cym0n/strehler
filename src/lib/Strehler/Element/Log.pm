@@ -1,7 +1,7 @@
 package Strehler::Element::Log;
 
 use Moo;
-use Dancer2;
+use Dancer2 0.11;
 use Dancer2::Plugin::DBIC;
 use DateTime::Format::Strptime;
 

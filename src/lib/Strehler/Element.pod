@@ -138,9 +138,10 @@ Return Values: \%elements
 Main class method to retrieve elements. There're many query_params you can use.
 
     order => desc|asc # The order of the results. Default is desc
-    order_by => $order_by # The field to order by. Default is id
+    order_by => $order_by # The field to order by. Default is id. 
+                          #Accept array_ref for multiple ordering.
     entries_per_page => $entries # How many results retrieve. Default is 20.
-                           # -1 makes the method return ALL results
+                                 # -1 makes the method return ALL results
     page => $page. Default is 1
     language => $lang # The language for multilanguage attributes. 
                       # Default is Strehler configured default language
