@@ -711,6 +711,7 @@ sub save_form
                 if(ref $form->param_value($column) eq 'DateTime')
                 {
                     my $ts = $form->param_value($column);
+                    $ts->set_time_zone(config->{'Strehler'}->{'timezone'});
                     $ts->set_time_zone('UTC');
                     $el_data->{$column} = $ts;
                 }
@@ -770,6 +771,7 @@ sub save_form
                     if(ref $form->param_value($multicolumn . '_' . $lang) eq 'DateTime')
                     {
                         my $ts = $form->param_value($multicolumn . '_' . $lang);
+                        $ts->set_time_zone(config->{'Strehler'}->{'timezone'});
                         $ts->set_time_zone('UTC');
                         $multi_el_data->{$multicolumn} = $ts;
                     }
