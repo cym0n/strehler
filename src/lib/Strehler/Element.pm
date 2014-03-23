@@ -626,10 +626,12 @@ sub get_list
 sub make_select
 {
     my $self = shift;
-    my $list = $self->get_list( {} );
+    my $list = $self->get_list( { entries_per_page => -1 } );
     my @category_values_for_select;
     push @category_values_for_select, { value => undef, label => "-- seleziona --" }; 
-    for(@{$list->{to_view}})
+    my @elements = @{$list->{to_view}};
+    @elements = sort { lc($a->{'title'}) cmp lc($b->{'title'}) } @elements;
+    for(@elements)
     {
         push @category_values_for_select, { value => $_->{'id'}, label => $_->{'title'} }
     }
