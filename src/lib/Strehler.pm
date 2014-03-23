@@ -125,6 +125,15 @@ And then
 
 During initdb running password for admin will be requested. Choose one and remember it.
 
+For database schema you have to ways. You can just configure in the plugin the schema as Strehler::Schema. It will works well if you have no intention to add tables other than the ones provided by Strehler.
+Other possibility is to create a schema using dbicdump script of DBIx::Class::Schema::Loader, dumping Strehler tables along with all the others you created.
+
+Finally open your bin/app.pl and add the line
+
+    use Strehler::Admin
+
+I<below> the use directive about your main app. Placing it below it (and not above) is important to keep Dancer2 to consider right paths and configurations.
+
 Done!
 Now at the url http://YOURAPP/admin you'll find Strehler backend!
 
