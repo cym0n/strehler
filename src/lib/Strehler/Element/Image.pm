@@ -45,12 +45,11 @@ sub save_form
         
     my $ref; 
     my $path;
-    if($img)
-    {
-        $ref = '/upload/' . $img->filename;
-        $path = 'public' . $ref;
-        $img->copy_to($path);
-    }
+    my $public = app->config->{public} || path( app->location, 'public' );
+    $ref = '/upload/' . $img->filename;
+    $path = $public . $ref;
+    $img->copy_to($path);
+    
     my $category;
     if($form->param_value('subcategory'))
     {

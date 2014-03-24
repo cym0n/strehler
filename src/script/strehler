@@ -93,6 +93,8 @@ sub statics
 
     say "Copying statics from $origin to $destination...";
     dircopy($origin, $destination);
+    mkdir $destination . '/upload';
+    say "Creating upload directory...";
     if($!)
     {
         print "\nCOPY FAILED! A problem occured: $!\n\n";
