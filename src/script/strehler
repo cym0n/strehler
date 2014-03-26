@@ -237,12 +237,32 @@ sub demo_components
     my $destination = $app_directory;
     say "Demo resources will be injected in the app...";
     say "$origin -> $destination";
+    if($!)
+    {
+        print "\nCOPY FAILED! A problem occured: $!\n\n";
+    }
     say "Config.yml...";
     copy($origin . "/config.yml", $destination . '/config.yml');
+    if($!)
+    {
+        print "\nCOPY FAILED! A problem occured: $!\n\n";
+    }
     say "Demo.pm...";
-    copy($origin . "/Demo.pm", $destination . '/lib/Demo.pm');
+    copy($origin . "/Demo.pm.ex", $destination . '/lib/Demo.pm');
+    if($!)
+    {
+        print "\nCOPY FAILED! A problem occured: $!\n\n";
+    }
     say "app.pl...";
     copy($origin . "/app.pl", $destination . '/bin/app.pl');
+    if($!)
+    {
+        print "\nCOPY FAILED! A problem occured: $!\n\n";
+    }
     say "strehler-home.tt...";
     copy($origin . "/strehler-home.tt", $destination . '/views/strehler-home.tt');
+    if($!)
+    {
+        print "\nCOPY FAILED! A problem occured: $!\n\n";
+    }
 }
