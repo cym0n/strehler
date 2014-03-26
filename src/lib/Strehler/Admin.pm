@@ -967,6 +967,41 @@ sub check_role
     }
 }
 
+=encoding utf8
+
+=head1 NAME
+
+Strehler::Admin - App holding the routes used by Strehler backend
+
+=head1 DESCRIPTION
+
+Strehler::Admin holds all the routes used by Strehler to erogate views. It also contains some helpers, mostly about form management, called inside routes.
+
+The use of the L<Strehler::Dancer2::Plugin> makes all the routes to have /admin as prefix.
+
+Routes have the structure:
+
+    /entity/action/id
+
+Where  B<entity> represent a L<Strehler::Element> class, action is usually a standard action of a CRUD interface and id (where needed) is the identifier of the object cosidered.
+
+=head1 SYNOPSIS
+
+Strehler::Admin is just a Dancer2 app so you need to add it to your bin/app.pl script to use it.
+
+    #!/usr/bin/env perl
+
+    use FindBin;
+    use lib "$FindBin::Bin/../lib";
+
+    use Site;
+    use Strehler::Admin;
+
+    Site->dance;
+
+Never add the C<use Strehler::Admin> line as the first App included to not mess with site directories (public, lib...)
+
+=cut
 
 
 1;

@@ -148,6 +148,48 @@ sub get_entity_attr
     }
 }
 
+=encoding utf8
+
+=head1 NAME
+
+Strehler::Helpers - Helpers
+
+=head1 DESCRIPTION
+
+Just few methods used in Strehler that could come useful throughtout in the application and also while developing on top of Strehler.
+
+=head1 FUNCTIONS
+
+=over 4
+
+=item slugify 
+
+arguments: $string
+
+return value: $slugified
+
+This method take a string and return the slugified version of it. Used to retrieve articles.
+
+=item get_entity_data
+
+arguments: entity
+
+return value %data
+
+This method give back every configuration about a given entity. It's also the place where default values for standard entities are nailed down.
+
+=item get_entity_attr
+
+arguments: entity, attrib
+
+return value $value
+
+A wrapper of get_entity_data to retrive informations faster, without passing by the global configuration hash of the entity.
+
+=back
+
+=cut
+
 1;
 
 
