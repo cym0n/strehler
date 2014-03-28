@@ -18,13 +18,9 @@ elements:
       name: subcategory
       label: Sub-category
       id: subcat
-    - type: Fieldset
-      elements:
-        - type: Block
-          tag: div
-          id: tags-place
-          attributes:
-            class: text label
+    - type: Block
+      tag: div
+      id: tags-place
     - type: Fieldset
       elements: 
           - name: display_order

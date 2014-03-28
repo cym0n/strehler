@@ -4,7 +4,7 @@ use Dancer2 0.11;
 use Dancer2::Plugin::DBIC;
 use Dancer2::Plugin::Ajax;
 use Strehler::Dancer2::Plugin;
-use HTML::FormFu;
+use HTML::FormFu 1.00;
 use HTML::FormFu::Element::Block;
 use Authen::Passphrase::BlowfishCrypt;
 use Strehler::Helpers; 
@@ -99,7 +99,6 @@ any '/image/add' => sub
         Strehler::Element::Log->write(session->read('user'), 'add', 'image', $id);
         redirect dancer_app->prefix . '/image/edit/' . $id;
     }
-    $form = bootstrap_divider($form);
     template "admin/image", { form => $form->render() }
 };
 
@@ -109,7 +108,6 @@ get '/image/edit/:id' => sub {
     my $form_data = $image->get_form_data();
     my $form = form_image('edit', $form_data->{'category'});
     $form->default_values($form_data);
-    $form = bootstrap_divider($form);
     template "admin/image", { id => $id, form => $form->render(), img_source => $image->get_attr('image') }
 };
 
@@ -129,7 +127,6 @@ post '/image/edit/:id' => sub
         redirect dancer_app->prefix . '/image/list';
     }
     my $img = Strehler::Element::Image->new($id);
-    $form = bootstrap_divider($form);
     template "admin/image", { form => $form->render(),img_source => $img->get_attr('image') }
 };
 
@@ -210,7 +207,6 @@ any '/user/add' => sub
             redirect dancer_app->prefix . '/user/list';
         }
     }
-    $form = bootstrap_divider($form);
     template "admin/user", { form => $form->render(), message => $message }
 };
 
@@ -312,7 +308,6 @@ any '/category/add' => sub
         Strehler::Element::Log->write(session->read('user'), 'add', 'category', $id);
         redirect dancer_app->prefix . '/category/list'; 
     }
-    $form = bootstrap_divider($form);
     template "admin/category", { form => $form->render() }
 };
 get '/category/edit/:id' => sub {
@@ -327,7 +322,6 @@ get '/category/edit/:id' => sub {
     my $form_data = $category->get_form_data(\@entities);
     my $form = form_category();
     $form->default_values($form_data);
-    $form = bootstrap_divider($form);
     template "admin/category", { form => $form->render() }
 };
 post '/category/edit/:id' => sub
@@ -698,7 +692,6 @@ any '/:entity/add' => sub
         redirect dancer_app->prefix . '/' . $entity . '/list';
     }
     my $fake_tags = $form->get_element({ name => 'tags'});
-    Strehler::Admin::bootstrap_divider($form);
     $form->remove_element($fake_tags) if($fake_tags);
     template "admin/generic_add", { entity => $entity, label => $label, form => $form->render() }
 };
@@ -724,7 +717,6 @@ get '/:entity/edit/:id' => sub {
         return pass;
     }
     $form->default_values($form_data);
-    $form = Strehler::Admin::bootstrap_divider($form);
     template "admin/generic_add", {  entity => $entity, label => $label, id => $id, form => $form->render() }
 };
 post '/:entity/edit/:id' => sub
@@ -869,20 +861,6 @@ sub tags_for_form
     { 
         my $subcategory = $form->get_element({ name => 'subcategory'});
         $form->insert_after($form->element({ type => 'Text', name => 'tags'}), $subcategory);
-    }
-    return $form;
-}
-
-sub bootstrap_divider
-{
-    my $form = shift;
-    my $elements = $form->get_elements();
-    my $divider = HTML::FormFu::Element::Block->new({ type => 'Block', tag => 'div', content => '&nbsp;' });
-    $divider->add_attributes({class => 'divider'});
-    foreach(@{$elements})
-    {
-        my $el = $_;
-        $form->insert_after($divider->clone(), $el);
     }
     return $form;
 }

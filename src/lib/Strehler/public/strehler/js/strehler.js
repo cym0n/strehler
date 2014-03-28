@@ -28,12 +28,12 @@ function subcategories(subcat) {
             request.done(function(msg) {
                 if(msg == '0')
                 {
-                    $("#subcat").parent(".select").hide();
+                    $("#subcat").parent("div").hide();
                     $('#subcat').val(null);
                 }
                 else
                 {
-                    $("#subcat").parent(".select").show();
+                    $("#subcat").parent("div").show();
                     $('#subcat').html(msg);
                     console.dir(subcat);
                     if(subcat)
@@ -65,7 +65,7 @@ function category_init(subcat) {
         }
         else
         {
-            $("#subcat").parent(".select").hide();
+            $("#subcat").parent("div").hide();
         }
     }
 };
