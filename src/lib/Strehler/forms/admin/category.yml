@@ -3,7 +3,7 @@ elements:
       label: Category
       constraints:
         - type: Required
-          message: 'Category needed<br />'
+          message: 'Category needed'
         - type: Regex
           regex: '^[^\/]*$'
           message: 'Invalid character'

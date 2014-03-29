@@ -45,8 +45,7 @@ get '/' => sub {
 ##### Login/Logout #####
 
 any '/login' => sub {
-    my $form = HTML::FormFu->new;
-    $form->load_config_file( $form_path . '/admin/login.yml' );
+    my $form = form_login();
     my $params_hashref = params;
     $form->process($params_hashref);
     my $message;
@@ -273,13 +272,10 @@ any '/category/list' => sub
     }
     #THE TABLE
     my $to_view = Strehler::Meta::Category->get_list();
+    my @entities = Strehler::Helpers::get_categorized_entities();
 
     #THE FORM
-    my $form = HTML::FormFu->new;
-    my @entities = Strehler::Helpers::get_categorized_entities();
-    $form->load_config_file( $form_path . '/admin/category_fast.yml' );
-    my $parent = $form->get_element({ name => 'parent'});
-    $parent->options(Strehler::Meta::Category->make_select());
+    my $form = form_category_fast();
     my $params_hashref = params;
     $form->process($params_hashref);
     if($form->submitted_and_valid)
@@ -752,13 +748,22 @@ post '/:entity/edit/:id' => sub
 };
 
 ##### Helpers #####
-# They only manipulate forms rendering and manage login
+# They only manipulate form rendering and ACL
+
+sub form_login
+{
+    my $form = HTML::FormFu->new;
+    $form->auto_error_class('error-msg');
+    $form->load_config_file( $form_path . '/admin/login.yml' );
+    return $form;    
+}
 
 sub form_image
 {
     my $action = shift;
     my $has_sub = shift;
     my $form = HTML::FormFu->new;
+    $form->auto_error_class('error-msg');
     $form->load_config_file( $form_path . '/admin/image.yml' );
     $form = add_multilang_fields($form, \@languages, $form_path . '/admin/image_multilang.yml'); 
     $form->constraint({ name => 'photo', type => 'Required' }) if $action eq 'add';
@@ -773,6 +778,7 @@ sub form_article
 {
     my $has_sub = shift;
     my $form = HTML::FormFu->new;
+    $form->auto_error_class('error-msg');
     $form->load_config_file( $form_path . '/admin/article.yml' );
     $form = add_multilang_fields($form, \@languages, $form_path . '/admin/article_multilang.yml'); 
     my $default_language = config->{Strehler}->{default_language};
@@ -789,6 +795,7 @@ sub form_article
 sub form_category
 {
     my $form = HTML::FormFu->new;
+    $form->auto_error_class('error-msg');
     $form->load_config_file( $form_path . '/admin/category.yml' );
     my $category = $form->get_element({ name => 'parent'});
     $category->options(Strehler::Meta::Category->make_select());
@@ -796,10 +803,21 @@ sub form_category
     return $form;
 }
 
+sub form_category_fast
+{
+    my $form = HTML::FormFu->new;
+    $form->auto_error_class('error-msg');
+    $form->load_config_file( $form_path . '/admin/category_fast.yml' );
+    my $parent = $form->get_element({ name => 'parent'});
+    $parent->options(Strehler::Meta::Category->make_select());
+    return $form;
+}
+
 sub form_user
 {
     my $action = shift;
     my $form = HTML::FormFu->new;
+    $form->auto_error_class('error-msg');
     $form->load_config_file( $form_path . '/admin/user.yml' );
     if($action eq 'add')
     {
@@ -821,6 +839,7 @@ sub form_generic
     }
 
     my $form = HTML::FormFu->new;
+    $form->auto_error_class('error-msg');
     $form->load_config_file( $conf );
     if($multilang_conf)
     {

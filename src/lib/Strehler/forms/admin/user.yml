@@ -7,7 +7,7 @@ elements:
         class: span8
       constraints:
         type: Required
-        message: 'Username needed<br />'
+        message: 'Username needed'
     - name: password
       label: Password
       type: Password

@@ -5,13 +5,13 @@ use warnings;
 use Moose;
 use Strehler::Meta::Category;
 
-
 use base 'HTML::FormFu::Validator';
 
 sub validate_value {
     my $self = shift;
-    my $parent = $self->form->param_value('parent');
-    my $category = $self->form->param_value('category');
+    my $query = $self->form->query();
+    my $parent = $query->param('parent');
+    my $category = $query->param('category');
     my $category_name;
     if($parent)
     {

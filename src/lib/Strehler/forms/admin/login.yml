@@ -7,7 +7,7 @@ elements:
         class: span4
       constraints:
         type: Required
-        message: 'Insert a username<br />'
+        message: 'Insert a username'
     - name : password
       type : Password
       label: password
@@ -15,7 +15,7 @@ elements:
         class: span4
       constraints:
         type: Required
-        message: 'Insert a password<br />'
+        message: 'Insert a password'
     - type: Block
       tag: div
       attributes:

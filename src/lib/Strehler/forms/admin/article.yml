@@ -13,7 +13,7 @@ elements:
       label: Category
       constraints:
         type: Required
-        message: 'Category needed<br />'
+        message: 'Category needed'
     - type: Select
       name: subcategory
       label: Sub-category
@@ -34,6 +34,8 @@ elements:
             attributes:
               type: button
               class: btn btn-warning
+      attributes:
+        class: order-widget
     - id: date_of_pub
       name: publish_date
       label: Date

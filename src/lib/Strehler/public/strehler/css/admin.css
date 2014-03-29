@@ -15,11 +15,10 @@
     padding-top: 40px;
     padding-bottom: 40px;
 }
-.error_message
+.error-msg
 {
-    font-size: 1.6em;
-    padding: 10px;
-    color: #FFE303;
+    font-weight: bold;
+    color: #ED0000;
 }
 .divider
 {
@@ -52,6 +51,16 @@
 {
     margin-bottom: 10px;
 }
+.categorylist .categoryadd div
+{
+    display: inline-block;
+}
+.categorylist .categoryadd button
+{
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
 #tags-place
 {
     margin-bottom: 7px;
@@ -74,5 +83,13 @@
 .table .sub_category
 {
     padding-left: 40px;
+}
+.order-widget div
+{
+    display: inline-block;
+}
+.order-widget button
+{
+    margin-bottom: 12px;
 }
 
