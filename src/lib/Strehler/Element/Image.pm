@@ -45,10 +45,15 @@ sub save_form
         
     my $ref; 
     my $path;
-    my $public = app->config->{public} || path( app->location, 'public' );
-    $ref = '/upload/' . $img->filename;
-    $path = $public . $ref;
-    $img->copy_to($path);
+    my $public;
+    
+    if($img)
+    {
+        $public = app->config->{public} || path( app->location, 'public' );
+        $ref = '/upload/' . $img->filename;
+        $path = $public . $ref;
+        $img->copy_to($path);
+    }
     
     my $category;
     if($form->param_value('subcategory'))
@@ -59,8 +64,8 @@ sub save_form
     {
         $category = $form->param_value('category');
     }
+    
     my $img_row;
-
     if($id)
     {
         $img_row = $self->get_schema()->resultset('Image')->find($id);
