@@ -114,5 +114,30 @@ function tags_init(id)
     {
         tags_refresh_on_parent();
     }
-
 }
+function get_last_chapter() {
+    var category;
+    if($("#subcat").val())
+    {
+        category = $("#subcat").val();
+    }
+    else
+    {
+        category = $("#category_selector").val();   
+    }
+    if(category)
+    {
+        var request = $.ajax({
+                               url: "/admin/"+item_type+"/lastchapter/"+category,
+                               dataType: 'text',
+                            });
+        request.done(function(msg) {
+                                    $('#order').val(msg);
+                                   });    
+    }
+    else
+    {
+        $('#order').val(null); 
+    }
+}
+

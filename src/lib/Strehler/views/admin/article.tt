@@ -27,31 +27,6 @@
                 $('#image_preview').attr('src', '/strehler/images/no-image.png');
            }
     }
-    function get_last_chapter() {
-        var category;
-        if($("#subcat").val())
-        {
-            category = $("#subcat").val();
-        }
-        else
-        {
-            category = $("#category_selector").val();   
-        }
-        if(category)
-        {
-            var request = $.ajax({
-                    url: "/admin/article/lastchapter/"+category,
-                    dataType: 'text',
-                });
-                request.done(function(msg) {
-                    $('#order').val(msg);
-                });    
-        }
-        else
-        {
-            $('#order').val(null); 
-        }
-    }
     
     $(document).ready(function() {
         manage_preview();

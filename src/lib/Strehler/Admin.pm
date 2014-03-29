@@ -412,14 +412,21 @@ ajax '/category/tagform/:type/:id?' => sub
     if(params->{id})
     {
         my $category = Strehler::Meta::Category->new(params->{id});
-        my @tags = Strehler::Meta::Tag->get_configured_tags_for_template($category->ext_name(), params->{type});
-        if($#tags > -1)
+        if(! $category->exists())
         {
-           template 'admin/configured_tags', { tags => \@tags }, { layout => undef };
+            template 'admin/open_tags';
         }
         else
         {
-            template 'admin/open_tags';
+            my @tags = Strehler::Meta::Tag->get_configured_tags_for_template($category->ext_name(), params->{type});
+            if($#tags > -1)
+            {
+                template 'admin/configured_tags', { tags => \@tags }, { layout => undef };
+            }
+            else
+            {
+                template 'admin/open_tags';
+            }
         }
     }
     else

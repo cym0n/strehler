@@ -7,39 +7,6 @@
     </div>
 </div>
 <script>
-    function get_last_chapter() {
-        var not_categorized = false;
-        var category;
-        if ($("#category_selector").length > 0){
-            if($("#subcat").val())
-            {
-                category = $("#subcat").val();
-            }
-            else
-            {
-                category = $("#category_selector").val();   
-            }
-        }
-        else
-        {
-            category = '';
-            not_categorized = true;
-        }
-        if(category || not_categorized)
-        {
-            var request = $.ajax({
-                    url: "/admin/[% entity %]/lastchapter/"+category,
-                    dataType: 'text',
-                });
-                request.done(function(msg) {
-                    $('#order').val(msg);
-                });    
-        }
-        else
-        {
-            $('#order').val(null); 
-        }
-    }
     $(document).ready(function() {
         item_type = '[% entity %]';
         category_init();
