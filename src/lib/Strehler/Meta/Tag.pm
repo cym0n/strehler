@@ -3,7 +3,7 @@ package Strehler::Meta::Tag;
 use Moo;
 use Dancer2 0.11;
 use Dancer2::Plugin::DBIC;
-use Data::Dumper;
+use Strehler::Meta::Category;
 
 has row => (
     is => 'ro',
@@ -58,23 +58,6 @@ sub tags_to_string
     return $out;
 }
 
-sub get_elements_by_tag
-{
-    my $self = shift;
-    my $tag = shift;
-    my @images;
-    my @articles;
-    foreach($self->get_schema()->resultset('Tag')->search({tag => $tag, item_type => 'image'}))
-    {
-        push @images, Strehler::Element::Image->new($_->item_id);
-    }
-    for($self->get_schema()->resultset('Tag')->search({tag => $tag, item_type => 'article'}))
-    {
-        push @articles, Strehler::Element::Article->new($_->item_id);
-    }
-    return { images => \@images, articles => \@articles };
-}
-
 sub save_tags
 {
     my $self = shift;
@@ -99,13 +82,14 @@ sub save_tags
 sub get_configured_tags
 {
     my $self = shift;
-    my $category = shift;
+    my $category_name = shift;
     my $t = shift;
     my @types = @{$t};
     my $out;
+    my $category = Strehler::Meta::Category->explode_name($category_name);
     foreach my $t (@types)
     {
-        my @tags = $self->get_schema()->resultset('ConfiguredTag')->search({category_id => $category, item_type => $t});
+        my @tags = $self->get_schema()->resultset('ConfiguredTag')->search({category_id => $category->get_attr('id'), item_type => $t});
         my $string = '';
         my $default = '';
         for(@tags)
@@ -135,9 +119,10 @@ sub get_configured_tags
 sub get_configured_tags_for_template
 {
     my $self = shift;
-    my $category = shift;
+    my $category_name = shift;
     my $type = shift;
-    my @tags = $self->get_schema()->resultset('ConfiguredTag')->search({category_id => $category, item_type => 'all'});
+    my $category = Strehler::Meta::Category->explode_name($category_name);
+    my @tags = $self->get_schema()->resultset('ConfiguredTag')->search({category_id => $category->get_attr('id'), item_type => 'all'});
     if($#tags > -1)
     {
         return @tags;

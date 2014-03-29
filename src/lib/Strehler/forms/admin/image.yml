@@ -20,8 +20,6 @@ elements:
     - type: Block
       tag: div
       id: tags-place
-      attributes:
-        class: text label
     - name: save
       type: Block
       tag: button

@@ -214,7 +214,7 @@ sub get_form_data
     my $data;
     $data->{'category'} = $row->category;
     $data->{'parent'} = $row->parent;
-    my $configured_tags = Strehler::Meta::Tag->get_configured_tags($row->id, \@entities);
+    my $configured_tags = Strehler::Meta::Tag->get_configured_tags($self->ext_name(), \@entities);
     for(@entities)
     {
        my $e = $_;

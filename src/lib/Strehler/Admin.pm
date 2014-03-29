@@ -411,7 +411,8 @@ ajax '/category/tagform/:type/:id?' => sub
 {
     if(params->{id})
     {
-        my @tags = Strehler::Meta::Tag->get_configured_tags_for_template(params->{id}, params->{type});
+        my $category = Strehler::Meta::Category->new(params->{id});
+        my @tags = Strehler::Meta::Tag->get_configured_tags_for_template($category->ext_name(), params->{type});
         if($#tags > -1)
         {
            template 'admin/configured_tags', { tags => \@tags }, { layout => undef };
@@ -615,7 +616,7 @@ ajax '/:entity/tagform/:id?' => sub
     {
         eval "require $class";
         my $obj = $class->new(params->{id});
-        my @category_tags = Strehler::Meta::Tag->get_configured_tags_for_template($obj->get_attr('category'), $entity);
+        my @category_tags = Strehler::Meta::Tag->get_configured_tags_for_template($obj->get_attr('category-name'), $entity);
         my @tags = split(',', $obj->get_tags());
         my @out;
         if($#category_tags > -1)

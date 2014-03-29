@@ -26,4 +26,35 @@ sub validate_value {
     return ! $category_element->exists();
 }
 
+=encoding utf8
+
+=head1 NAME
+
+Strehler::FormFu::Validator::CategoryUnique - FormFu Validator for Category form.
+
+=head1 DESCRIPTION
+
+A FormFu Validate to ensure that a user can't insert a category with the same name of a category already inserted.
+Parent value of the form must be checked because two category with the same name under different parents can exist.
+
+This validator hasn't the standard HTML::FormFu validators namespace because it makes sense only in a Strehler system.
+
+=head1 SYNOPSIS
+
+In category form configuration:
+
+    - name: category
+      label: Category
+      constraints:
+        - type: Required
+          message: 'Category needed'
+        - type: Regex
+          regex: '^[^\/]*$'
+          message: 'Invalid character'
+      validators:
+        - type: '+Strehler::FormFu::Validator::CategoryUnique'
+          message: 'Category already exists'
+
+=cut
+
 1;

@@ -6,7 +6,6 @@ use Test::TCP;
 use LWP::UserAgent;
 use FindBin;
 use Data::Dumper;
-use File::Slurp;
 
 use t::testapp::lib::Site;
 
