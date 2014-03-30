@@ -107,6 +107,8 @@ Its main title is the title in the language configured as default.
 
 It has all the features of base Strehler::Element plus the capability to upload images.
 
+=cut 
+
 1;
 
 

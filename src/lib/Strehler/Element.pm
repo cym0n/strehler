@@ -119,7 +119,7 @@ sub get_attr
     {
         if($self->row->result_source->has_column($attribute))
         {
-            if($self->row->result_source->column_info($attribute)->{'data_type'} eq 'timestamp' || $self->row->result_source->column_info($attribute)->{'data_type'} eq 'date' || $self->row->result_source->column_info($attribute)->{'data_type'} eq 'datetime')
+            if($self->row->result_source->column_info($attribute)->{'data_type'} eq 'timestamp' || $self->row->result_source->column_info($attribute)->{'data_type'} eq 'datetime')
             {
                 my $ts = $self->row->$attribute;
                 if($ts)
@@ -132,6 +132,10 @@ sub get_attr
                 {
                     return undef;
                 }
+            }
+            elsif($self->row->result_source->column_info($attribute)->{'data_type'} eq 'date')
+            {
+                return $self->row->$attribute;
             }
             else
             {
@@ -162,7 +166,7 @@ sub get_attr_multilang
             {
                 return $self->$accessor($content->$attribute. $lang);
             }
-            if($content->result_source->column_info($attribute)->{'data_type'} eq 'timestamp' || $content->result_source->column_info($attribute)->{'data_type'} eq 'date' || $content->result_source->column_info($attribute)->{'data_type'} eq 'datetime')
+            if($content->result_source->column_info($attribute)->{'data_type'} eq 'timestamp' || $content->result_source->column_info($attribute)->{'data_type'} eq 'datetime')
             {
                 my $ts = $content->$attribute;
                 if($ts)
@@ -175,6 +179,10 @@ sub get_attr_multilang
                 {
                     return undef;
                 }
+            }
+            elsif($content->result_source->column_info($attribute)->{'data_type'} eq 'date')
+            {
+                return $content->$attribute;
             }
             else
             {
@@ -710,10 +718,17 @@ sub save_form
             {
                 if(ref $form->param_value($column) eq 'DateTime')
                 {
-                    my $ts = $form->param_value($column);
-                    $ts->set_time_zone(config->{'Strehler'}->{'timezone'});
-                    $ts->set_time_zone('UTC');
-                    $el_data->{$column} = $ts;
+                    if($self->get_schema()->resultset($self->ORMObj())->result_source->column_info($column)->{'data_type'} eq 'date')
+                    {
+                        $el_data->{$column} = $form->param_value($column);
+                    }
+                    else
+                    {
+                        my $ts = $form->param_value($column);
+                        $ts->set_time_zone(config->{'Strehler'}->{'timezone'});
+                        $ts->set_time_zone('UTC');
+                        $el_data->{$column} = $ts;
+                    }
                 }
                 else
                 {
@@ -770,10 +785,17 @@ sub save_form
                 {
                     if(ref $form->param_value($multicolumn . '_' . $lang) eq 'DateTime')
                     {
-                        my $ts = $form->param_value($multicolumn . '_' . $lang);
-                        $ts->set_time_zone(config->{'Strehler'}->{'timezone'});
-                        $ts->set_time_zone('UTC');
-                        $multi_el_data->{$multicolumn} = $ts;
+                       if($self->get_schema()->resultset($self->ORMObj())->$children->result_source->column_info($multicolumn)->{'data_type'} eq 'date')
+                       {
+                            $multi_el_data->{$multicolumn} = $form->param_value($multicolumn . '_' . $lang);
+                       }
+                       else
+                       {
+                            my $ts = $form->param_value($multicolumn . '_' . $lang);
+                            $ts->set_time_zone(config->{'Strehler'}->{'timezone'});
+                            $ts->set_time_zone('UTC');
+                            $multi_el_data->{$multicolumn} = $ts;
+                       }
                     }
                     else
                     {
