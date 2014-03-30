@@ -168,6 +168,20 @@ sub clean_configured_tags
     $self->get_schema()->resultset('ConfiguredTag')->search({ category_id => $category })->delete_all();
 }
 
+=encoding utf8
+
+=head1 NAME
+
+Strehler::Meta::Tag - Strehler Entity for Tags
+
+=head1 DESCRIPTION
+
+Tags. Tags can be used to give a classification of contents other than the one given by categories. 
+
+In the forms, tags are alway presented as a list of strings separated with comma or as checkbox, but in the database every link tag-entity is a line on a table. Tag module gives abstraction for this.
+
+=cut 
+
 
 
 1;
