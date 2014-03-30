@@ -1,3 +1,9 @@
+1.1.4
+=====
+
+Mon Mar 31 2014
+
+* Bugfix on category editing
 
 1.1.3
 =====

@@ -12,8 +12,8 @@ sub validate_value {
     my $query = $self->form->query();
     my $parent = $query->param('parent');
     my $category = $query->param('category');
-    my $prev_parent = $query->param('prev-parent');
-    my $prev_name = $query->param('prev-name');
+    my $prev_parent = $query->param('prev-parent') || "";
+    my $prev_name = $query->param('prev-name') || "";
     my $category_name;
     if($parent eq $prev_parent && $category eq $prev_name)
     {
