@@ -77,6 +77,43 @@ sub get_by_slug
     }
 }
 
+=encoding utf8
+
+=head1 NAME
+
+Strehler::Element::Article - Strehler Entity for articles
+
+=head1 DESCRIPTION
+
+Base Strehler content, it's used to create general articles, multilanguage.
+
+Its main title is the title in the language configured as default.
+
+It also manages slugs, automatically generated using L<Strehler::Helpers> function slugify.
+Articles can be retrived using slug through the get_by_slug function.
+
+=head1 SYNOPSIS
+
+    my $article = Strehler::Element::Article->get_by_slug('a-slug-suitable-for-web', $language)
+
+=head1 FUNCTIONS
+
+=over 4
+
+=item get_by_slug
+
+arguments: $slug, $language
+
+retur value: $article
+
+Retrive the Article $article using the slug generated in automatic by CMS. Language is given because a slug can exist under a language but not under another.
+
+If no article with give slug is present, function return undef.
+
+=back
+
+=cut
+
 1;
 
 

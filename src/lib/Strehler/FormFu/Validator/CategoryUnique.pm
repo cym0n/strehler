@@ -34,7 +34,7 @@ Strehler::FormFu::Validator::CategoryUnique - FormFu Validator for Category form
 
 =head1 DESCRIPTION
 
-A FormFu Validate to ensure that a user can't insert a category with the same name of a category already inserted.
+A FormFu Validator to ensure that a user can't insert a category with the same name of a category already inserted.
 Parent value of the form must be checked because two category with the same name under different parents can exist.
 
 This validator hasn't the standard HTML::FormFu validators namespace because it makes sense only in a Strehler system.

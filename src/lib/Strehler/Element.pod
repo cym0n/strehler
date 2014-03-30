@@ -200,14 +200,6 @@ Return Value: $element
 Same as get_first_by_order/get_last_by_order, using publish_date to order elements.
 You can use this only on elements with a publish_date field (like articles). Configure the entity as dated.
 
-=item get_by_slug
-
-Arguments: $slug, $language
-
-Return Value: $element
-
-Available only for articles. Retrive the Article $element using the slug generated in automatic by CMS.
-
 =back
 
 =cut

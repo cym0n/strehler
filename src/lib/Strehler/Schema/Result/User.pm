@@ -112,4 +112,11 @@ __PACKAGE__->add_unique_constraint("unique_user", ["user"]);
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+
+=head1 DESCRIPTION
+
+Module of Strehler::Schema
+
+=cut
+
 1;

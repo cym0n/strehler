@@ -119,4 +119,11 @@ __PACKAGE__->belongs_to(
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+
+=head1 DESCRIPTION
+
+Module of Strehler::Schema
+
+=cut
+
 1;
