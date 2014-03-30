@@ -129,7 +129,7 @@ sub get_configured_tags_for_template
     }
     else
     {
-        @tags = $self->get_schema()->resultset('ConfiguredTag')->search({category_id => $category, item_type => $type});
+        @tags = $self->get_schema()->resultset('ConfiguredTag')->search({category_id => $category->get_attr('id'), item_type => $type});
         return @tags;
     }
 }

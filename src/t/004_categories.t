@@ -39,6 +39,18 @@ Test::TCP::test_tcp(
         my $cat_id = $cat->get_attr('id');
         ok($cat->exists(), "Category inserted");
 
+        $res = $ua->post($site . "/admin/category/add",
+                         { 'category' => 'prova2',
+                           'parent' => '',
+                           'tags-all' => '',
+                           'default-all' => '',
+                           'tags-article' => 'tagart1,tagart2,tagart3',
+                           'default-article' => '',
+                           'tags-image' => '',
+                           'default-image' => '' });
+        my $cat2 = Strehler::Meta::Category->new({ category => 'prova2' });
+        my $cat2_id = $cat2->get_attr('id');
+
         #SELECT
         my $select_string = '<option value="' . $cat->get_attr('id') . '">prova</option>';
         $ua->default_header('X-Requested-With' => "XMLHttpRequest");
@@ -48,7 +60,10 @@ Test::TCP::test_tcp(
         #TAGS
         my $tags_string = '<input type="checkbox" name="configured-tag" value="tag2" checked><span>tag2</span>';
         $res = $ua->get($site . "/admin/category/tagform/article/$cat_id");
-        like($res->content, qr/$tags_string/, "Tags checkbox correctly generated");
+        like($res->content, qr/$tags_string/, "Tags checkbox (category id: $cat_id) correctly generated");
+        my $tags_string2 = '<input type="checkbox" name="configured-tag" value="tagart2" ><span>tagart2</span>';
+        $res = $ua->get($site . "/admin/category/tagform/article/$cat2_id");
+        like($res->content, qr/$tags_string2/, "Tags checkbox (articles only - category id: $cat2_id) correctly generated");
 
         #DELETE
         $ua->default_header('X-Requested-With' => undef);

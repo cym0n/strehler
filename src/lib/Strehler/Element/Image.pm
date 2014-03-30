@@ -93,6 +93,19 @@ sub save_form
     return $img_row->id;     
 }
 
+=encoding utf8
+
+=head1 NAME
+
+Strehler::Element::Image - Strehler Entity for images
+
+=head1 DESCRIPTION
+
+Base Strehler content, it's used to create images, multilanguage.
+
+Its main title is the title in the language configured as default.
+
+It has all the features of base Strehler::Element plus the capability to upload images.
 
 1;
 
