@@ -213,7 +213,14 @@ sub get_form_data
     my $row = $self->row;
     my $data;
     $data->{'category'} = $row->category;
-    $data->{'parent'} = $row->parent;
+    if($row->parent)
+    {
+        $data->{'parent'} = $row->parent->id;
+    }
+    else
+    {
+        $data->{'parent'} = undef;
+    }
     my $configured_tags = Strehler::Meta::Tag->get_configured_tags($self->ext_name(), \@entities);
     for(@entities)
     {

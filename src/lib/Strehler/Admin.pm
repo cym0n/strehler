@@ -316,6 +316,8 @@ get '/category/edit/:id' => sub {
     my $category = Strehler::Meta::Category->new($id);
     my @entities = Strehler::Helpers::get_categorized_entities();
     my $form_data = $category->get_form_data(\@entities);
+    $form_data->{'prev-name'} = $form_data->{'category'};
+    $form_data->{'prev-parent'} = $form_data->{'parent'};
     my $form = form_category();
     $form->default_values($form_data);
     template "admin/category", { form => $form->render() }
@@ -808,6 +810,11 @@ sub form_category
     my $category = $form->get_element({ name => 'parent'});
     $category->options(Strehler::Meta::Category->make_select());
     $form = add_dynamic_fields_for_category($form); 
+    my $prev_name = $form->element( { type => 'Hidden', name => 'prev-name'} );
+    my $prev_parent = $form->element( { type => 'Hidden', name => 'prev-parent'} );
+    my $position = $form->get_element({ name => 'save' });
+    $form->insert_before($prev_name, $position);
+    $form->insert_before($prev_parent, $position);
     return $form;
 }
 
