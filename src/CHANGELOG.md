@@ -1,4 +1,13 @@
 
+1.1.3
+=====
+
+Sun Mar 30 2014
+
+* Another tags bugfix
+* Better management of Date fields
+* Schema updated
+
 1.1.2
 =====
 
