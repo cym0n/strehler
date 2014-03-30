@@ -81,4 +81,19 @@ sub valid_login
     return undef;
 }
 
+=encoding utf8
+
+=head1 NAME
+
+Strehler::Element::User - Strehler Entity for users
+
+=head1 DESCRIPTION
+
+A little entity used to manage users.
+
+It keeps also password saving logic. Password is saved using L<Authen::Passphrase::BlowfishCrypt>
+
+=cut
+
+
 1;

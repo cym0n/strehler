@@ -37,5 +37,17 @@ sub main_title
     return "[" . $self->get_attr('timestamp') . "] " . $self->get_attr('action') . " " . $self->get_attr('entity_type');
 }
 
+=encoding utf8
+
+=head1 NAME
+
+Strehler::Element::Log - Strehler Entity for logs
+
+=head1 DESCRIPTION
+
+A little entity used to log Strehler backend actions and keep trace of it.
+
+=cut
+
 1;
 
