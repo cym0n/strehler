@@ -164,7 +164,7 @@ sub get_attr_multilang
             my $accessor = $self->can($attribute);
             if($accessor && ! $bare)
             {
-                return $self->$accessor($content->$attribute. $lang);
+                return $self->$accessor($content->$attribute, $lang);
             }
             if($content->result_source->column_info($attribute)->{'data_type'} eq 'timestamp' || $content->result_source->column_info($attribute)->{'data_type'} eq 'datetime')
             {
