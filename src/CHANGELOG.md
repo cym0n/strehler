@@ -1,14 +1,22 @@
+
+1.1.5
+=====
+
+_Tue Apr 01 2014_
+
+* Bugfix on rendering attributes retrieved using custom accessors
+
 1.1.4
 =====
 
-Mon Mar 31 2014
+_Mon Mar 31 2014_
 
 * Bugfix on category editing
 
 1.1.3
 =====
 
-Sun Mar 30 2014
+_Sun Mar 30 2014_
 
 * Another tags bugfix
 * Better management of Date fields
@@ -17,7 +25,7 @@ Sun Mar 30 2014
 1.1.2
 =====
 
-Sat Mar 29 2014
+_Sat Mar 29 2014_
 
 * Fix to make Strehelr forms compatible with HTML::FormFu 1.00
 * Tags bugfix
@@ -27,13 +35,13 @@ Sat Mar 29 2014
 1.1.1
 =====
 
-Wen Mar 26 2014
+_Wen Mar 26 2014_
 
 * Demo.pm renamed to avoid its indexing as a distribution module.
 
 1.1.0
 =====
 
-Tue Mar 25 2014
+_Tue Mar 25 2014_
 
 First release on CPAN
