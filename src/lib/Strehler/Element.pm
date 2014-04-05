@@ -598,9 +598,16 @@ sub get_list
 
     my $no_paging = 0;
     my $default_page = 1;
+    my $search_criteria = undef;
+
     if($args{'order_by'} eq 'title')
     {
        $args{'order_by'} = $self->order_title();
+    }
+    if($args{'order_by'} =~ /^(.*?)\.(.*?)$/)
+    {
+        $args{'join'} = $1;
+        $search_criteria->{$args{'join'}. '.language'} = $args{'language'};
     }
     if($args{'entries_per_page'} == -1)
     {
@@ -609,7 +616,6 @@ sub get_list
         $no_paging = 1;
     }
 
-    my $search_criteria = undef;
     if($self->publishable())
     {
         if(exists $args{'published'})
@@ -622,6 +628,7 @@ sub get_list
         my $ids = $self->get_schema()->resultset('Tag')->search({tag => $args{'tag'}, item_type => $self->item_type()})->get_column('item_id');
         $search_criteria->{'id'} = { -in => $ids->as_query };
     }
+    my $search_rules = { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => $default_page, rows => $args{'entries_per_page'}, join => $args{'join'} };
 
     my $rs;
     if(exists $args{'category_id'} && $args{'category_id'})
@@ -632,7 +639,7 @@ sub get_list
             return {'to_view' => [], 'last_page' => 1 };
         }
         my $category_access = $self->category_accessor($category);
-        $rs = $category->$category_access->search($search_criteria, { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => $default_page, rows => $args{'entries_per_page'} });
+        $rs = $category->$category_access->search($search_criteria, $search_rules);
     }
     elsif(exists $args{'category'} && $args{'category'})
     {
@@ -647,11 +654,11 @@ sub get_list
             $category = $category_obj->row;
         }
         my $category_access = $self->category_accessor($category);
-        $rs = $category->$category_access->search($search_criteria, { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => $default_page, rows => $args{'entries_per_page'} });
+        $rs = $category->$category_access->search($search_criteria, $search_rules);
     }
     else
     {
-        $rs = $self->get_schema()->resultset($self->ORMObj())->search($search_criteria, { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => $default_page, rows => $args{'entries_per_page'}});
+        $rs = $self->get_schema()->resultset($self->ORMObj())->search($search_criteria, $search_rules);
     }
     my $elements;
     my $last_page;

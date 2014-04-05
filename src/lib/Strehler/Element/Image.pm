@@ -34,6 +34,10 @@ sub main_title
         return "*** no title ***";
     }
 }
+sub order_title
+{
+    return 'descriptions.title';
+}
 sub fields_list
 {
     my $self = shift;

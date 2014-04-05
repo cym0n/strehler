@@ -36,6 +36,10 @@ sub main_title
     }
 
 }
+sub order_title
+{
+    return 'contents.title';
+}
 
 #Ad hoc accessors and hooks
 sub image

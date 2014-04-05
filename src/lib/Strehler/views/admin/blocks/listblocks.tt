@@ -87,7 +87,7 @@
     [% IF order_by == field.id %]
         [% myorder = invert %]
     [% ELSE %]
-        [% myorder = 'desc' %]
+        [% myorder = 'asc' %]
     [% END %]
         
     [% IF field.ordinable %]
