@@ -78,3 +78,28 @@
   });
 </script>
 [% END %]
+[% BLOCK listhead %]
+[% IF order == 'desc' %][% invert = 'asc' %][% else %][% invert = 'desc' %][% END %]
+<thead>
+<tr>
+[% FOREACH field IN fields %]
+ <th>
+    [% IF order_by == field.id %]
+        [% myorder = invert %]
+    [% ELSE %]
+        [% myorder = 'desc' %]
+    [% END %]
+        
+    [% IF field.ordinable %]
+    <a href="[% request.path %]?order-by=[% field.id %]&order=[% myorder %]">
+    [% END %]
+    [% field.label %][% IF order_by == field.id %]
+                        <span class="caret ordered [% order %]"></span>
+                     [% END %]
+    [% IF field.ordinable %]</a>[% END %]
+</th>
+[% END %]
+</tr>
+</thead>
+[% END %]      
+

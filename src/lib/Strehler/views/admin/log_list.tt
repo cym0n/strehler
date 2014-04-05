@@ -5,15 +5,7 @@
 <div class="content articlelist span12">
         [% INCLUDE pager_no_new %]
         <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Timestamp</th>
-                <th>User</th>
-                <th>Action</th>
-                <th>Object</th>
-            </tr>
-        </thead>
+        [% INCLUDE listhead %]
         <tbody>
             [% FOREACH el IN elements %]
             <tr>

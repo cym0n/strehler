@@ -5,6 +5,7 @@ use Dancer2 0.11;
 use Dancer2::Plugin::DBIC;
 use Strehler::Meta::Tag;
 use Strehler::Meta::Category;
+use Strehler::Helpers;
 
 has row => (
     is => 'ro',
@@ -64,15 +65,7 @@ sub publishable
 {
     my $self = shift;
     my $item = $self->metaclass_data('item_type');
-    return 1 if($item eq 'article');
-    if(config->{'Strehler'}->{'extra_menu'}->{$item}->{'publishable'})
-    {
-        return config->{'Strehler'}->{'extra_menu'}->{$item}->{'publishable'};
-    }
-    else
-    {
-        return 0;
-    }
+    return Strehler::Helpers::get_entity_attr($item, 'publishable');
 }
 sub exists
 {
@@ -302,6 +295,62 @@ sub main_title
     {
         return "[". $self->get_attr('id') . "]";
     }
+}
+sub order_title
+{
+    my $self = shift;
+
+    my $resultset = $self->get_schema()->resultset($self->ORMObj());
+    if($resultset->result_source->has_column('title'))
+    {
+        return 'title';
+    }
+    elsif($resultset->result_source->has_column('name'))
+    {
+        return 'name';
+    }
+    else
+    {
+        return 'id';
+    }
+}
+sub fields_list
+{
+    my $self = shift;
+    my $item = $self->metaclass_data('item_type');
+    my %attributes = Strehler::Helpers::get_entity_data($item);
+    my @fields = ( { 'id' => 'id',
+                     'label' => 'ID',
+                     'ordinable' => 1 },
+                   { 'id' => 'title',
+                     'label' => 'Title',
+                     'ordinable' => 1 } );
+    if($attributes{'categorized'})
+    {
+        push @fields, { 'id' => 'category',
+                       'label' => 'Category',
+                       'ordinable' => 0 };
+    }
+    if($attributes{'ordered'})
+    {
+        push @fields, { 'id' => 'display_order',
+                       'label' => 'Order',
+                       'ordinable' => 1 };
+    }
+    if($attributes{'dated'})
+    {
+        push @fields, { 'id' => 'publish_date',
+                       'label' => 'Date',
+                       'ordinable' => 1 };
+    }
+    if($attributes{'publishable'})
+    {
+        push @fields, { 'id' => 'published',
+                       'label' => 'Status',
+                       'ordinable' => 1 };
+    }
+    return \@fields;
+    
 }
 sub publish
 {
@@ -549,6 +598,10 @@ sub get_list
 
     my $no_paging = 0;
     my $default_page = 1;
+    if($args{'order_by'} eq 'title')
+    {
+       $args{'order_by'} = $self->order_title();
+    }
     if($args{'entries_per_page'} == -1)
     {
         $args{'entries_per_page'} = undef;

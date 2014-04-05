@@ -37,6 +37,32 @@ sub main_title
     return "[" . $self->get_attr('timestamp') . "] " . $self->get_attr('action') . " " . $self->get_attr('entity_type');
 }
 
+sub fields_list
+{
+    my $self = shift;
+    my $item = $self->metaclass_data('item_type');
+    my %attributes = Strehler::Helpers::get_entity_data($item);
+    my @fields = ( { 'id' => 'id',
+                     'label' => 'ID',
+                     'ordinable' => 1 },
+                   { 'id' => 'timestamp',
+                     'label' => 'Timestamp',
+                     'ordinable' => 1 },
+                   { 'id' => 'user',
+                       'label' => 'User',
+                       'ordinable' => 1 },
+                   { 'id' => 'action',
+                       'label' => 'Action',
+                       'ordinable' => 0 },
+                   { 'id' => 'object',
+                       'label' => 'Object',
+                       'ordinable' => 0 }
+               );
+    return \@fields;
+    
+}
+
+
 =encoding utf8
 
 =head1 NAME

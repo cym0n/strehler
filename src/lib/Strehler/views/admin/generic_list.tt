@@ -12,16 +12,7 @@
             [% INCLUDE pager_no_new %]
         [% END %]
         <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Title</th>
-                [% IF categorized %]<th>Category</th>[% END %]
-                [% IF ordered %]<th>Order</th>[% END %]
-                [% IF dated %]<th>Date</th>[% END %]
-                [% IF publishable %]<th>Status</th>[% END %]
-            </tr>
-        </thead>
+        [% INCLUDE listhead %]
         <tbody>
             [% FOREACH el IN elements %]
             <tr>

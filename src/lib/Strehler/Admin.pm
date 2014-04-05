@@ -473,6 +473,8 @@ any '/:entity/list' => sub
     
     my $page = exists params->{'page'} ? params->{'page'} : session $entity . '-page';
     my $cat_param = exists params->{'cat'} ? params->{'cat'} : session $entity . '-cat-filter';
+    my $order = exists params->{'order'} ? params->{'order'} : session $entity . '-order';
+    my $order_by = exists params->{'order-by'} ? params->{'order-by'} : session $entity . '-order-by';
     my $wanted_cat = undef;
     if(exists params->{'catname'})
     {
@@ -501,13 +503,17 @@ any '/:entity/list' => sub
         }
     }
     $page ||= 1;
+    $order ||= 'desc';
+    $order_by ||= 'id';
     my $entries_per_page = 20;
     my $class = $entity_data{'class'};
     eval "require $class";
-    my $elements = $class->get_list({ page => $page, entries_per_page => $entries_per_page, category_id => $cat_param});
+    my $elements = $class->get_list({ page => $page, entries_per_page => $entries_per_page, category_id => $cat_param, order => $order, order_by => $order_by});
     session $entity . '-page' => $page;
     session $entity . '-cat-filter' => $cat_param;
-    template $custom_list_view, { (entity => $entity, elements => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, last_page => $elements->{'last_page'}), %entity_data };
+    session $entity . '-order' => $order;
+    session $entity . '-order-by' => $order_by;
+    template $custom_list_view, { (entity => $entity, elements => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, order => $order, order_by => $order_by, fields => $class->fields_list(), last_page => $elements->{'last_page'}), %entity_data };
 };
 get '/:entity/turnon/:id' => sub
 {

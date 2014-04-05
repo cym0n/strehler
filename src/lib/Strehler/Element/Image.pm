@@ -34,6 +34,27 @@ sub main_title
         return "*** no title ***";
     }
 }
+sub fields_list
+{
+    my $self = shift;
+    my $item = $self->metaclass_data('item_type');
+    my %attributes = Strehler::Helpers::get_entity_data($item);
+    my @fields = ( { 'id' => 'id',
+                     'label' => 'ID',
+                     'ordinable' => 1 },
+                   { 'id' => 'title',
+                     'label' => 'Title',
+                     'ordinable' => 1 },
+                   { 'id' => 'category',
+                       'label' => 'Category',
+                       'ordinable' => 0 },
+                   { 'id' => 'Preview',
+                       'label' => 'Preview',
+                       'ordinable' => 0 }
+               );
+    return \@fields;
+    
+}
 
 #Save form redefined to manage image upload
 sub save_form

@@ -33,6 +33,16 @@
     margin-top: 4px;
     margin-left: 12px;
 }
+table th .ordered
+{
+    margin-left: 8px;
+    margin-top: 8px;
+}
+table th .asc
+{
+    border-top-width: 0;
+    border-bottom: 4px solid #000000;
+}
 .articlelist .thumbnail img
 {
     height: 80px;
