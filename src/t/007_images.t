@@ -38,6 +38,8 @@ Test::TCP::test_tcp(
         #LIST
         $res = $ua->get($site . "/admin/image/list");
         is($res->code, 200, "Images page correctly accessed");
+        $res = $ua->get($site . "/admin/image/list?order-by=descriptions.title&order=asc");
+        is($res->code, 200, "Images page correctly accessed (ordering parameters added");
 
         #ADD        
         $res = $ua->post($site . "/admin/image/add",

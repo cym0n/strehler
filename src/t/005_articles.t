@@ -37,6 +37,8 @@ Test::TCP::test_tcp(
         #LIST
         $res = $ua->get($site . "/admin/article/list");
         is($res->code, 200, "Articles page correctly accessed");
+        $res = $ua->get($site . "/admin/article/list?order-by=contents.title&order=asc");
+        is($res->code, 200, "Articles page correctly accessed (order parameters added)");
 
         #ADD        
         $res = $ua->post($site . "/admin/article/add",

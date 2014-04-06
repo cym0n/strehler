@@ -1,3 +1,9 @@
+1.1.6
+=====
+
+* fields\_list introduced to manage table header in Strehler backend list view
+* Elements in list view can now be ordered
+
 
 1.1.5
 =====

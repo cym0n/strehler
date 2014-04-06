@@ -101,6 +101,18 @@ Return the main title for the element. The standard implementation try for an at
 
 In Articles and Images it returns the title attribute in the default language.
 
+=item fields_list
+
+Return Value: $list_of_fields
+
+Return a pointer to an array used by list views to configure the header (and just the header) of the table of contents. Every element of the list is a pointer to an hash. Hash attributes are the following:
+
+    label: The label that will be displayed
+    id: used only if the field is ordinable, the db column user to order objects
+    ordinable: true if the column can be used to order elements
+
+About id consider notes about order_by field in the get_list method.
+
 =back
 
 =head1 METHODS TO MANIPULATE ENTITIES
@@ -139,7 +151,7 @@ Main class method to retrieve elements. There're many query_params you can use.
 
     order => desc|asc # The order of the results. Default is desc
     order_by => $order_by # The field to order by. Default is id. 
-                          #Accept array_ref for multiple ordering.
+                          # Accept array_ref for multiple ordering.
     entries_per_page => $entries # How many results retrieve. Default is 20.
                                  # -1 makes the method return ALL results
     page => $page. Default is 1
@@ -151,6 +163,8 @@ Main class method to retrieve elements. There're many query_params you can use.
                           # Category can be written in the form $parent/$cat
     category_id => $category_id # Retrieve elements with the category with that id
     ext => 1 # Return elements with al data (get_ext_data is invoked)
+
+order_by attribute can be written as a field of the multilanguage children table. For example articles can be ordered using contents.title. In this case contents table will be filtered on language field, using only the considered language in the query.
 
 All the parameters can be combined togheter.
 
