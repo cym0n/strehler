@@ -25,6 +25,20 @@ sub main_title
     return $self->get_attr('user');
 }
 
+sub fields_list
+{
+    my $self = shift;
+    my @fields = ( { 'id' => 'id',
+                     'label' => 'ID',
+                     'ordinable' => 1 },
+                   { 'id' => 'user',
+                     'label' => 'Username',
+                     'ordinable' => 1 },
+               );
+    return \@fields;
+    
+}
+
 #Because of password management we need to override form management methods
 sub get_form_data
 {

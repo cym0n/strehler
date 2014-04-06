@@ -36,10 +36,31 @@ sub main_title
     }
 
 }
-sub order_title
+sub fields_list
 {
-    return 'contents.title';
+    my $self = shift;
+    my @fields = ( { 'id' => 'id',
+                     'label' => 'ID',
+                     'ordinable' => 1 },
+                   { 'id' => 'contents.title',
+                     'label' => 'Title',
+                     'ordinable' => 1 },
+                   { 'id' => 'category',
+                       'label' => 'Category',
+                       'ordinable' => 0 },
+                   { 'id' => 'display_order',
+                     'label' => 'Order',
+                     'ordinable' => 1 },
+                   { 'id' => 'publish_date',
+                     'label' => 'Date',
+                     'ordinable' => 1 },
+                   { 'id' => 'published',
+                     'label' => 'Status',
+                     'ordinable' => 1 }
+                );
+    return \@fields;
 }
+
 
 #Ad hoc accessors and hooks
 sub image

@@ -34,19 +34,13 @@ sub main_title
         return "*** no title ***";
     }
 }
-sub order_title
-{
-    return 'descriptions.title';
-}
 sub fields_list
 {
     my $self = shift;
-    my $item = $self->metaclass_data('item_type');
-    my %attributes = Strehler::Helpers::get_entity_data($item);
     my @fields = ( { 'id' => 'id',
                      'label' => 'ID',
                      'ordinable' => 1 },
-                   { 'id' => 'title',
+                   { 'id' => 'descriptions.title',
                      'label' => 'Title',
                      'ordinable' => 1 },
                    { 'id' => 'category',

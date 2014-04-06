@@ -296,35 +296,36 @@ sub main_title
         return "[". $self->get_attr('id') . "]";
     }
 }
-sub order_title
-{
-    my $self = shift;
-
-    my $resultset = $self->get_schema()->resultset($self->ORMObj());
-    if($resultset->result_source->has_column('title'))
-    {
-        return 'title';
-    }
-    elsif($resultset->result_source->has_column('name'))
-    {
-        return 'name';
-    }
-    else
-    {
-        return 'id';
-    }
-}
 sub fields_list
 {
     my $self = shift;
     my $item = $self->metaclass_data('item_type');
     my %attributes = Strehler::Helpers::get_entity_data($item);
+    my $resultset = $self->get_schema()->resultset($self->ORMObj());
+    my $title_id;
+    my $title_label;
+    if($resultset->result_source->has_column('title'))
+    {
+        $title_label = 'Title';
+        $title_id = 'title';
+    }
+    elsif($resultset->result_source->has_column('name'))
+    {
+        $title_label = 'Name';
+        $title_id = 'name';
+    }
+    else
+    {
+        $title_label = 'Title';
+        $title_id = undef;
+    }
+    my $title_ordinable = $title_id ? 1 : 0;
     my @fields = ( { 'id' => 'id',
                      'label' => 'ID',
                      'ordinable' => 1 },
-                   { 'id' => 'title',
-                     'label' => 'Title',
-                     'ordinable' => 1 } );
+                   { 'id' => $title_id,
+                     'label' => $title_label,
+                     'ordinable' => $title_ordinable } );
     if($attributes{'categorized'})
     {
         push @fields, { 'id' => 'category',
