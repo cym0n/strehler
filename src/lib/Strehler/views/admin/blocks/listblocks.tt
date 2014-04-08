@@ -22,7 +22,7 @@
     </div>
 [% END %]
 [% BLOCK categoryfilter %]
-        <div class="row well" style="margin-left:0">        
+        <div class="row">
          <div class="span2">
             Filter on category:
          </div>
@@ -36,12 +36,23 @@
         </div>
         <div class="btn-group span3">
         <a href="#" id="filter-button" class="btn">Filter</a>
-        <a href="[% request.path_info %]?cat=&page=" id="filter-button" class="btn">Reset filter</a>
+        <a href="[% request.path_info %]?cat=&page=" class="btn">Reset filter</a>
         </div>
         </div>
 [% END %]
+[% BLOCK searchbox %]
+    <div class="row">
+    <div class="span1">
+         Search:
+    </div>
+    <div class="span3"><input id="search-field" type="text" name="search" /></div>
+    <div class="btn-group span3">
+    <a href="#" id="search-button" class="btn">Search</a>
+    <a href="[% request.path_info %]?search=" class="btn">Reset search</a>
+    </div>
+    </div>
+[% END %]
 [% BLOCK filterscripts %]
-
 <script>
   function go_to_filtered()
   {
@@ -77,6 +88,28 @@
         
   });
 </script>
+<script>
+  function go_to_search()
+  {
+    search = $('#search-field').val();
+    if(! search)
+    {
+        alert("nothing to do");
+        return false;
+    }
+    var raw = "[% request.request_uri %]";
+    raw = raw.replace(/\?.*/, '');
+    destination = raw+"?page=1&search="+search;
+
+    window.location.href = destination;
+    return false;
+  }
+  $(document).ready(function() {
+        $("#search-button").on("click", go_to_search);
+        
+  });
+</script>
+
 [% END %]
 [% BLOCK listhead %]
 [% IF order == 'desc' %][% invert = 'asc' %][% else %][% invert = 'desc' %][% END %]

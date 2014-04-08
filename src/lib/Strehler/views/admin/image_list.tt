@@ -3,7 +3,10 @@
     <h1>[% label %]</h1>
 </div>
 <div class="content articlelist span12">
+        <div class="row well" style="margin-left:0">        
         [% INCLUDE categoryfilter %]
+        [% INCLUDE searchbox %]
+        </div>
         [% INCLUDE pager %]
         <table class="table table-striped">
         [% INCLUDE listhead %]

@@ -111,6 +111,15 @@ sub save_form
     Strehler::Meta::Tag->save_tags($form->param_value('tags'), $img_row->id, 'image');
     return $img_row->id;     
 }
+sub search_box
+{
+    my $self = shift;
+    my $string = shift;
+    my $parameters = shift;
+    $parameters->{'search'} = { 'descriptions.title' => { 'like', "%$string%" } };
+    $parameters->{'join'} = 'descriptions';
+    return $self->get_list($parameters);
+}
 
 =encoding utf8
 
