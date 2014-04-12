@@ -52,6 +52,17 @@
     </div>
     </div>
 [% END %]
+[% BLOCK tools %]
+        <div id="list-tools"><a href="#" class="btn btn-warning btn-tools"><span id="tools-label">Tools</span></a> 
+        <div id="tools" class="well" style="margin-left:0">        
+        [% IF categorized %]
+            [% INCLUDE categoryfilter %]
+        [% END %]
+        [% INCLUDE searchbox %]
+        </div>
+        </div>
+[% END %]
+
 [% BLOCK filterscripts %]
 <script>
   function go_to_filtered()
