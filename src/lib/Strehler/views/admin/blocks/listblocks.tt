@@ -2,12 +2,23 @@
         [% IF page > 1 %]
             <a href="[% request.path %]?page=[% page - 1 %]" class="span1 btn">&lt;</a>
         [% ELSE %]
-            <span class="span1">&nbsp;</span>
+            <span class="span1 btn disabled">&lt;</span>
+        [% END %]
+        [% IF last_page > 1 %]
+          [% pages = 1 %]
+          <span class="span1">
+          <select class="span1 pageturn">
+            [% WHILE pages <= last_page %]
+            <option value=[% pages %] [% IF pages == page %]selected[% END %]>[% pages %]</option>
+            [% pages = pages + 1 %]
+            [% END %]
+          </select>
+            </span>
         [% END %]
         [% IF page < last_page %]
             <a href="[% request.path %]?page=[% page + 1 %]" class="span1 btn">&gt;</a>
         [% ELSE %]
-            <span class="span1">&nbsp;</span>
+            <span class="span1 btn disabled">&gt;</span>
         [% END %]
 [% END %]
 [% BLOCK pager %]
@@ -64,6 +75,17 @@
 [% END %]
 
 [% BLOCK filterscripts %]
+<script>
+    $(function(){
+      $('.pageturn').bind('change', function () {
+          var url = '[% request.path %]?page='+$(this).val(); 
+          if (url) { 
+              window.location = url; // redirect
+          }
+          return false;
+      });
+    });
+</script>
 <script>
   function go_to_filtered()
   {

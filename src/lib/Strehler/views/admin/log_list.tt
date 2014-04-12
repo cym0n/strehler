@@ -22,4 +22,6 @@
         </table>
         [% INCLUDE pager_no_new %]
 </div>
+[% INCLUDE filterscripts %]
+
 
