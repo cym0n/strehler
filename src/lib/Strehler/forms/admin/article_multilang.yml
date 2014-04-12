@@ -3,6 +3,12 @@ elements:
       label: Title
       attributes: 
         class: span8
+    - name: slug
+      label: "Slug [Automatic]"
+      type: Label
+      default: "..."
+      attributes: 
+        class: span8
     - name: text
       label: Text
       type: Textarea
