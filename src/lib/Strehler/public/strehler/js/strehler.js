@@ -140,4 +140,21 @@ function get_last_chapter() {
         $('#order').val(null); 
     }
 }
+$(function() {
+        $( "#list-tools" ).accordion({
+            collapsible: true,
+            active: false,
+            activate : function (event, ui)
+                   {
+                       if(ui.newPanel.length == 0)
+                       {
+                           $('#tools-label').text("Tools")
+                       }
+                       else
+                       {
+                          $('#tools-label').text("Hide tools")
+                       }
+                   }
+        });
+  });
 

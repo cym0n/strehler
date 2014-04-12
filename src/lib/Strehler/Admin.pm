@@ -524,7 +524,7 @@ any '/:entity/list' => sub
     session $entity . '-order' => $order;
     session $entity . '-order-by' => $order_by;
     session $entity . '-search' => $search;
-    template $custom_list_view, { (entity => $entity, elements => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, order => $order, order_by => $order_by, fields => $class->fields_list(), last_page => $elements->{'last_page'}), %entity_data };
+    template $custom_list_view, { (entity => $entity, elements => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, search => $search, order => $order, order_by => $order_by, fields => $class->fields_list(), last_page => $elements->{'last_page'}), %entity_data };
 };
 get '/:entity/turnon/:id' => sub
 {

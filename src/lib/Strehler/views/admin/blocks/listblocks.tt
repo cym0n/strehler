@@ -45,7 +45,7 @@
     <div class="span1">
          Search:
     </div>
-    <div class="span3"><input id="search-field" type="text" name="search" /></div>
+    <div class="span3"><input id="search-field" type="text" name="search" value="[% search %]" /></div>
     <div class="btn-group span3">
     <a href="#" id="search-button" class="btn">Search</a>
     <a href="[% request.path_info %]?search=" class="btn">Reset search</a>
@@ -82,10 +82,13 @@
     window.location.href = destination;
     return false;
   }
+ 
   $(document).ready(function() {
         maincategories([% IF cat_filter %][% cat_filter %][% IF subcat_filter %], [% subcat_filter %][% END %][% END %]);
         $("#filter-button").on("click", go_to_filtered);
-        
+        [% IF cat_filter %]
+        $( "#list-tools" ).accordion("option", "active", 0);
+        [% END %]
   });
 </script>
 <script>
@@ -106,7 +109,11 @@
   }
   $(document).ready(function() {
         $("#search-button").on("click", go_to_search);
-        
+        search = $('#search-field').val();
+        if(search)
+        {
+            $( "#list-tools" ).accordion("option", "active", 0);
+        }
   });
 </script>
 

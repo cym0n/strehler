@@ -8,10 +8,10 @@
 <link rel="stylesheet" href="[% request.uri_base %]/strehler/bootstrap/datepicker/css/datepicker.css" />
 <link rel="stylesheet" href="[% request.uri_base %]/strehler/css/admin.css" />
 <script src="[% request.uri_base %]/strehler/js/jquery.js"></script>
+<script src="[% request.uri_base %]/strehler/js/jquery-ui-1.10.3.custom.min.js"></script>
 <script src="[% request.uri_base %]/strehler/bootstrap/js/bootstrap.min.js"></script>
 <script src="[% request.uri_base %]/strehler/bootstrap/datepicker/js/bootstrap-datepicker.js"></script>
 <script src="[% request.uri_base %]/strehler/js/strehler.js"></script>
-
 </head>
 <body>
 <div class="navbar">

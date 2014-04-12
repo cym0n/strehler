@@ -2,12 +2,17 @@
 <div class="span12">
     <h1>[% label %]</h1>
 </div>
+<div class="span12">
+
+</div>
 <div class="content articlelist span12">
-        <div class="well" style="margin-left:0">        
+        <div id="list-tools"><a href="#" class="btn btn-warning btn-tools"><span id="tools-label">Tools</span></a> 
+        <div id="tools" class="well" style="margin-left:0">        
         [% IF categorized %]
             [% INCLUDE categoryfilter %]
         [% END %]
         [% INCLUDE searchbox %]
+        </div>
         </div>
         [% IF creatable %]
             [% INCLUDE pager %]
