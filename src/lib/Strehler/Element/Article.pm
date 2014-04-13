@@ -91,7 +91,14 @@ sub save_slug
     my $id = shift;
     my $form = shift;
     my $lan = shift;
-    return $id . '-' . Strehler::Helpers::slugify($form->param_value('title_' . $lan));
+    if($form->param_value('title_' . $lan))
+    {
+        return $id . '-' . Strehler::Helpers::slugify($form->param_value('title_' . $lan));
+    }
+    else
+    {
+        return undef;
+    }
 }
 
 #Method to manage slugs
