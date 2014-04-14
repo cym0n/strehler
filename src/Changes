@@ -1,6 +1,8 @@
 1.1.6
 =====
 
+_Tue Apr 15 2014_
+
 * fields\_list introduced to manage table header in Strehler backend list view
 * Elements in list view can now be ordered
 * Search box
