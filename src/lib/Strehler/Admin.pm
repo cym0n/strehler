@@ -668,10 +668,10 @@ ajax '/:entity/tagform/:id?' => sub
            template 'admin/open_tags';
     }
 };
-ajax '/:entity/lastchapter/:id' => sub
+ajax '/:entity/lastchapter/:id?' => sub
 {
     my $entity = params->{entity};
-    my $id = params->{id};
+    my $id = params->{id} || undef;
     my %entity_data = Strehler::Helpers::get_entity_data($entity);
     if(! $entity_data{'auto'})
     {

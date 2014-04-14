@@ -117,28 +117,38 @@ function tags_init(id)
 }
 function get_last_chapter() {
     var category;
-    if($("#subcat").val())
+    if ($("#category_selector").length > 0)
     {
-        category = $("#subcat").val();
+        if($("#subcat").val())
+        {
+            category = $("#subcat").val();
+        }
+        else
+        {
+            category = $("#category_selector").val();   
+        }
+        if(category)
+        {
+            url = "/admin/"+item_type+"/lastchapter/"+category;
+        }
+        else
+        {
+            alert("No category selected")
+            return false;
+        }
     }
     else
     {
-        category = $("#category_selector").val();   
+        url = "/admin/"+item_type+"/lastchapter/";
     }
-    if(category)
-    {
-        var request = $.ajax({
-                               url: "/admin/"+item_type+"/lastchapter/"+category,
+    var request = $.ajax({
+                               url: url,
                                dataType: 'text',
-                            });
-        request.done(function(msg) {
+                         });
+    request.done(function(msg) {
                                     $('#order').val(msg);
-                                   });    
-    }
-    else
-    {
-        $('#order').val(null); 
-    }
+                               });    
+    return false;
 }
 $(function() {
         $( "#list-tools" ).accordion({
