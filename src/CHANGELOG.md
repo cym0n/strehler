@@ -3,7 +3,10 @@
 
 * fields\_list introduced to manage table header in Strehler backend list view
 * Elements in list view can now be ordered
-
+* Search box
+* Filters on category and search box hidden with an accordion
+* Slug visible while editing articles
+* Last chapter feature can be used also if entity is not categorized
 
 1.1.5
 =====
