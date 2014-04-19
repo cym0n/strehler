@@ -46,7 +46,7 @@ Strehler::FormFu::Element::EntitySelect - FormFu Element to allow browsing a Str
 
 A Strehler element that you can include in your form configuration to add in an entity edit form a select box populated with the elements of another entity, tipically to manage a foreign key field.
 
-This element hasn't the standard HTML::FormFu validators namespace because it makes sense only in a Strehler system.
+This element hasn't the standard HTML::FormFu elements namespace because it makes sense only in a Strehler system.
 
 =head1 SYNOPSIS
 
