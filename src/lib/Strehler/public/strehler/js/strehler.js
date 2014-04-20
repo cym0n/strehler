@@ -52,7 +52,14 @@ function get_final_category()
     }
     else
     {
-        return $('#subcat').val();
+        if($('#subcat').val() == '*')
+        {
+            return "anc:"+$('#category_selector').val();
+        }
+        else
+        {
+            return $('#subcat').val();
+        }
     }
 }
 function category_init(subcat) {

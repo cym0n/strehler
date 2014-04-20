@@ -141,6 +141,10 @@ sub make_select
     my @category_values = $self->get_schema()->resultset('Category')->search({ parent => $parent });
     my @category_values_for_select;
     push @category_values_for_select, { value => undef, label => "-- select --" }; 
+    if($parent)
+    {
+        push @category_values_for_select, { value => '*', label => "-- all --" }; 
+    }
     for(@category_values)
     {
         push @category_values_for_select, { value => $_->id, label => $_->category }

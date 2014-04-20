@@ -661,6 +661,19 @@ sub get_list
         my $category_access = $self->category_accessor($category);
         $rs = $category->$category_access->search($search_criteria, $search_rules);
     }
+    elsif(exists $args{'ancestor'} && $args{'ancestor'})
+    {
+        my $category_obj = Strehler::Meta::Category->new($args{'ancestor'});
+        my @category_ids;
+        push @category_ids, $args{'ancestor'};
+        my @subcategories = $category_obj->subcategories;
+        for(@subcategories)
+        {
+            push @category_ids, $_->get_attr('id');
+        }
+        $search_criteria->{'category'} = { -in => \@category_ids };
+        $rs = $self->get_schema()->resultset($self->ORMObj())->search($search_criteria, $search_rules);
+    }
     else
     {
         $rs = $self->get_schema()->resultset($self->ORMObj())->search($search_criteria, $search_rules);

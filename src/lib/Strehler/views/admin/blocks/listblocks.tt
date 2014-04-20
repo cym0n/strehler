@@ -95,29 +95,26 @@
         alert("nothing to do");
         return false;
     }
-    var raw = "[% request.request_uri %]";
-
-    //No need of parameter replacement. All parameter will be reset
-    /*raw = raw.replace(/&cat=\d+/, '');
-    raw = raw.replace(/cat=\d+&/, '');
-    raw = raw.replace(/cat=\d+/, '');
-    if(raw.indexOf("?") != -1)
+    is_ancestor = cat.match(/^anc:(\d)/);
+    if(is_ancestor)
     {
-        destination = raw+"&cat="+cat;
+        var param = "ancestor="+is_ancestor[1];
     }
     else
     {
-        destination = raw+"?cat="+cat;
-    }*/
+        var param = "cat="+cat;
+    }
+    var raw = "[% request.request_uri %]";
+
     raw = raw.replace(/\?.*/, '');
-    destination = raw+"?page=1&cat="+cat;
+    destination = raw+"?page=1&"+param;
 
     window.location.href = destination;
     return false;
   }
  
   $(document).ready(function() {
-        maincategories([% IF cat_filter %][% cat_filter %][% IF subcat_filter %], [% subcat_filter %][% END %][% END %]);
+        maincategories([% IF cat_filter %]'[% cat_filter %]'[% IF subcat_filter %], '[% subcat_filter %]'[% END %][% END %]);
         $("#filter-button").on("click", go_to_filtered);
         [% IF cat_filter %]
         $( "#list-tools" ).accordion("option", "active", 0);
