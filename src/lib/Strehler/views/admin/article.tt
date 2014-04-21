@@ -34,7 +34,7 @@
         $("#image_selector").on("change", manage_preview);
         $("#last").on("click", get_last_chapter);
         item_type = 'article';
-        category_init();
+        category_commander();
         tags_init([% id %]);
     });
 </script>

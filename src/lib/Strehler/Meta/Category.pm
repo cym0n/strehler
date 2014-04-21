@@ -140,16 +140,27 @@ sub make_select
     my $parent = shift;
     my @category_values = $self->get_schema()->resultset('Category')->search({ parent => $parent });
     my @category_values_for_select;
-    push @category_values_for_select, { value => undef, label => "-- select --" }; 
+    my @base_select;
+    push @base_select, { value => undef, label => "-- select --" }; 
     if($parent)
     {
         push @category_values_for_select, { value => '*', label => "-- all --" }; 
     }
+    my $category_count = 0;
     for(@category_values)
     {
+        $category_count++;
         push @category_values_for_select, { value => $_->id, label => $_->category }
     }
-    return \@category_values_for_select;
+    if($category_count > 0)
+    {
+        @category_values_for_select = (@base_select, @category_values_for_select);
+        return \@category_values_for_select;
+    }
+    else
+    {
+        return \@base_select;
+    }
 }
 
 sub get_list

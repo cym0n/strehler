@@ -114,7 +114,7 @@
   }
  
   $(document).ready(function() {
-        maincategories([% IF cat_filter %]'[% cat_filter %]'[% IF subcat_filter %], '[% subcat_filter %]'[% END %][% END %]);
+        category_init([% cat_filter || 'null' %], [% IF subcat_filter %]'[% subcat_filter %]'[% ELSE %]null[% END %]);
         $("#filter-button").on("click", go_to_filtered);
         [% IF cat_filter %]
         $( "#list-tools" ).accordion("option", "active", 0);

@@ -1,8 +1,4 @@
-function evoke_subcategories(event)
-{
-    subcategories(null);
-}
-function maincategories(cat, subcat)
+function category_init(cat, subcat)
 {
     var request = $.ajax({
         url: "/admin/category/select",
@@ -14,35 +10,98 @@ function maincategories(cat, subcat)
        {
             $("#category_selector").val(cat);
        }
-       category_init(subcat);
     });
-}
-function subcategories(subcat) { 
-        var category = $("#category_selector").val(); 
-        if(category)
+    if(cat)
+    {
+        var request = $.ajax({
+            url: "/admin/category/select/"+cat,
+            dataType: 'text',
+        });
+        request.done(function(msg) {
+            if(msg == 0)
+            {
+                $("#subcat").parent("div").hide();
+                $('#subcat').val(null);
+            }
+            else
+            {
+                $("#subcat").html(msg);
+                if(subcat)
+                {
+                    $("#subcat").val(subcat);
+                }
+            }
+        });
+    }
+    else
+    {
+        $("#subcat").parent("div").hide();
+    }
+    category_commander(cat, subcat);
+};
+function category_commander(cat, subcat)
+{
+    if(! cat)
+    {
+        cat = $("#category_selector").val();
+    }
+    if(! subcat)
+    {
+        subcat = $("#subcat").val();
+    }
+    if(! cat)
+    {
+        $("#subcat").parent("div").hide();
+        $('#subcat').val(null);
+    }
+    else
+    {
+        if(! subcat)
         {
             var request = $.ajax({
-            url: "/admin/category/select/"+category,
-            dataType: 'text',
+                url: "/admin/category/select/"+cat,
+                dataType: 'text',
             });
             request.done(function(msg) {
-                if(msg == '0')
+                $("#subcat").html(msg);
+                if(msg == 0)
                 {
                     $("#subcat").parent("div").hide();
                     $('#subcat').val(null);
                 }
-                else
-                {
-                    $("#subcat").parent("div").show();
-                    $('#subcat').html(msg);
-                    console.dir(subcat);
-                    if(subcat)
-                    {
-                        $('#subcat').val(subcat);
-                    }
-                }
             });
-        }   
+        }
+    }
+    $("#category_selector").on("change", subcat_manager);
+}
+function subcat_manager()
+{
+     var category = $("#category_selector").val(); 
+     if(category)
+     {
+        var request = $.ajax({
+            url: "/admin/category/select/"+category,
+            dataType: 'text',
+        });
+        request.done(function(msg) {
+            if(msg == '0')
+            {
+                $("#subcat").parent("div").hide();
+                $('#subcat').val(null);
+            }
+            else
+            {
+                $("#subcat").parent("div").show();
+                $('#subcat').html(msg);
+                $('#subcat').val(null);
+            }
+        });
+    }
+    else
+    {
+        $("#subcat").parent("div").hide();
+        $('#subcat').val(null);
+    }   
 };
 function get_final_category()
 {
@@ -62,20 +121,7 @@ function get_final_category()
         }
     }
 }
-function category_init(subcat) {
-    $("#category_selector").on("change", evoke_subcategories);
-    if(! $('#subcat').val())
-    {
-        if($('#category_selector').val())
-        {
-            subcategories(subcat);
-        }
-        else
-        {
-            $("#subcat").parent("div").hide();
-        }
-    }
-};
+
 function tags_refresh_on_parent() {
     category = $("#category_selector").val()
     var request = $.ajax({
