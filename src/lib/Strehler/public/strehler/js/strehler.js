@@ -1,3 +1,39 @@
+function subcategories(cat, subcat)
+{
+    var option = $("#category_selector").attr('rel');
+    url = "/admin/category/select/"+cat;
+    if(option)
+    {
+        url = url+'?option='+option;
+    }
+    var request = $.ajax({
+        url: url,
+        dataType: 'text',
+    });
+    request.done(function(msg) {
+        if(msg == 0)
+        {
+            $("#subcat").parent("div").hide();
+            $('#subcat').val(null);
+        }
+        else
+        {
+            $("#subcat").parent("div").show();
+            $("#subcat").html(msg);
+            if(subcat)
+            {
+                $("#subcat").val(subcat);
+            }
+            else
+            {
+                $('#subcat').val(null);
+            }
+        }
+    });
+}
+
+
+
 function category_init(cat, subcat)
 {
     var request = $.ajax({
@@ -13,25 +49,7 @@ function category_init(cat, subcat)
     });
     if(cat)
     {
-        var request = $.ajax({
-            url: "/admin/category/select/"+cat,
-            dataType: 'text',
-        });
-        request.done(function(msg) {
-            if(msg == 0)
-            {
-                $("#subcat").parent("div").hide();
-                $('#subcat').val(null);
-            }
-            else
-            {
-                $("#subcat").html(msg);
-                if(subcat)
-                {
-                    $("#subcat").val(subcat);
-                }
-            }
-        });
+        subcategories(cat, subcat);
     }
     else
     {
@@ -58,44 +76,17 @@ function category_commander(cat, subcat)
     {
         if(! subcat)
         {
-            var request = $.ajax({
-                url: "/admin/category/select/"+cat,
-                dataType: 'text',
-            });
-            request.done(function(msg) {
-                $("#subcat").html(msg);
-                if(msg == 0)
-                {
-                    $("#subcat").parent("div").hide();
-                    $('#subcat').val(null);
-                }
-            });
+            subcategories(cat, subcat);
         }
     }
     $("#category_selector").on("change", subcat_manager);
 }
 function subcat_manager()
 {
-     var category = $("#category_selector").val(); 
-     if(category)
-     {
-        var request = $.ajax({
-            url: "/admin/category/select/"+category,
-            dataType: 'text',
-        });
-        request.done(function(msg) {
-            if(msg == '0')
-            {
-                $("#subcat").parent("div").hide();
-                $('#subcat').val(null);
-            }
-            else
-            {
-                $("#subcat").parent("div").show();
-                $('#subcat').html(msg);
-                $('#subcat').val(null);
-            }
-        });
+    var category = $("#category_selector").val(); 
+    if(category)
+    {
+        subcategories(category);
     }
     else
     {

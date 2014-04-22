@@ -138,11 +138,12 @@ sub make_select
 {
     my $self = shift;
     my $parent = shift;
+    my $option = shift;
     my @category_values = $self->get_schema()->resultset('Category')->search({ parent => $parent });
     my @category_values_for_select;
     my @base_select;
     push @base_select, { value => undef, label => "-- select --" }; 
-    if($parent)
+    if($parent && $option  && $option eq 'ancestor')
     {
         push @category_values_for_select, { value => '*', label => "-- all --" }; 
     }

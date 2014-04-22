@@ -387,7 +387,8 @@ post '/category/delete/:id' => sub
 ajax '/category/select/:id' => sub
 {
     my $id = params->{id};
-    my $data = Strehler::Meta::Category->make_select($id);
+    my $option = params->{option} || undef;
+    my $data = Strehler::Meta::Category->make_select($id, $option);
     if($data->[1])
     {
         template 'admin/category_select', { categories => $data }, { layout => undef };

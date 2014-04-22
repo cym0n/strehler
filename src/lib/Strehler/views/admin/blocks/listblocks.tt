@@ -38,7 +38,7 @@
             Filter on category:
          </div>
          <div class="span3">
-            <select id="category_selector">
+            <select id="category_selector" rel="ancestor">
             </select>
         </div>
         <div class="span3 select">
