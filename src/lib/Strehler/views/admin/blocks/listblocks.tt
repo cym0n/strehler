@@ -95,7 +95,7 @@
         alert("nothing to do");
         return false;
     }
-    is_ancestor = cat.match(/^anc:(\d)/);
+    is_ancestor = cat.match(/^anc:(\d+)/);
     if(is_ancestor)
     {
         var param = "ancestor="+is_ancestor[1];
