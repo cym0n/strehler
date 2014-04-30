@@ -4,6 +4,8 @@ use v5.10;
 use Cwd;
 use File::Copy;
 use File::Copy::Recursive 'dircopy';
+use Dancer2::Core::Runner;
+use Dancer2::Core::App;
 use Strehler;
 use Strehler::Schema;
 use Term::ReadKey;
@@ -119,26 +121,34 @@ sub initdb
 
     if(! $demo)
     {
-        use Dancer2;
-        if(! config->{'plugins'}->{'DBIC'})
+        my $runner = Dancer2::Core::Runner->new( caller => getcwd() . "/bin" );
+        my $app = Dancer2::Core::App->new(
+            name            => "dummy",
+            environment     => $runner->environment,
+            location        => $runner->location,
+            runner_config   => $runner->config,
+            postponed_hooks => $runner->postponed_hooks,
+        );
+  
+        if(! $app->config->{'plugins'}->{'DBIC'})
         {
             say "Can't read config.yml or no DBIC plugin configured in it\n";
             exit();
         }
         my $schema_name = $wanted_schema || 'default';
-        if(! config->{'plugins'}->{'DBIC'}->{$schema_name} && $wanted_schema)
+        if(! $app->config->{'plugins'}->{'DBIC'}->{$schema_name} && $wanted_schema)
         {
             say "Schema $wanted_schema doesn't exists in the config.yml file we're using!\n";
             exit();
         }
-        if(! $wanted_schema && ! config->{'plugins'}->{'DBIC'}->{'default'})
+        if(! $wanted_schema && ! $app->config->{'plugins'}->{'DBIC'}->{'default'})
         {
-            my @availables = keys %{config->{'plugins'}->{'DBIC'}};
+            my @availables = keys %{$app->config->{'plugins'}->{'DBIC'}};
             $schema_name = $availables[0];
         }
-        $dsn = config->{'plugins'}->{'DBIC'}->{$schema_name}->{'dsn'};
-        $user = config->{'plugins'}->{'DBIC'}->{$schema_name}->{'user'};
-        $password = config->{'plugins'}->{'DBIC'}->{$schema_name}->{'password'};
+        $dsn = $app->config->{'plugins'}->{'DBIC'}->{$schema_name}->{'dsn'};
+        $user = $app->config->{'plugins'}->{'DBIC'}->{$schema_name}->{'user'};
+        $password = $app->config->{'plugins'}->{'DBIC'}->{$schema_name}->{'pass'};
         print "Schema: $schema_name\n\n";
         say "DSN: $dsn";
         say "User: $user";

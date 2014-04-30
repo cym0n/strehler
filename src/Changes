@@ -1,3 +1,11 @@
+1.1.7
+=====
+
+_..._
+
+* Filter can now take a category and all its subcategories
+* Fix on strehler script. Now initdb works.
+
 1.1.6
 =====
 
