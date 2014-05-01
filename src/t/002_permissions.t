@@ -29,7 +29,14 @@ Test::TCP::test_tcp(
     server => sub {
         my $port = shift;
         use Dancer2;
-        Dancer2->runner->server->port($port);
+        if($Dancer2::VERSION < 0.14)
+        {
+            Dancer2->runner->server->port($port);
+        }
+        else
+        {
+            Dancer2->runner->{'port'} = $port;
+        }
         start;
     },
 );

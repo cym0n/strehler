@@ -83,7 +83,14 @@ Test::TCP::test_tcp(
     server => sub {
         use Dancer2;
         my $port = shift;
-        Dancer2->runner->server->port($port);
+        if($Dancer2::VERSION < 0.14)
+        {
+            Dancer2->runner->server->port($port);
+        }
+        else
+        {
+            Dancer2->runner->{'port'} = $port;
+        }
         start;
         chdir "t/testapp";
     },
