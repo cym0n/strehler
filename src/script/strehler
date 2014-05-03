@@ -2,8 +2,8 @@
 
 use v5.10;
 use Cwd;
-use File::Copy;
 use File::Copy::Recursive 'dircopy';
+use File::Path 'remove_tree';
 use Dancer2::Core::Runner;
 use Dancer2::Core::App;
 use Strehler;
@@ -77,7 +77,7 @@ sub statics
 
     print "-statics- command: $available_commands{'statics'}\n\n";
 
-    my $origin = $strehler_root . '/public';
+    my $origin = $strehler_root . '/public/strehler';
 
     my $app_directory = getcwd();
     my $destination = $app_directory . '/' . $public_dir;
@@ -94,18 +94,42 @@ sub statics
     }
 
     say "Copying statics from $origin to $destination...";
-    dircopy($origin, $destination);
-    mkdir $destination . '/upload';
-    say "Creating upload directory...";
+    say "Deleting old $destination" . '/strehler';
+    remove_tree($destination . '/strehler');
     if($!)
     {
-        print "\nCOPY FAILED! A problem occured: $!\n\n";
+        print "COPY FAILED! Impossibile to delete old directory: $!\n\n";
     }
     else
     {
-        print "\nSUCCESS! Files copied in your Dancer2 App!\n\n";
+        $File::Copy::Recursive::CPRFComp = 1;
+        dircopy($origin, $destination);
+        if($!)
+        {
+            print "COPY FAILED! A problem occured: $!\n\n";
+        }
+        else
+        {
+            print "SUCCESS! Files copied in your Dancer2 App!\n\n";
+        }
     }
-    mkdir 'public/upload';
+    if(-d $destination . '/upload')
+    {
+        print "Upload directory already present\n\n" 
+    }
+    else
+    { 
+        mkdir $destination . '/upload';
+        say "Creating upload directory...";
+        if($!)
+        {
+            print "UPLOAD DIRECTORY CREATION FAILED! A problem occured: $!\n\n";
+        }
+        else
+        {
+            print "SUCCESS! Upload directory created!\n\n";
+        }
+    }
 }
 
 sub initdb
