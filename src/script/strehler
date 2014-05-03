@@ -93,16 +93,21 @@ sub statics
         exit();
     }
 
-    say "Copying statics from $origin to $destination...";
-    say "Deleting old $destination" . '/strehler';
-    remove_tree($destination . '/strehler');
-    if($!)
+    my $nocopy = 0;
+    if(-d $destination . '/strehler')
     {
-        print "COPY FAILED! Impossibile to delete old directory: $!\n\n";
+        say "Deleting old $destination" . '/strehler';
+        remove_tree($destination . '/strehler');
+        if($!)
+        {
+            print "COPY FAILED! Impossibile to delete old directory: $!\n\n";
+            $nocopy = 1;
+        }
     }
-    else
+    if(! $nocopy)
     {
         $File::Copy::Recursive::CPRFComp = 1;
+        say "Copying statics from $origin to $destination...";
         dircopy($origin, $destination);
         if($!)
         {
