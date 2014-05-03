@@ -2,7 +2,7 @@ use strict;
 use warnings;
 package Strehler;
 {
-  $Strehler::VERSION = '1.1.7';
+  $Strehler::VERSION = '1.1.8';
 }
 
 # ABSTRACT: A light-weight, nerdy, smart CMS in perl based on Perl Dancer2 framework.
