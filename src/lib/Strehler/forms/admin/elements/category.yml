@@ -1,0 +1,12 @@
+elements:
+    - type: Select
+      id: category_selector
+      name: category
+      label: Category
+      constraints:
+        type: Required
+        message: 'Category needed'
+    - type: Select
+      name: subcategory
+      label: Sub-category
+      id: subcat

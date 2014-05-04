@@ -825,9 +825,10 @@ sub form_article
     $form->constraint({ name => 'title_' . $default_language, type => 'Required' }); 
     my $image = $form->get_element({ name => 'image'});
     $image->options(Strehler::Element::Image->make_select());
-    my $category = $form->get_element({ name => 'category'});
+    my $category_block = $form->get_element({ name => 'categoryblock'});
+    my $category = $category_block->get_element({ name => 'category'});
     $category->options(Strehler::Meta::Category->make_select());
-    my $subcategory = $form->get_element({ name => 'subcategory'});
+    my $subcategory = $category_block->get_element({ name => 'subcategory'});
     $subcategory->options(Strehler::Meta::Category->make_select($has_sub));
     return $form;
 }

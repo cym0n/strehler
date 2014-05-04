@@ -7,17 +7,7 @@ elements:
       attributes: 
         id: image_selector
         class: span8
-    - type: Select
-      id: category_selector
-      name: category
-      label: Category
-      constraints:
-        type: Required
-        message: 'Category needed'
-    - type: Select
-      name: subcategory
-      label: Sub-category
-      id: subcat
+    - type: "+Strehler::FormFu::Element::Category"
     - type: Block
       tag: div
       id: tags-place
