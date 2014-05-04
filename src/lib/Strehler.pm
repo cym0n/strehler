@@ -61,6 +61,8 @@ This command will copy static resources used by Strehler in the public directory
 
 Using strehler statics on your app is MANDATORY to use Strehler capabilities.
 
+Attention: every time you run strehler statics the public/strehler directory is removed and copy as new from the package. Do not use this directory for your files if you think you could run strehler statics more than once (for example, updating package)
+
 =item initdb 
 
 Go in the root directory of your Dancer2 app, ensure you have in it a config.yml with a Dancer2::Plugin::DBIC configured and type
