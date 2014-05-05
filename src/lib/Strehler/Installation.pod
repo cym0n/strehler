@@ -1,0 +1,111 @@
+# ABSTRACT: Installation guide for Strehler
+package Strehler::Installation;
+
+=encoding utf8
+
+=pod
+
+=head1 DESCRIPTION
+
+A guide to install Strehler on your Dancer2 app and enjoy all the power of a ready-to-use general purpose CMS.
+
+=head1 GETTING THE MODULE
+
+Strehler module can be easly installed from CPAN
+
+    cpan -i Strehler
+
+Strehler has L<Dancer2> as a mandatory dependency so getting it will give you all the tools to create a Dancer2 app (including L<Dancer2::Plugin::DBIC>).
+
+=head1 INSTALLING ON A DANCER2 APP
+
+This tutorial needs a Dancer2 app already create and, generally speaking, is intended for users with some knowledge about Dancer2 framework. Strehler is a ready-to-use package, but it's still a toy for developers.
+
+=head2 DATABASE
+
+Dancer2 app needs a database. Connection will be managed by L<Dancer2::Plugin::DBIC> so database's configuration has to be inserted in B<config.yml>.
+
+    plugins:
+        DBIC:
+            default:
+                dsn: dbi:mysql:mydb
+                schema_class: Strehler::Schema
+                user: myuser
+                pass: mypassword
+                options:
+                    RaiseError: 1
+                    PrintError: 1
+                    mysql_enable_utf8: 1
+
+As you can see you can directly use L<Strehler::Schema> as your B<schema_class>. This is the fastest solution and the recommended one if you won't modify the database adding tables other than the ones used by Strehler.
+
+With the configuration of your database in the B<config.yml> you can run (from the root directory of your project):
+
+    strehler initdb
+
+This script will create on your database all the tables needed by Strehler, asking you, during the procedure, to choose a password for your admin user.
+
+B<BEWARE>: All the tables will be preceded by a B<DROP IF EXIST> command, so if ou run the command on a database where a Strehler table is present that will be destroyed and recreated. B<DO NOT USE> this script to update the database from a Strehler version to another.
+
+After using initdb command, if you chose to not use Strehler::Schema you can dump the schema using dbicdump from L<DBIx::Class::Schema::Loader>.
+
+=head2 STATIC CONTENTS
+
+Static contents (css and javascript) must be copied in the public directory of the project to make them available.
+
+In the root directory of the project type
+
+    strehler statics
+
+This will copy under your public directory a strehler directory containing all the elements needed by the CMS.
+
+strehler statics will erase the public/strehler directory every time you'll call it, to replace it with a fresh one from the package. Please, don't use this directory for your custom elements if you want to use this script also to update resources after a Strehler package update.
+
+=head2 CONFIG.YML
+
+Strehler needs something configured in your B<config.yml> file.
+All informations about configuration is here L<https://github.com/cym0n/strehler/wiki/Configuration>. 
+The snippet below represent the minimal code needed to run CMS.
+
+    Strehler:
+        languages: ['it']
+        default_language: 'it'
+        timezone: 'Europe/Rome'
+
+Yes, i'm italian and the configuration follows my needs. :-)
+
+=head2 APP.PL SCRIPT
+
+In the B<bin/app.pl> script just add
+
+    use Strehler::Admin;
+
+This directive B<must> be placed after the use directive for your main site module, as in the example below:
+
+    #!/usr/bin/env perl
+
+    use FindBin;
+    use lib "$FindBin::Bin/../lib";
+
+    use Site;
+    use Strehler::Admin;
+
+    Site->dance;
+
+=head2 DANCE WITH STREHLER
+
+Run your site, go to yourdomain.com/admin, enter B<admin> as username and the password you chose during database init and enjoy Strehler!
+
+=head1 DEMO
+
+You can just try Strehler without creating a Dancer2 app and with very little Dancer2 knowledge using the demo command of the strehler script.
+Just type:
+
+    strehler demo
+
+A complete Dancer2 app with Strehler installed will be created in a directory named B<StrehlerDemo>.Now type:
+
+    cd StrehlerDemo
+    bin/app.pl
+
+Open your browser and go to http://localhost:3000/admin. Enter B<admin> as username and B<admin> as password then try out all the Strehler feature as in a real site.
