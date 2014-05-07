@@ -18,6 +18,22 @@ sub metaclass_data
     return $element_conf{$param};
 }
 
+#Standard configuration overrides
+
+sub label
+{
+    return 'Users';
+}
+sub role
+{
+    return 'admin';
+}
+sub class
+{
+    return __PACKAGE__;
+}
+
+
 #Main title redefined because here it's user
 sub main_title
 {

@@ -137,15 +137,30 @@ sub get_entity_attr
 {
     my $entity = shift;
     my $attr = shift;
-    my %entity_data = get_entity_data($entity);
-    if(%entity_data)
+    my $class;
+    if($entity eq 'article')
     {
-        return $entity_data{$attr};
+        $class = 'Strehler::Element::Article';
+    }
+    elsif($entity eq 'image')
+    {
+        $class = 'Strehler::Element::Image';
+    }
+    elsif($entity eq 'user')
+    {
+        $class = 'Strehler::Element::User';
+    }
+    elsif($entity eq 'log')
+    {
+        $class = 'Strehler::Element::Log';
     }
     else
     {
-        return undef;
+        $class = config->{'Strehler'}->{'extra_menu'}->{$entity}->{class} 
     }
+    return undef if(! $class);
+    eval "require $class";
+    return $class->$attr();
 }
 
 =encoding utf8

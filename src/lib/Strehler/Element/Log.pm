@@ -20,6 +20,36 @@ sub metaclass_data
     return $element_conf{$param};
 }
 
+#Standard configuration overrides
+
+sub label
+{
+    return 'Logs';
+}
+sub creatable
+{
+    return 0;
+}
+sub updatable
+{
+    return 0;
+}
+sub deletable
+{
+    return 0;
+}
+sub custom_lis_view
+{
+    return 'admin/log_list';
+}
+sub role
+{
+    return 'admin';
+}
+sub class
+{
+    return __PACKAGE__;
+}
 
 sub write
 {

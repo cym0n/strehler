@@ -20,6 +20,25 @@ sub metaclass_data
     return $element_conf{$param};
 }
 
+#Standard configuration overrides
+
+sub label
+{
+    return 'Images';
+}
+sub categorized
+{
+    return 1;
+}
+sub custom_list_view
+{
+    return 'admin/image_list';
+}
+sub class
+{
+    return __PACKAGE__;
+}
+
 #Main title redefined to fetch title from multilang attributes
 sub main_title
 {

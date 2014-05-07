@@ -8,6 +8,8 @@ use Strehler::Meta::Category;
 use Strehler::Helpers;
 use Data::Dumper;
 
+with 'Strehler::Element::Role::Configured';
+
 has row => (
     is => 'ro',
 );
@@ -27,47 +29,17 @@ sub BUILDARGS {
    return { row => $article };
 };
 
-sub category_accessor
+sub metaclass_data 
 {
     my $self = shift;
-    my $category = shift;
-    return $category->can($self->metaclass_data('category_accessor'));
+    my $param = shift;
+    my %element_conf = ( item_type => 'element',
+                         ORMObj => undef,
+                         category_accessor => undef,
+                         multilang_children => undef );
+    return $element_conf{$param};
 }
 
-sub item_type
-{
-    my $self = shift;
-    return $self->metaclass_data('item_type');
-}
-
-sub ORMObj
-{
-    my $self = shift;
-    return $self->metaclass_data('ORMObj');
-}
-sub multilang_children
-{
-    my $self = shift;
-    return $self->metaclass_data('multilang_children');
-}
-sub get_schema
-{
-    if(config->{'Strehler'}->{'schema'})
-    {
-        return schema config->{'Strehler'}->{'schema'};
-    }
-    else
-    {
-        return schema;
-    }
-}
-
-sub publishable
-{
-    my $self = shift;
-    my $item = $self->metaclass_data('item_type');
-    return Strehler::Helpers::get_entity_attr($item, 'publishable');
-}
 sub exists
 {
     my $self = shift;
