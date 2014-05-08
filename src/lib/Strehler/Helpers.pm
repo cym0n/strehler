@@ -163,6 +163,37 @@ sub get_entity_attr
     return $class->$attr();
 }
 
+sub class_from_entity
+{
+    my $entity = shift;
+    my $class;
+    if($entity eq 'article')
+    {
+        $class = "Strehler::Element::Article";
+    }
+    elsif($entity eq 'image')
+    {
+        $class = "Strehler::Element::Image";
+    }
+    elsif($entity eq 'user')
+    {
+        $class = "Strehler::Element::User";
+    }
+    elsif($entity eq 'log')
+    {
+        $class = "Strehler::Element::Log";
+    }
+    else
+    {
+        $class = config->{'Strehler'}->{'extra_menu'}->{$entity}->{class};
+    }
+    if($class)
+    {
+        eval("require $class");
+        return $class;
+    }
+}
+
 =encoding utf8
 
 =head1 NAME

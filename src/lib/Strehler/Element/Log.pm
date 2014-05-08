@@ -38,7 +38,7 @@ sub deletable
 {
     return 0;
 }
-sub custom_lis_view
+sub custom_list_view
 {
     return 'admin/log_list';
 }

@@ -110,6 +110,29 @@ sub role
     my $self = shift;
     return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{role} || undef;
 }
+sub entity_data
+{
+    my $self = shift;
+    my @attributes = ('auto', 
+                   'label', 
+                   'class', 
+                   'creatable', 
+                   'updatable', 
+                   'deletable',
+                   'categorized',
+                   'ordered',  
+                   'publishable',
+                   'custom_list_view',
+                   'form',
+                   'multilang_form',
+                   'role');
+    my %entity_data;
+    foreach my $attr (@attributes)
+    {
+        $entity_data{$attr} = $self->$attr();
+    }
+    return %entity_data;
+}
 
 
 
