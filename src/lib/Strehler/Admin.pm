@@ -184,11 +184,7 @@ post '/article/edit/:id' => sub
 
 any '/user/add' => sub
 {
-    if (! check_role('user'))
-    {
-        send_error("Access denied", 403);
-        return;
-    }
+    send_error("Access denied", 403) if ( ! Strehler::Element::User->check_role(session->read('role')));
     my $form = form_user('add');
     my $params_hashref = params;
     $form->process($params_hashref);
@@ -210,11 +206,7 @@ any '/user/add' => sub
 };
 
 get '/user/edit/:id' => sub {
-    if (! check_role('user'))
-    {
-        send_error("Access denied", 403);
-        return;
-    }
+    send_error("Access denied", 403) if ( ! Strehler::Element::User->check_role(session->read('role')));
     my $id = params->{id};
     my $user = Strehler::Element::User->new($id);
     my $form_data = $user->get_form_data();
@@ -225,11 +217,7 @@ get '/user/edit/:id' => sub {
 
 post '/user/edit/:id' => sub
 {
-    if (! check_role('user'))
-    {
-        send_error("Access denied", 403);
-        return;
-    }
+    send_error("Access denied", 403) if ( ! Strehler::Element::User->check_role(session->read('role')));
     my $form = form_user('edit');
     my $id = params->{id};
     my $params_hashref = params;
@@ -255,21 +243,14 @@ post '/user/edit/:id' => sub
 
 get '/category' => sub
 {
-    if (! check_role('category'))
-    {
-        send_error("Access denied", 403);
-        return;
-    }
+    send_error("Access denied", 403) if ( ! Strehler::Meta::Category->check_role(session->read('role')));
     redirect dancer_app->prefix . '/category/list';
 };
 
 any '/category/list' => sub
 {
-    if (! check_role('category'))
-    {
-        send_error("Access denied", 403);
-        return;
-    }
+    send_error("Access denied", 403) if ( ! Strehler::Meta::Category->check_role(session->read('role')));
+
     #THE TABLE
     my $to_view = Strehler::Meta::Category->get_list();
     my @entities = Strehler::Helpers::get_categorized_entities();
@@ -289,11 +270,7 @@ any '/category/list' => sub
 
 any '/category/add' => sub
 {
-    if (! check_role('category'))
-    {
-        send_error("Access denied", 403);
-        return;
-    }
+    send_error("Access denied", 403) if ( ! Strehler::Meta::Category->check_role(session->read('role')));
     my $form = form_category();
     my $params_hashref = params;
     my @entities = Strehler::Helpers::get_categorized_entities();
@@ -307,11 +284,7 @@ any '/category/add' => sub
     template "admin/category", { form => $form->render() }
 };
 get '/category/edit/:id' => sub {
-    if (! check_role('category'))
-    {
-        send_error("Access denied", 403);
-        return;
-    }
+    send_error("Access denied", 403) if ( ! Strehler::Meta::Category->check_role(session->read('role')));
     my $id = params->{id};
     my $category = Strehler::Meta::Category->new($id);
     my @entities = Strehler::Helpers::get_categorized_entities();
@@ -324,11 +297,7 @@ get '/category/edit/:id' => sub {
 };
 post '/category/edit/:id' => sub
 {
-    if (! check_role('category'))
-    {
-        send_error("Access denied", 403);
-        return;
-    }
+    send_error("Access denied", 403) if ( ! Strehler::Meta::Category->check_role(session->read('role')));
     my $form = form_category();
     my $id = params->{id};
     my $params_hashref = params;
@@ -345,11 +314,7 @@ post '/category/edit/:id' => sub
 
 get '/category/delete/:id' => sub
 {
-    if (! check_role('category'))
-    {
-        send_error("Access denied", 403);
-        return;
-    }
+    send_error("Access denied", 403) if ( ! Strehler::Meta::Category->check_role(session->read('role')));
     my $id = params->{id};
     my $category = Strehler::Meta::Category->new($id);
     if($category->has_elements())
@@ -372,11 +337,7 @@ get '/category/delete/:id' => sub
 };
 post '/category/delete/:id' => sub
 {
-    if (! check_role('category'))
-    {
-        send_error("Access denied", 403);
-        return;
-    }
+    send_error("Access denied", 403) if ( ! Strehler::Meta::Category->check_role(session->read('role')));
     my $id = params->{id};
     my $category = Strehler::Meta::Category->new($id);
     $category->delete();
@@ -441,13 +402,10 @@ ajax '/category/tagform/:type/:id?' => sub
 get '/:entity' => sub
 {
     my $entity = params->{entity};
-    if($entity)
+    my $class = Strehler::Helpers::class_from_entity($entity);
+    if($class)
     {
-        if (! check_role($entity))
-        {
-            send_error("Access denied", 403);
-            return;
-        }
+        send_error("Access denied", 403) if ( ! $class->check_role(session->read('role')));
         redirect dancer_app->prefix . '/' . $entity . '/list';
     }
     else
@@ -464,11 +422,7 @@ any '/:entity/list' => sub
     {
         return pass;
     }
-    if (! check_role($entity))
-    {
-        send_error("Access denied", 403);
-        return;
-    }
+    send_error("Access denied", 403) if ( ! $class->check_role(session->read('role')));
 
     my $custom_list_view = $class->custom_list_view() || 'admin/generic_list';
     
@@ -545,11 +499,7 @@ get '/:entity/turnon/:id' => sub
     {
         return pass;
     }
-    if (! check_role($entity))
-    {
-        send_error("Access denied", 403);
-        return;
-    }
+    send_error("Access denied", 403) if ( ! $class->check_role(session->read('role')));
     my $id = params->{id};
     my $obj = $class->new($id);
     $obj->publish();
@@ -564,11 +514,7 @@ get '/:entity/turnoff/:id' => sub
     {
         return pass;
     }
-    if (! check_role($entity))
-    {
-        send_error("Access denied", 403);
-        return;
-    }
+    send_error("Access denied", 403) if ( ! $class->check_role(session->read('role')));
     my $id = params->{id};
     my $obj = $class->new($id);
     $obj->unpublish();
@@ -583,11 +529,7 @@ get '/:entity/delete/:id' => sub
     {
         return pass;
     }
-    if (! check_role($entity))
-    {
-        send_error("Access denied", 403);
-        return;
-    }
+    send_error("Access denied", 403) if ( ! $class->check_role(session->read('role')));
     my $id = params->{id};
     my $obj = $class->new($id);
     my %el = $obj->get_basic_data();
@@ -601,11 +543,7 @@ post '/:entity/delete/:id' => sub
     {
         return pass;
     }
-    if (! check_role($entity))
-    {
-        send_error("Access denied", 403);
-        return;
-    }
+    send_error("Access denied", 403) if ( ! $class->check_role(session->read('role')));
     my $id = params->{id};
     my $obj = $class->new($id);
     $obj->delete();
@@ -669,6 +607,7 @@ any '/:entity/add' => sub
     {
         return pass;
     }
+    send_error("Access denied", 403) if ( ! $class->check_role(session->read('role')));
     my $form = form_generic($class->form(), $class->multilang_form(), 'add'); 
     my $params_hashref = params;
     $form = Strehler::Admin::tags_for_form($form, $params_hashref);
@@ -690,42 +629,33 @@ any '/:entity/add' => sub
 get '/:entity/edit/:id' => sub {
     my $id = params->{id};
     my $entity = params->{entity};
-    if(! Strehler::Helpers::get_entity_attr($entity, 'auto'))
+    my $class = Strehler::Helpers::class_from_entity($entity);
+    if((! $class->auto()) || (! $class->updatable()))
     {
         return pass;
     }
-    if(! Strehler::Helpers::get_entity_attr($entity, 'updatable'))
-    {
-        return pass;
-    }
-    my $class = Strehler::Helpers::get_entity_attr($entity, 'class');
-    my $label = Strehler::Helpers::get_entity_attr($entity, 'label');
-    eval "require $class";
+    send_error("Access denied", 403) if ( ! $class->check_role(session->read('role')));
     my $el = $class->new($id);
     my $form_data = $el->get_form_data();
-    my $form = form_generic(Strehler::Helpers::get_entity_attr($entity, 'form'), Strehler::Helpers::get_entity_attr($entity, 'multilang_form'), 'edit', $form_data->{'category'});
+    my $form = form_generic($class->form(), $class->multilang_form(), 'edit', $form_data->{'category'}); 
     if(! $form)
     {
         return pass;
     }
     $form->default_values($form_data);
-    template "admin/generic_add", {  entity => $entity, label => $label, id => $id, form => $form->render() }
+    template "admin/generic_add", {  entity => $entity, label => $class->label(), id => $id, form => $form->render() }
 };
 post '/:entity/edit/:id' => sub
 {
     my $id = params->{id};
     my $entity = params->{entity};
-    if(! Strehler::Helpers::get_entity_attr($entity, 'auto'))
+    my $class = Strehler::Helpers::class_from_entity($entity);
+    if((! $class->auto()) || (! $class->updatable()))
     {
         return pass;
     }
-    if(! Strehler::Helpers::get_entity_attr($entity, 'updatable'))
-    {
-        return pass;
-    }
-    my $class = Strehler::Helpers::get_entity_attr($entity, 'class');
-    my $label = Strehler::Helpers::get_entity_attr($entity, 'label');
-    my $form = form_generic(Strehler::Helpers::get_entity_attr($entity, 'form'), Strehler::Helpers::get_entity_attr($entity, 'multilang_form'), 'edit');
+    send_error("Access denied", 403) if ( ! $class->check_role(session->read('role')));
+    my $form = form_generic($class->form(), $class->multilang_form(), 'edit'); 
     if(! $form)
     {
         return pass;
@@ -735,12 +665,11 @@ post '/:entity/edit/:id' => sub
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
-        eval "require $class";
         $class->save_form($id, $form);
         Strehler::Element::Log->write(session->read('user'), 'edit', $entity, $id);
         redirect dancer_app->prefix . '/' . $entity . '/list';
     }
-    template "admin/generic_add", { entity => $entity, label => $label, id => $id, form => $form->render() }
+    template "admin/generic_add", { entity => $entity, label => $class->label(), id => $id, form => $form->render() }
 };
 
 ##### Helpers #####
@@ -938,31 +867,6 @@ sub add_dynamic_fields_for_category
         $form->insert_before($fieldset->clone(), $position);
     }
     return $form;
-}
-
-sub check_role
-{
-    if(! config->{Strehler}->{admin_secured})
-    {
-        return 1;
-    }
-    my $entity = shift;
-    my %entity_data = Strehler::Helpers::get_entity_data($entity);
-    if($entity_data{'role'})
-    {
-        if(session->read('role') eq $entity_data{'role'})
-        {
-            return 1;
-        }
-        else
-        {
-            return 0;
-        }
-    }
-    else
-    {
-        return 1;
-    }
 }
 
 =encoding utf8

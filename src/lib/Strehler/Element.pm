@@ -891,4 +891,30 @@ sub save_form
     return $el_row->id;  
 }
 
+sub check_role
+{
+    my $self = shift;
+    my $user_role = shift;
+    if(! config->{Strehler}->{admin_secured})
+    {
+        return 1;
+    }
+    my $role = $self->role();
+    if($role)
+    {
+        if($user_role eq $role)
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else
+    {
+        return 1;
+    }
+}
+
 1;
