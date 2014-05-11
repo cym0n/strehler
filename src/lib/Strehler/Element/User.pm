@@ -18,6 +18,34 @@ sub metaclass_data
     return $element_conf{$param};
 }
 
+#Standard configuration overrides
+
+sub label
+{
+    return config->{'Strehler'}->{'extra_menu'}->{'user'}->{label} || "Users";
+}
+sub allowed_role
+{
+    if(config->{'Strehler'}->{'extra_menu'}->{'log'}->{allowed_role})
+    {
+        return config->{'Strehler'}->{'extra_menu'}->{'log'}->{allowed_role};
+    }
+    elsif(config->{'Strehler'}->{'extra_menu'}->{'log'}->{role}) 
+    {
+        #For retrocompatibility
+        return config->{'Strehler'}->{'extra_menu'}->{'log'}->{role};
+    }
+    else
+    {
+        return 'admin';
+    }
+}
+sub class
+{
+    return __PACKAGE__;
+}
+
+
 #Main title redefined because here it's user
 sub main_title
 {

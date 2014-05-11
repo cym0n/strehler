@@ -20,7 +20,36 @@ sub metaclass_data
     return $element_conf{$param};
 }
 
+
+#Standard configuration overrides
+
+sub label
+{
+    return config->{'Strehler'}->{'extra_menu'}->{'article'}->{label} || "Articles";
+}
+sub categorized
+{
+    return config->{'Strehler'}->{'extra_menu'}->{'article'}->{categorized} || 1;
+}
+sub ordered
+{
+    return config->{'Strehler'}->{'extra_menu'}->{'article'}->{ordered} || 1;
+}
+sub dated
+{
+    return config->{'Strehler'}->{'extra_menu'}->{'article'}->{dated} || 1;
+}
+sub publishable
+{
+    return config->{'Strehler'}->{'extra_menu'}->{'article'}->{publishable} || 1;
+}
+sub class
+{
+    return __PACKAGE__;
+}
+
 #Main title redefined to fetch title from multilang attributes
+
 sub main_title
 {
     my $self = shift;
@@ -36,6 +65,7 @@ sub main_title
     }
 
 }
+
 sub fields_list
 {
     my $self = shift;

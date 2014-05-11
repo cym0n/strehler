@@ -43,6 +43,15 @@ Return Value: $exists
 
 Return 1 if the element is linked to a real row on the database, 0 otherwise.
 
+=item check_role
+
+Arguments: $user_role
+
+Return Value: $access
+
+Return 1 if user, considering his $user_role, has rights to access the entity.
+
+
 =item get_attr
 
 Arguments: $attr

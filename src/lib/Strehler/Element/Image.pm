@@ -20,6 +20,25 @@ sub metaclass_data
     return $element_conf{$param};
 }
 
+#Standard configuration overrides
+
+sub label
+{
+    return config->{'Strehler'}->{'extra_menu'}->{'image'}->{label} || "Images";
+}
+sub categorized
+{
+    return config->{'Strehler'}->{'extra_menu'}->{'image'}->{categorized} || 1;
+}
+sub custom_list_view
+{
+        return config->{'Strehler'}->{'extra_menu'}->{'image'}->{custom_list_view} || 'admin/image_list';
+}
+sub class
+{
+    return __PACKAGE__;
+}
+
 #Main title redefined to fetch title from multilang attributes
 sub main_title
 {

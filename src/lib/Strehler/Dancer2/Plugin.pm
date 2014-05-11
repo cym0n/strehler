@@ -81,7 +81,7 @@ under your Dancer2 App, to copy Strehler Layout in it, making it available for y
 
 =head1 HOW TO CUSTOMIZE STREHLER BACKEND HOMEPAGE
 
-Strehler homepage is empty e really dump. Probably there're informations you want to display on it or shortcut for your navigation.
+Strehler homepage is empty and really dumb. Probably there're informations you want to display on it or shortcut for your navigation.
 
 To do this you can:
 

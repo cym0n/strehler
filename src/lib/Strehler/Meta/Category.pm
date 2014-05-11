@@ -317,6 +317,17 @@ sub ext_name
     return $category;
 }
 
+sub check_role
+{
+    my $self = shift;
+    my $role = shift;
+    if(! config->{Strehler}->{admin_secured})
+    {
+        return 1;
+    }
+    return ($role eq 'admin');
+}
+
 
 1;
 

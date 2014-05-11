@@ -33,118 +33,34 @@ sub get_categorized_entities
     return @entities;
 }
 
-sub get_entity_data
+sub class_from_entity
 {
     my $entity = shift;
-    my %data;
+    my $class;
     if($entity eq 'article')
     {
-        %data = ( 'auto' => 1,
-                  'label' => 'Articles',
-                  'class' => 'Strehler::Element::Article',
-                  'creatable' => 1,
-                  'updatable' => 1,
-                  'deletable' => 1,
-                  'categorized' => 1,
-                  'publishable' => 1,
-                  'ordered' => 1,
-                  'dated' => 1,
-                  'custom_list_view' => undef,
-                  'form' => undef,
-                  'multilang_form' => undef,
-                  'role' => undef );
+        $class = "Strehler::Element::Article";
     }
     elsif($entity eq 'image')
     {
-        %data = ( 'auto' => 1,
-                  'label' => 'Images',
-                  'class' => 'Strehler::Element::Image',
-                  'creatable' => 1,
-                  'updatable' => 1,
-                  'deletable' => 1,
-                  'categorized' => 1,
-                  'ordered' => 0,
-                  'dated' => 0,
-                  'publishable' => 0,
-                  'custom_list_view' => 'admin/image_list',
-                  'form' => undef,
-                  'multilang_form' => undef,
-                  'role' => undef );
+        $class = "Strehler::Element::Image";
     }
     elsif($entity eq 'user')
     {
-        %data = ( 'auto' => 1,
-                  'label' => 'Users',
-                  'class' => 'Strehler::Element::User',
-                  'creatable' => 1,
-                  'updatable' => 1,
-                  'deletable' => 1,
-                  'categorized' => 0,
-                  'ordered' => 0,
-                  'dated' => 0,
-                  'publishable' => 0,
-                  'custom_list_view' => undef,
-                  'form' => undef,
-                  'multilang_form' => undef,
-                  'role' => 'admin' );
-    }
-    elsif($entity eq 'category')
-    {
-        %data = ( 'auto' => 0,
-                  'role' => 'admin' );
+        $class = "Strehler::Element::User";
     }
     elsif($entity eq 'log')
     {
-        %data = ( 'auto' => 1,
-                  'label' => 'Logs',
-                  'class' => 'Strehler::Element::Log',
-                  'creatable' => 0,
-                  'updatable' => 0,
-                  'deletable' => 0,
-                  'categorized' => 0,
-                  'ordered' => 0,
-                  'dated' => 0,
-                  'publishable' => 0,
-                  'custom_list_view' => 'admin/log_list',
-                  'form' => undef,
-                  'multilang_form' => undef,
-                  'role' => 'admin' );
-    }
-    elsif(config->{'Strehler'}->{'extra_menu'}->{$entity})
-    {
-        %data = ( 'auto' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{auto},
-                  'label' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{label},
-                  'class' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{class},
-                  'creatable' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{creatable} || 1,
-                  'updatable' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{updatable} || 1,
-                  'deletable' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{deletable} || 1,
-                  'categorized' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{categorized} || 0,
-                  'ordered' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{ordered} || 0,
-                  'dated' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{dated} || 0,
-                  'publishable' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{publishable} || 0,
-                  'custom_list_view' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{custom_list_view},
-                  'form' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{form},
-                  'multilang_form' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{multilang_form},
-                  'role' => config->{'Strehler'}->{'extra_menu'}->{$entity}->{role} );
+        $class = "Strehler::Element::Log";
     }
     else
     {
-        return undef;
+        $class = config->{'Strehler'}->{'extra_menu'}->{$entity}->{class};
     }
-    return %data;
-}
-sub get_entity_attr
-{
-    my $entity = shift;
-    my $attr = shift;
-    my %entity_data = get_entity_data($entity);
-    if(%entity_data)
+    if($class)
     {
-        return $entity_data{$attr};
-    }
-    else
-    {
-        return undef;
+        eval("require $class");
+        return $class;
     }
 }
 
