@@ -1,0 +1,14 @@
+elements: 
+    - name: display_order
+      id: order
+      label: Order
+    - type: Block
+      id: last
+      name: last
+      tag: button
+      content: Next!
+      attributes:
+         type: button
+         class: btn btn-warning
+attributes:
+    class: order-widget
