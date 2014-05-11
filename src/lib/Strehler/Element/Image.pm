@@ -24,15 +24,15 @@ sub metaclass_data
 
 sub label
 {
-    return 'Images';
+    return config->{'Strehler'}->{'extra_menu'}->{'image'}->{label} || "Images";
 }
 sub categorized
 {
-    return 1;
+    return config->{'Strehler'}->{'extra_menu'}->{'image'}->{categorized} || 1;
 }
 sub custom_list_view
 {
-    return 'admin/image_list';
+        return config->{'Strehler'}->{'extra_menu'}->{'image'}->{custom_list_view} || 'admin/image_list';
 }
 sub class
 {

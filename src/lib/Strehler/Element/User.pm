@@ -22,11 +22,23 @@ sub metaclass_data
 
 sub label
 {
-    return 'Users';
+    return config->{'Strehler'}->{'extra_menu'}->{'user'}->{label} || "Users";
 }
-sub role
+sub allowed_role
 {
-    return 'admin';
+    if(config->{'Strehler'}->{'extra_menu'}->{'log'}->{allowed_role})
+    {
+        return config->{'Strehler'}->{'extra_menu'}->{'log'}->{allowed_role};
+    }
+    elsif(config->{'Strehler'}->{'extra_menu'}->{'log'}->{role}) 
+    {
+        #For retrocompatibility
+        return config->{'Strehler'}->{'extra_menu'}->{'log'}->{role};
+    }
+    else
+    {
+        return 'admin';
+    }
 }
 sub class
 {

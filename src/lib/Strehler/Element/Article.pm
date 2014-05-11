@@ -25,23 +25,23 @@ sub metaclass_data
 
 sub label
 {
-    return 'Articles';
+    return config->{'Strehler'}->{'extra_menu'}->{'article'}->{label} || "Articles";
 }
 sub categorized
 {
-    return 1;
+    return config->{'Strehler'}->{'extra_menu'}->{'article'}->{categorized} || 1;
 }
 sub ordered
 {
-    return 1;
+    return config->{'Strehler'}->{'extra_menu'}->{'article'}->{ordered} || 1;
 }
 sub dated
 {
-    return 1;
+    return config->{'Strehler'}->{'extra_menu'}->{'article'}->{dated} || 1;
 }
 sub publishable
 {
-    return 1;
+    return config->{'Strehler'}->{'extra_menu'}->{'article'}->{publishable} || 1;
 }
 sub class
 {

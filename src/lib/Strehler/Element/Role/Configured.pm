@@ -105,10 +105,22 @@ sub multilang_form
     my $self = shift;
     return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{multilang_form} || undef;
 }
-sub role
+sub allowed_role
 {
     my $self = shift;
-    return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{role} || undef;
+    if(config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{allowed_role})
+    {
+        return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{allowed_role};
+    }
+    elsif(config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{role}) 
+    {
+        #For retrocompatibility
+        return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{role};
+    }
+    else
+    {
+        return undef;
+    }
 }
 sub entity_data
 {
@@ -125,7 +137,7 @@ sub entity_data
                    'custom_list_view',
                    'form',
                    'multilang_form',
-                   'role');
+                   'allowed_role');
     my %entity_data;
     foreach my $attr (@attributes)
     {

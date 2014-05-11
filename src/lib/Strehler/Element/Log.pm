@@ -24,27 +24,39 @@ sub metaclass_data
 
 sub label
 {
-    return 'Logs';
+    return config->{'Strehler'}->{'extra_menu'}->{'log'}->{label} || "Logs";
 }
 sub creatable
 {
-    return 0;
+    return config->{'Strehler'}->{'extra_menu'}->{'log'}->{creatable} || 0;
 }
 sub updatable
 {
-    return 0;
+    return config->{'Strehler'}->{'extra_menu'}->{'log'}->{updatable} || 0;
 }
 sub deletable
 {
-    return 0;
+    return config->{'Strehler'}->{'extra_menu'}->{'log'}->{deletable} || 0;
 }
 sub custom_list_view
 {
-    return 'admin/log_list';
+    return config->{'Strehler'}->{'extra_menu'}->{'log'}->{custom_list_view} || 'admin/log_list';
 }
-sub role
+sub allowed_role
 {
-    return 'admin';
+    if(config->{'Strehler'}->{'extra_menu'}->{'log'}->{allowed_role})
+    {
+        return config->{'Strehler'}->{'extra_menu'}->{'log'}->{allowed_role};
+    }
+    elsif(config->{'Strehler'}->{'extra_menu'}->{'log'}->{role}) 
+    {
+        #For retrocompatibility
+        return config->{'Strehler'}->{'extra_menu'}->{'log'}->{role};
+    }
+    else
+    {
+        return 'admin';
+    }
 }
 sub class
 {

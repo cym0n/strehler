@@ -899,7 +899,7 @@ sub check_role
     {
         return 1;
     }
-    my $role = $self->role();
+    my $role = $self->allowed_role();
     if($role)
     {
         if($user_role eq $role)
