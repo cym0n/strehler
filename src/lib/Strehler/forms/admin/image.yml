@@ -6,20 +6,8 @@ elements:
       label: Image
       attributes: 
         class: span5
-    - type: Select
-      id: category_selector
-      name: category
-      label: Category
-      constraints:
-        type: Required
-        message: 'Category needed'
-    - type: Select
-      name: subcategory
-      label: Subcategory
-      id: subcat
-    - type: Block
-      tag: div
-      id: tags-place
+    - type: "+Strehler::FormFu::Element::Category"
+    - type: "+Strehler::FormFu::Element::Tags"
     - name: save
       type: Block
       tag: button
