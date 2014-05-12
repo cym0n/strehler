@@ -10,16 +10,7 @@ elements:
     - type: "+Strehler::FormFu::Element::Category"
     - type: "+Strehler::FormFu::Element::Tags"
     - type: "+Strehler::FormFu::Element::DisplayOrder"
-    - id: date_of_pub
-      name: publish_date
-      label: Date
-      inflators:
-         - type: DateTime
-           parser:
-              strptime: "%d/%m/%Y"
-      deflator:
-         - type: Strftime
-           strftime: "%d/%m/%Y"
+    - type: "+Strehler::FormFu::Element::PublishDate"
     - type: Block
       name: save
       tag: button

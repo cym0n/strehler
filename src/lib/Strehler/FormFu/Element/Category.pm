@@ -56,6 +56,10 @@ No parameters, no labels.
 Options are inserted dinamically during form generation.
 Sub-category display attributed is managed by javascript.
 
+=head1 YAML CONFIGURATION
+
+For the complete configuration see in the package: _forms/admin/elements/category.yml_
+
 =cut
 
 1;
