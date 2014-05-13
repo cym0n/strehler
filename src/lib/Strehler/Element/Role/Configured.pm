@@ -133,6 +133,7 @@ sub entity_data
                    'deletable',
                    'categorized',
                    'ordered',  
+                   'dated',
                    'publishable',
                    'custom_list_view',
                    'form',

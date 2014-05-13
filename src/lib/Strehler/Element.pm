@@ -273,7 +273,8 @@ sub fields_list
 {
     my $self = shift;
     my $item = $self->metaclass_data('item_type');
-    my %attributes = Strehler::Helpers::get_entity_data($item);
+    my $class = Strehler::Helpers::class_from_entity($item);
+    my %attributes = $class->entity_data();
     my $resultset = $self->get_schema()->resultset($self->ORMObj());
     my $title_id = $self->default_field();
     my $title_label = $title_id ? ucfirst($title_id) : 'Title';
