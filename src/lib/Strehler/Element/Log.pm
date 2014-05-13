@@ -82,8 +82,6 @@ sub main_title
 sub fields_list
 {
     my $self = shift;
-    my $item = $self->metaclass_data('item_type');
-    my %attributes = Strehler::Helpers::get_entity_data($item);
     my @fields = ( { 'id' => 'id',
                      'label' => 'ID',
                      'ordinable' => 1 },

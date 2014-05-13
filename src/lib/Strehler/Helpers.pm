@@ -86,21 +86,13 @@ return value: $slugified
 
 This method take a string and return the slugified version of it. Used to retrieve articles.
 
-=item get_entity_data
+=item class_from_entity
 
 arguments: entity
 
-return value %data
+return value $class
 
-This method give back every configuration about a given entity. It's also the place where default values for standard entities are nailed down.
-
-=item get_entity_attr
-
-arguments: entity, attrib
-
-return value $value
-
-A wrapper of get_entity_data to retrive informations faster, without passing by the global configuration hash of the entity.
+Return the $class related to the given entity
 
 =back
 
