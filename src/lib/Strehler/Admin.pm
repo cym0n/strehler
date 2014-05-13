@@ -804,12 +804,14 @@ sub tags_for_form
         {
             $params_hashref->{'tags'} = $params_hashref->{'configured-tag'};
         }
-        my $subcategory = $form->get_element({ name => 'subcategory'});
+        my $subcategory = $form->get_element({ name => 'categoryblock'});
         $form->insert_after($form->element({ type => 'Text', name => 'tags'}), $subcategory);
     }
     elsif($params_hashref->{'tags'})
     { 
-        my $subcategory = $form->get_element({ name => 'subcategory'});
+        debug "No configured tags";
+        print "Tags are " . $params_hashref->{'tags'};
+        my $subcategory = $form->get_element({ name => 'categoryblock'});
         $form->insert_after($form->element({ type => 'Text', name => 'tags'}), $subcategory);
     }
     return $form;
