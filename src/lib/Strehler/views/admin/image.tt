@@ -16,7 +16,7 @@
 <script>
   $(document).ready(function() {
         item_type = 'image';
-        category_init();
+        category_commander();
         tags_init([% id %]);
   });
 </script>

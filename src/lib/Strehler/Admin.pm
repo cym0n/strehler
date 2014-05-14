@@ -777,11 +777,16 @@ sub form_generic
     {
         $form = add_multilang_fields($form, \@languages, $multilang_conf); 
     }
-    my $category = $form->get_element({ name => 'category'});
+    my $category_block = $form->get_element({ name => 'categoryblock'});
+    my $category = $category_block ?
+        $category_block->get_element({ name => 'category'}) :
+        $form->get_element({ name => 'category'});
     if($category)
     {
        $category->options(Strehler::Meta::Category->make_select());
-       my $subcategory = $form->get_element({ name => 'subcategory'});
+       my $subcategory = $category_block ?
+            $category_block->get_element({ name => 'subcategory'}) :
+            $form->get_element({ name => 'subcategory'});
        if($subcategory)
        {
            $subcategory->options(Strehler::Meta::Category->make_select($has_sub));
@@ -805,13 +810,13 @@ sub tags_for_form
         {
             $params_hashref->{'tags'} = $params_hashref->{'configured-tag'};
         }
-        my $subcategory = $form->get_element({ name => 'categoryblock'});
-        $form->insert_after($form->element({ type => 'Text', name => 'tags'}), $subcategory);
+        my $position = $form->get_element({ name => 'categoryblock'}) || $form->get_element({ name => 'subcategory'});
+        $form->insert_after($form->element({ type => 'Text', name => 'tags'}), $position);
     }
     elsif($params_hashref->{'tags'})
     { 
-        my $subcategory = $form->get_element({ name => 'categoryblock'});
-        $form->insert_after($form->element({ type => 'Text', name => 'tags'}), $subcategory);
+        my $position = $form->get_element({ name => 'categoryblock'}) || $form->get_element({ name => 'subcategory'});
+        $form->insert_after($form->element({ type => 'Text', name => 'tags'}), $position);
     }
     return $form;
 }

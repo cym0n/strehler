@@ -9,7 +9,7 @@
 <script>
     $(document).ready(function() {
         item_type = '[% entity %]';
-        category_init();
+        category_commander();
         tags_init([% id %]);
         $("#last").on("click", get_last_chapter);
         $("#date_of_pub").datepicker({ format: "dd/mm/yyyy" });
