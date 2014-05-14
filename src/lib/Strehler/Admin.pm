@@ -692,9 +692,10 @@ sub form_image
     $form->load_config_file( $form_path . '/admin/image.yml' );
     $form = add_multilang_fields($form, \@languages, $form_path . '/admin/image_multilang.yml'); 
     $form->constraint({ name => 'photo', type => 'Required' }) if $action eq 'add';
-    my $category = $form->get_element({ name => 'category'});
+    my $category_block = $form->get_element({ name => 'categoryblock'});
+    my $category = $category_block->get_element({ name => 'category'});
     $category->options(Strehler::Meta::Category->make_select());
-    my $subcategory = $form->get_element({ name => 'subcategory'});
+    my $subcategory = $category_block->get_element({ name => 'subcategory'});
     $subcategory->options(Strehler::Meta::Category->make_select($has_sub));
     return $form;
 }
@@ -809,8 +810,6 @@ sub tags_for_form
     }
     elsif($params_hashref->{'tags'})
     { 
-        debug "No configured tags";
-        print "Tags are " . $params_hashref->{'tags'};
         my $subcategory = $form->get_element({ name => 'categoryblock'});
         $form->insert_after($form->element({ type => 'Text', name => 'tags'}), $subcategory);
     }
