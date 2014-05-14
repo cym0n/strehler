@@ -70,11 +70,6 @@ Test::TCP::test_tcp(
         $res = $ua->get($site . "/admin/article/lastchapter/$cat_id");
         is($res->content, 15, "Last chapter function works");
 
-        #TAGS
-        my $tags_string = '<input type="checkbox" name="configured-tag" value="tag1" checked><span>tag1</span>';
-        $res = $ua->get($site . "/admin/article/tagform/$article_id");
-        like($res->content, qr/$tags_string/, "Tags checkbox correctly generated");
-
         #DELETE
         $ua->default_header('X-Requested-With' => undef);
         $res = $ua->post($site . "/admin/article/delete/$article_id");

@@ -57,14 +57,6 @@ Test::TCP::test_tcp(
         $res = $ua->get($site . "/admin/category/select");
         like($res->content, qr/$select_string/, "Categories select combo correctly generated");
 
-        #TAGS
-        my $tags_string = '<input type="checkbox" name="configured-tag" value="tag2" checked><span>tag2</span>';
-        $res = $ua->get($site . "/admin/category/tagform/article/$cat_id");
-        like($res->content, qr/$tags_string/, "Tags checkbox (category id: $cat_id) correctly generated");
-        my $tags_string2 = '<input type="checkbox" name="configured-tag" value="tagart2" ><span>tagart2</span>';
-        $res = $ua->get($site . "/admin/category/tagform/article/$cat2_id");
-        like($res->content, qr/$tags_string2/, "Tags checkbox (articles only - category id: $cat2_id) correctly generated");
-
         #DELETE
         $ua->default_header('X-Requested-With' => undef);
         $res = $ua->post($site . "/admin/category/delete/$cat_id");

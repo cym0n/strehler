@@ -724,7 +724,7 @@ sub get_form_data
             $data->{$attribute} = $el_row->$attribute;
         }
     }
-    if($self->row->can('category')) #Is the element categorized?
+    if($self->categorized()) #Is the element categorized?
     {
         if($el_row->category->parent)
         {
@@ -733,9 +733,10 @@ sub get_form_data
         }
         else
         {
-        $data->{'category'} = $el_row->category->id;
+            $data->{'category'} = $el_row->category->id;
         }
     }
+    $data->{'tags'} = $self->get_tags();
     my $children = $self->row->can($self->multilang_children());
     if($children)
     {

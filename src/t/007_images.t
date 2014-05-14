@@ -47,7 +47,7 @@ Test::TCP::test_tcp(
                          'Content' =>  [
                             'category' => $cat_id,
                             'subcategory' => undef,
-                            'tags' => undef,
+                            'tags' => 'tag1',
                             'title_it' => 'Automatic test - title - IT',
                             'description_it' => 'Automatic test - body - IT',
                             'title_en' => 'Automatic test - title - EN',
