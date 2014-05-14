@@ -188,9 +188,7 @@ Test::TCP::test_tcp(
         $response_content =~ s/\n//g;
         like($response_content, qr/$tags_configured_string_default/, "Image - Configured Tags - Box generated on category select OK");
 
-
-
-
+        unlink 't/testapp/public/upload/strehler.jpg';
     },
     server => sub {
         use Dancer2;
