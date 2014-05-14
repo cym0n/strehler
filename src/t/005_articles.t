@@ -59,7 +59,6 @@ Test::TCP::test_tcp(
         my $article_id = $article->{'id'};
         my $article_object = Strehler::Element::Article->new($article_id);
         ok($article_object->exists(), "Article correctly inserted");
-        is($article_object->get_tags(), 'tag1', "Tags correctly saved");
 
         #TURN ON
         $res = $ua->get($site . "/admin/article/turnon/$article_id");
@@ -70,11 +69,6 @@ Test::TCP::test_tcp(
         $ua->default_header('X-Requested-With' => "XMLHttpRequest");
         $res = $ua->get($site . "/admin/article/lastchapter/$cat_id");
         is($res->content, 15, "Last chapter function works");
-
-        #TAGS
-        my $tags_string = '<input type="checkbox" name="configured-tag" value="tag1" checked><span>tag1</span>';
-        $res = $ua->get($site . "/admin/article/tagform/$article_id");
-        like($res->content, qr/$tags_string/, "Tags checkbox correctly generated");
 
         #DELETE
         $ua->default_header('X-Requested-With' => undef);

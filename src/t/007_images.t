@@ -62,7 +62,6 @@ Test::TCP::test_tcp(
         my $image_id = $image->{'id'};
         my $image_object = Strehler::Element::Image->new($image_id);
         ok($image_object->exists(), "Image correctly inserted");
-        is($image_object->get_tags(), 'tag1', "Tags correctly saved");
         
         $res = $ua->get($site . "/upload/strehler.jpg");
         is($res->code, 200, "Image resource in place");
