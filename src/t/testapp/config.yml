@@ -15,7 +15,7 @@ plugins:
   DBIC:
     default:
       dsn: dbi:SQLite:dbname=t/testapp/test.sqlite
-      schema_class: Strehler::Schema
+      schema_class: TestDB
 
 Strehler:
     admin_secured: 1

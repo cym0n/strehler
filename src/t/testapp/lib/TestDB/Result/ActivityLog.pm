@@ -67,7 +67,6 @@ __PACKAGE__->table("ACTIVITY_LOG");
 =head2 timestamp
 
   data_type: 'datetime'
-  datetime_undef_if_invalid: 1
   is_nullable: 1
 
 =cut
@@ -84,11 +83,7 @@ __PACKAGE__->add_columns(
   "entity_id",
   { data_type => "integer", is_nullable => 1 },
   "timestamp",
-  {
-    data_type => "datetime",
-    datetime_undef_if_invalid => 1,
-    is_nullable => 1,
-  },
+  { data_type => "datetime", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -104,8 +99,8 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07037 @ 2014-02-23 00:04:46
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:JbmErKbH96rp6MDog3CS7g
+# Created by DBIx::Class::Schema::Loader v0.07037 @ 2014-05-16 00:56:29
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:HOBsV+/T3kU+wjogutoYqA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

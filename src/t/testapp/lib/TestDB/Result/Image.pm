@@ -50,7 +50,6 @@ __PACKAGE__->table("IMAGES");
 =head2 category
 
   data_type: 'integer'
-  is_foreign_key: 1
   is_nullable: 1
 
 =cut
@@ -61,7 +60,7 @@ __PACKAGE__->add_columns(
   "image",
   { data_type => "varchar", is_nullable => 1, size => 50 },
   "category",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
+  { data_type => "integer", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -76,46 +75,9 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("id");
 
-=head1 RELATIONS
 
-=head2 category
-
-Type: belongs_to
-
-Related object: L<TestDB::Result::Category>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "category",
-  "TestDB::Result::Category",
-  { id => "category" },
-  {
-    is_deferrable => 1,
-    join_type     => "LEFT",
-    on_delete     => "RESTRICT",
-    on_update     => "RESTRICT",
-  },
-);
-
-=head2 descriptions
-
-Type: has_many
-
-Related object: L<TestDB::Result::Description>
-
-=cut
-
-__PACKAGE__->has_many(
-  "descriptions",
-  "TestDB::Result::Description",
-  { "foreign.image" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-
-# Created by DBIx::Class::Schema::Loader v0.07037 @ 2014-01-25 12:20:54
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:1KgpRmW8x0mL5AxsWRqhEg
+# Created by DBIx::Class::Schema::Loader v0.07037 @ 2014-05-16 00:56:29
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:9KdS6Awd52zQSmy2HPSdeg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

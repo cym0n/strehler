@@ -50,7 +50,6 @@ __PACKAGE__->table("CONFIGURED_TAGS");
 =head2 category_id
 
   data_type: 'integer'
-  is_foreign_key: 1
   is_nullable: 1
 
 =head2 item_type
@@ -63,6 +62,7 @@ __PACKAGE__->table("CONFIGURED_TAGS");
 
   data_type: 'tinyint'
   is_nullable: 1
+  size: 1
 
 =cut
 
@@ -72,11 +72,11 @@ __PACKAGE__->add_columns(
   "tag",
   { data_type => "varchar", is_nullable => 1, size => 120 },
   "category_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
+  { data_type => "integer", is_nullable => 1 },
   "item_type",
   { data_type => "varchar", is_nullable => 1, size => 20 },
   "default_tag",
-  { data_type => "tinyint", is_nullable => 1 },
+  { data_type => "tinyint", is_nullable => 1, size => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -91,31 +91,9 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("id");
 
-=head1 RELATIONS
 
-=head2 category
-
-Type: belongs_to
-
-Related object: L<TestDB::Result::Category>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "category",
-  "TestDB::Result::Category",
-  { id => "category_id" },
-  {
-    is_deferrable => 1,
-    join_type     => "LEFT",
-    on_delete     => "RESTRICT",
-    on_update     => "RESTRICT",
-  },
-);
-
-
-# Created by DBIx::Class::Schema::Loader v0.07037 @ 2014-01-27 00:45:49
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:xQcYYKhIWAzsHNZXPJtiKA
+# Created by DBIx::Class::Schema::Loader v0.07037 @ 2014-05-16 00:56:29
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:H6lCrkpkKSKs2Me9F26vDA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

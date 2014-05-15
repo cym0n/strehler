@@ -1,12 +1,12 @@
 use utf8;
-package TestDB::Result::WineMulti;
+package TestDB::Result::Dummy;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
 
 =head1 NAME
 
-TestDB::Result::WineMulti
+TestDB::Result::Dummy
 
 =cut
 
@@ -27,11 +27,11 @@ use base 'DBIx::Class::Core';
 
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 TABLE: C<WINE_MULTI>
+=head1 TABLE: C<DUMMY>
 
 =cut
 
-__PACKAGE__->table("WINE_MULTI");
+__PACKAGE__->table("DUMMY");
 
 =head1 ACCESSORS
 
@@ -41,40 +41,48 @@ __PACKAGE__->table("WINE_MULTI");
   is_auto_increment: 1
   is_nullable: 0
 
-=head2 wine
+=head2 text
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 50
+
+=head2 category
 
   data_type: 'integer'
   is_nullable: 1
 
-=head2 description
+=head2 display_order
 
-  data_type: 'text'
+  data_type: 'integer'
   is_nullable: 1
 
-=head2 notes
+=head2 publish_date
 
-  data_type: 'text'
+  data_type: 'date'
   is_nullable: 1
 
-=head2 language
+=head2 published
 
-  data_type: 'varchar'
+  data_type: 'tinyint'
   is_nullable: 1
-  size: 2
+  size: 1
 
 =cut
 
 __PACKAGE__->add_columns(
   "id",
   { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
-  "wine",
+  "text",
+  { data_type => "varchar", is_nullable => 1, size => 50 },
+  "category",
   { data_type => "integer", is_nullable => 1 },
-  "description",
-  { data_type => "text", is_nullable => 1 },
-  "notes",
-  { data_type => "text", is_nullable => 1 },
-  "language",
-  { data_type => "varchar", is_nullable => 1, size => 2 },
+  "display_order",
+  { data_type => "integer", is_nullable => 1 },
+  "publish_date",
+  { data_type => "date", is_nullable => 1 },
+  "published",
+  { data_type => "tinyint", is_nullable => 1, size => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -90,8 +98,8 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07037 @ 2014-01-25 12:20:54
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:3sIl30HpV+NK1bCa4Z1WhQ
+# Created by DBIx::Class::Schema::Loader v0.07037 @ 2014-05-16 00:56:29
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:lv/Bxl+Kt6PxXBFiJ7+Kig
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

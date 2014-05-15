@@ -44,7 +44,6 @@ __PACKAGE__->table("CONTENTS");
 =head2 article
 
   data_type: 'integer'
-  is_foreign_key: 1
   is_nullable: 1
 
 =head2 title
@@ -76,7 +75,7 @@ __PACKAGE__->add_columns(
   "id",
   { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
   "article",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
+  { data_type => "integer", is_nullable => 1 },
   "title",
   { data_type => "varchar", is_nullable => 1, size => 120 },
   "slug",
@@ -99,31 +98,9 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("id");
 
-=head1 RELATIONS
 
-=head2 article
-
-Type: belongs_to
-
-Related object: L<TestDB::Result::Article>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "article",
-  "TestDB::Result::Article",
-  { id => "article" },
-  {
-    is_deferrable => 1,
-    join_type     => "LEFT",
-    on_delete     => "RESTRICT",
-    on_update     => "RESTRICT",
-  },
-);
-
-
-# Created by DBIx::Class::Schema::Loader v0.07037 @ 2014-01-25 12:20:54
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:zGhCQtLMiXnyo9xUnO7d/A
+# Created by DBIx::Class::Schema::Loader v0.07037 @ 2014-05-16 00:56:29
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:I8nB5Y2XIPpO2V6gdm44UQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
