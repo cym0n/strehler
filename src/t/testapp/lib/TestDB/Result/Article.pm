@@ -50,6 +50,7 @@ __PACKAGE__->table("ARTICLES");
 =head2 category
 
   data_type: 'integer'
+  is_foreign_key: 1
   is_nullable: 1
 
 =head2 display_order
@@ -60,13 +61,13 @@ __PACKAGE__->table("ARTICLES");
 =head2 publish_date
 
   data_type: 'date'
+  datetime_undef_if_invalid: 1
   is_nullable: 1
 
 =head2 published
 
   data_type: 'tinyint'
   is_nullable: 1
-  size: 1
 
 =cut
 
@@ -76,13 +77,13 @@ __PACKAGE__->add_columns(
   "image",
   { data_type => "varchar", is_nullable => 1, size => 50 },
   "category",
-  { data_type => "integer", is_nullable => 1 },
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "display_order",
   { data_type => "integer", is_nullable => 1 },
   "publish_date",
-  { data_type => "date", is_nullable => 1 },
+  { data_type => "date", datetime_undef_if_invalid => 1, is_nullable => 1 },
   "published",
-  { data_type => "tinyint", is_nullable => 1, size => 1 },
+  { data_type => "tinyint", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -97,10 +98,48 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("id");
 
+=head1 RELATIONS
 
-# Created by DBIx::Class::Schema::Loader v0.07037 @ 2014-05-16 00:56:29
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:btyexA79WmBUX47fxiSjeg
+=head2 category
+
+Type: belongs_to
+
+Related object: L<TestDB::Result::Category>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "category",
+  "TestDB::Result::Category",
+  { id => "category" },
+  {
+    is_deferrable => 1,
+    join_type     => "LEFT",
+    on_delete     => "RESTRICT",
+    on_update     => "RESTRICT",
+  },
+);
+
+=head2 contents
+
+Type: has_many
+
+Related object: L<TestDB::Result::Content>
+
+=cut
+
+__PACKAGE__->has_many(
+  "contents",
+  "TestDB::Result::Content",
+  { "foreign.article" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07037 @ 2014-03-30 16:02:43
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:n0dlyBES+E6X32y9cRU70g
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+
 1;

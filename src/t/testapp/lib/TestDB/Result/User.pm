@@ -92,10 +92,25 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("id");
 
+=head1 UNIQUE CONSTRAINTS
 
-# Created by DBIx::Class::Schema::Loader v0.07037 @ 2014-05-16 00:56:29
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:3lZ9TWmajZ/54IX7uakbFw
+=head2 C<unique_user>
+
+=over 4
+
+=item * L</user>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("unique_user", ["user"]);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07037 @ 2014-03-15 15:14:27
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ubaRR3LicWbngr//dE0JNA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+
 1;
