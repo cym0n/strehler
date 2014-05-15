@@ -22,4 +22,11 @@ Strehler:
     languages: ['it', 'en']
     default_language: 'it'
     timezone: 'Europe/Rome'
+    extra_menu:
+        dummy:
+            auto: 1
+            label: Dummy
+            class: Site::Dummy
+            form: forms/dummy.yml
+            categorized: 1
 
