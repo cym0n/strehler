@@ -27,7 +27,7 @@ sub ORMObj
 sub multilang_children
 {
     my $self = shift;
-    return $self->metaclass_data('multilang_children');
+    return $self->metaclass_data('multilang_children') || '';
 }
 sub get_schema
 {

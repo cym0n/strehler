@@ -309,6 +309,7 @@ sub save_form
 sub ext_name
 {
     my $self = shift;
+    return undef if(! $self->row);
     my $category = $self->row->category;
     if($self->row->parent)
     {

@@ -825,17 +825,23 @@ sub save_form
             $el_data->{'category'} = $category;
         }
     }
-    my $children;
     if($id)
     {
         $el_row = $self->get_schema()->resultset($self->ORMObj())->find($id);
         $el_row->update($el_data);
+    }
+    else
+    {
+        $el_row = $self->get_schema()->resultset($self->ORMObj())->create($el_data);
+    }
+    my $children = undef;
+    if($id)
+    {
         $children = $el_row->can($self->multilang_children());
         $el_row->$children->delete_all() if($children);
     }
     else
     {
-        $el_row = $self->get_schema()->resultset($self->ORMObj())->create($el_data);
         $children = $el_row->can($self->multilang_children());
     }
     if($children)
