@@ -131,6 +131,7 @@ post '/image/edit/:id' => sub
 
 ajax '/image/src/:id' => sub
 {
+    content_type('text/plain');
     my $id = params->{id};
     my $img = Strehler::Element::Image->new($id);
     return $img->get_attr('image');
@@ -347,6 +348,7 @@ post '/category/delete/:id' => sub
 
 ajax '/category/select/:id' => sub
 {
+    content_type('text/plain');
     my $id = params->{id};
     my $option = params->{option} || undef;
     my $data = Strehler::Meta::Category->make_select($id, $option);
@@ -361,6 +363,7 @@ ajax '/category/select/:id' => sub
 };
 ajax '/category/select' => sub
 {
+    content_type('text/plain');
     my $data = Strehler::Meta::Category->make_select(undef);
     if($data->[1])
     {
@@ -373,6 +376,7 @@ ajax '/category/select' => sub
 };
 ajax '/category/tagform/:type/:id?' => sub
 {
+    content_type('text/plain');
     if(params->{id})
     {
         my $category = Strehler::Meta::Category->new(params->{id});
@@ -552,6 +556,7 @@ post '/:entity/delete/:id' => sub
 };
 ajax '/:entity/tagform/:id?' => sub
 {
+    content_type('text/plain');
     my $entity = params->{entity};
     my $class = Strehler::Helpers::class_from_entity($entity);
     if((! $class->auto()) || (! $class->categorized()))
@@ -589,6 +594,7 @@ ajax '/:entity/tagform/:id?' => sub
 };
 ajax '/:entity/lastchapter/:id?' => sub
 {
+    content_type('text/plain');
     my $entity = params->{entity};
     my $id = params->{id} || undef;
     my $class = Strehler::Helpers::class_from_entity($entity);
