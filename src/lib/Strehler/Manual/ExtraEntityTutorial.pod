@@ -1,0 +1,211 @@
+=head1 NAME
+
+Strehler::Manual::ExtraEntityTutorial - How to add custom objects to a Strehler backend
+
+=head1 RAISE OF THE ROBOTS
+
+So you have installed Strehler, but you need more power, you need a CRUD for something more specific than articles and images, but you want it in Strehler flavour. Usually this kind of tutorial uses books or CDs as example, but these are boring things. We'll create a collection of bad-ass giant robots.
+
+=head2 DATABASE
+
+Our data will be store in the database, so we'll start with it. We'll trace these data for the robots:
+
+These are the robot characteristics that we'll trace:
+
+=over 2
+
+=item name
+
+=item pilot 
+
+=item strength 
+
+=item speed
+
+=item defence 
+
+=back
+
+We'll trace also robots' descriptions, but as we will manage them as multilanguage field we'll talk about them in a second moment.
+
+Considering this data structure you have to create database table for it by yourself, Strehler doesn't give you tools to manage database table out of the ones for tables of its own.
+
+SQL script should be
+
+    CREATE TABLE ROBOTS (
+    ID INTEGER PRIMARY KEY AUTO_INCREMENT,
+    NAME VARCHAR(50),
+    PILOT VARCHAR(50),
+    STRENGHT INTEGER,
+    SPEED INTEGER,
+    DEFENCE INTEGER,
+    CATEGORY INTEGER,
+    PUBLISHED TINYINT(1)
+    );
+
+Table fields are more than data we asked for. ID si mandatory in B<every> Strehler entity table as primary key for it. We also decided to give this object two Strehler out-of-the-box featuers: published status and category. Designing the database is enough to add a CATEGORY column and a PUBLISHED one (INTEGER and TINYINT respectivly).
+
+For description, the multilangua field, we need a second table. Here's its script:
+
+    CREATE TABLE ROBOTS_MULTI(
+    ID INTEGER PRIMARY KEY AUTO_INCREMENT,
+    ROBOT INTEGER,
+    DESCRIPTION VARCHAR(120),
+    LANGUAGE VARCHAR(2)
+    );
+
+An ID as for the main table, a column for the foreign key on ROBOTS table (ROBOT) and a LANGUAGE VARCHAR(2) field. These elements are mandatory for a multilanguage Strehler table.
+
+Our last SQL activity will create indexes needed by the system:
+
+    ALTER TABLE `ROBOTS_MULTI` ENGINE = InnoDB;
+    CREATE INDEX robot ON ROBOTS_MULTI (robot);
+    ALTER TABLE `ROBOTS_MULTI` 
+    ADD CONSTRAINT robot FOREIGN KEY ( `ROBOT` ) 
+    REFERENCES `ROBOTS` (`ID` );
+
+    ALTER TABLE `ROBOTS` ENGINE = InnoDB;
+    CREATE INDEX category_for_robot ON ROBOTS (CATEGORY);
+    ALTER TABLE `ROBOTS` 
+    ADD CONSTRAINT category_of_robot FOREIGN KEY ( `CATEGORY` ) 
+    REFERENCES `CATEGORIES` (`ID` );
+
+Now you can just dump all these new tables with the schema loader to make DBIx::Class manage them.
+
+B<WARNING>: If you don't want to create indexes because, for example, you are working with SQLite this is not a problem, but remember to write down the relationships in your DBIx::Classes in any case, Strehler will use them!
+
+=head2 Forms
+
+Strehler do no introspection to elaborate the form to create/edit robots so we have to write it by ourself. It's just HTML::FormFu syntax. You can do everything you want, just remember to keep fields names the same of the database fields names. For Strehler standard features use custom FormFu::Elements.
+In this example we'll use L<Strehler::Formfu::Element::Category> and L<Strehler::Formfu::Element::Tags>.
+
+    attributes:
+        class: well
+    elements:
+        - type: "+Strehler::Formfu::Element::Category"
+        - type: "+Strehler::Formfu::Element::Tags"
+        - name: name
+          label: Name
+          attributes: 
+            class: span8
+          constraints:
+            type: Required
+            message: 'Name required<br />'
+        - name: pilot
+          label: Pilot
+          attributes: 
+            class: span8
+        - name: strenght
+          label: Strength
+          attributes: 
+            class: span8
+        - name: speed
+          label: Speed
+          attributes: 
+            class: span8
+        - name: defence
+          label: Defence
+          attributes: 
+            class: span8
+        - name: save
+          type: Block
+          tag: button
+          content: Submit
+          attributes:
+            type: submit
+            class: btn btn-primary
+
+Classes are assigned according to Strehler layout
+Multilang fields need a file by themselves
+
+    elements:
+        - name: description
+          label: Description
+
+=head2 Class
+
+Now you need a class that will manage robots. Basic implementation of it is just an extension of Element with metaclass_data overridden. Class namespace is not important at all.
+
+    package Site::Element::Robot;
+
+    use Moo;
+    use Dancer2;
+
+    extends 'Strehler::Element';
+
+    sub metaclass_data 
+    {
+        my $self = shift;
+        my $param = shift;
+        my %element_conf = ( item_type => 'robot',
+                             ORMObj => 'Robot',
+                             category_accessor => 'robots',
+                             multilang_children => 'robots_multis' );
+        return $element_conf{$param};
+    }
+
+I<metaclass_data> just gives back basic informations about the entity to all the Strehler system. These informations are:
+
+=over 4
+
+=item item_type
+
+Label that will be used to identify your entity. It can be any string you want, it will be used also to build admin URLs for the entity (/admin/$item_type/list etc...)
+
+=item ORMObj
+
+Name of the module in DBIx::Class structure that manage the main table of the entity.
+
+=item category_accessor
+
+The relationship name in Category mdule. You can read it from Your::Module::Result::Category as here:
+
+    __PACKAGE__->has_many(
+        "robots",
+        "Your::Module::Result::Robot",
+        { "foreign.category" => "self.id" },
+        { cascade_copy => 0, cascade_delete => 0 },
+    );
+
+=item multilang_children
+
+The relationship name to the multilang fields. You can read it from Your::Module::Result::Robot module, as here:
+
+    __PACKAGE__->has_many(
+        "robots_multis",
+        "Your::Module::Result::RobotsMulti",
+        { "foreign.robot" => "self.id" },
+        { cascade_copy => 0, cascade_delete => 0 },
+    );
+
+=back
+
+You can also use this class to tell Strehler the label that will be used in the menu and that category feature and publish feature are active for the entity, just adding relative methods returning true.
+
+    sub label { return "Robots"; }
+    sub categorized { return 1; }
+    sub publishable { return 1; }
+
+Same for forms you created:
+
+    sub form { return "forms/robots.yml" }
+    sub multilang_form { return "forms/robots_multi.yml" }
+
+This configuration can be done through config.yml too, but this could make config file very big, with a lot of entries and difficult to be read. This is probably a better solution.
+
+
+=head2 Strehler configuration
+
+New entity must be registered in Strehler configuration, in the Dancer2 config.yml file. 
+As we configured most of the characteristics in the class itself, we'll keep this configuration as tiny as possible.
+
+    Strehler:
+        language: ['it', 'en']
+        default_language: 'it'
+        extra_menu:
+            robot:
+                auto: 1
+                class: Site::Element::Robot
+
+
+=cut
