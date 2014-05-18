@@ -4,6 +4,7 @@
 _..._
 
 * Configuration refactoring
+* FomrFu element to encapsulate all Strehler logic (Category, DisplayOrder,PublishDate, Tags)
 
 
 1.1.8
