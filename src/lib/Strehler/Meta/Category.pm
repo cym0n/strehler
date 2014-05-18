@@ -63,6 +63,7 @@ sub subcategories
 {
     my $self = shift;
     my @subs;
+    return () if ! $self->row;
     for($self->row->categories)
     {
         push @subs, Strehler::Meta::Category->new('row', $_);

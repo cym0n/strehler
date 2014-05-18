@@ -95,7 +95,9 @@ sub search_box
     my $self = shift;
     my $string = shift;
     my $parameters = shift;
-    $parameters->{'search'} = { 'contents.title' => { 'like', "%$string%" } };
+    $parameters->{'search'} = { -or => [ 'contents.title' => { 'like', "%$string%" },
+                                         'contents.text'  => { 'like', "%$string%" } ] 
+                              };
     $parameters->{'join'} = 'contents';
     return $self->get_list($parameters);
 }
