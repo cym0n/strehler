@@ -5,6 +5,8 @@ _..._
 
 * Configuration refactoring
 * FomrFu element to encapsulate all Strehler logic (Category, DisplayOrder,PublishDate, Tags)
+* Articles' search box search now in articles texts too.
+* Generic bugfix
 
 
 1.1.8
