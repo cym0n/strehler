@@ -1,0 +1,155 @@
+=head1 NAME
+
+Strehler::Manual::ExtraEntityConfiguration - Configurable flags on extra entities
+
+=head1 DESCRIPTION
+
+The behaviour of Strehler when it manages an extra entity can be highly customized just using standard Strehler flags. These flags will be listed here and explained.
+
+=head1 CONFIGURE A FLAG
+
+There're two ways to assign a custom value to a flag related to an extra entity.
+
+=head2 ENTITY CLASS FLAG METHOD OVERRIDE
+
+In the new entity class you can override methods that belong to L<Strehler::Element::Role::Configured> to make them return flag value you want.
+For example:
+
+    sub updatable { return 0; }
+
+will make your entity elements impossible to be modified, turning off the "Edit" button.
+
+=head2 STREHLER CONFIGURATION
+
+Standard implementation of configuration methods just try to read the flag from the config.yml or return a default value. So you can use Dancer2 configuration to change values.
+
+    Strehler:
+        my_entity:
+            auto: 1
+            class: My::Entity
+            deletable: 0
+
+My_entity will not have delete button on its entries.
+
+B<REMEMBER>: Overriding configuration methods has always priority on config.yml configuration.
+
+=head1 CONFIGURATION FLAGS
+
+=over 4
+
+=item auto
+
+default: 1
+
+Tell Strehler to use standard implementation for all the backend navigations. With auto = 0, paths like /admin/entity/list have to be implemented.
+
+=item label
+
+default: ???
+
+The label that will appear in the menu and in the entity pages.
+
+=item class
+
+B<Mandatory in config.yml>
+
+Indicates the class that will manage the entity (a L<Strehler::Element subclass>).
+
+=item form
+
+default: undef
+
+Say the file with the form configuration for the CRUD of the entity.
+If no form is defined create/update functions will fail.
+
+=item multilang_form
+
+default: undef
+
+As for form flag, defines the file with multilang fields configuration. TO be used only if you have multilang fields.
+
+=item creatable
+
+default: 1
+
+Say if Strehler user can create an entry for the entity.
+
+=item updatable
+
+default: 1
+
+Say if Strehler user can modify an entry for the entity.
+
+=item deletable
+
+default: 1
+
+Say if Strehler user can delete an entry for the entity.
+
+=item categorized
+
+default: 0
+
+Say if entity can be categorized using Strehler categories.
+To be categorized, the entity must have a column CATEGORY (INTEGER) in its database table.
+
+To add category selector to your form use L<Strehler::FormFu::Element::Category>. Just add:
+
+    - type: "+Strehler::FormFu::Element::Category"
+
+to your form.
+For tags use L<Strehler::FormFu::Element::Tags>.
+
+    - type: "+Strehler::FormFu::Element::Tags"
+
+=item ordered
+
+default: 0
+
+Say if entity uses Strehler ordering feature.
+To use it, the entity must ave a column DISPLAY_ORDER (INTEGER) in its database table.
+
+To add order field (with Next! button) to your form use L<Strehler::FormFu::Element::DisplayOrder>
+
+    - type: "+Strehler::FormFu::Element::DisplayOrder"
+
+=item dated
+
+default: 0
+
+Say if entity uses Strehler publish date feature.
+To use it, the entity must ave a column PUBLISH_DATE (DATE) in its database table.
+
+To add order field (with Next! button) to your form use L<Strehler::FormFu::Element::PublishDate>
+
+    - type: "+Strehler::FormFu::Element::PublishDate"
+
+
+=item publishable
+
+default: 0
+
+Say if entity uses Strehler publish feature 
+To use it, the entity must ave a column PUBLISHED (TINYINT) in its database table.
+
+=item custom_list_view
+
+default: generic list view as in the Strehler package
+
+Let you use a different view for listing entity entries.
+Entries will be passed to the view as "elements" array, with all the basic data of the entity.
+
+=item role
+
+default: ""
+
+If role is equal to admin only admin user will see the entity.
+
+=back
+
+=head1 SEE ALSO
+
+L<Strehler::Manual::ExtraEntityTutorial> explain how to create a new entity and how configuration flags will be used.
+
+=cut
+

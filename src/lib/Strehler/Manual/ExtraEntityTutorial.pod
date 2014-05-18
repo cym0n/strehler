@@ -144,6 +144,8 @@ Now you need a class that will manage robots. Basic implementation of it is just
         return $element_conf{$param};
     }
 
+=head3 METACLASS DATA
+
 I<metaclass_data> just gives back basic informations about the entity to all the Strehler system. These informations are:
 
 =over 4
@@ -180,6 +182,8 @@ The relationship name to the multilang fields. You can read it from Your::Module
 
 =back
 
+=head3 CONFIGURATION FLAGS
+
 You can also use this class to tell Strehler the label that will be used in the menu and that category feature and publish feature are active for the entity, just adding relative methods returning true.
 
     sub label { return "Robots"; }
@@ -193,8 +197,19 @@ Same for forms you created:
 
 This configuration can be done through config.yml too, but this could make config file very big, with a lot of entries and difficult to be read. This is probably a better solution.
 
+=head3 HOOKS
 
-=head2 Strehler configuration
+Extending L<Strehler::Element> to create new entities allow you to override every method of that class to fit your needs. In particular, you'll probably work a lot with the B<get_form_data> and the B<save_form methods>, if the logic of your data is more complicated than expected by Strehler.
+
+There're also two hooks to make life easier. 
+
+Think about a situation where you have an Entity Site::Element::Foo with an attribute I<bar>. If you want it back from the get_basic_data or get_ext_data in a shape different by what you have in your database, just define a sub bar in the class returning it the way you want it. A good example of this is the image field in the L<Strehler::Element::Article>. Sub bar will receive as arguments the value of the attribute (the one returned with no hook) and the language, if the attribute is multilanguage.
+
+If bar is a field elaborated from the form but not contained in the form, you can implement the logic to save it creating in your class a sub I<save_bar> that returns what you want to save. Again, look at L<Strehler::Element::Article>, save_slug method. In this case the hook receives the id of the object and the form object as input.
+
+Hooks will not be used in this tutorial.
+
+=head2 STRELHER CONFIGURATION
 
 New entity must be registered in Strehler configuration, in the Dancer2 config.yml file. 
 As we configured most of the characteristics in the class itself, we'll keep this configuration as tiny as possible.
@@ -207,5 +222,8 @@ As we configured most of the characteristics in the class itself, we'll keep thi
                 auto: 1
                 class: Site::Element::Robot
 
+=head1 SEE ALSO
+
+L<Strehler::Manual::ExtraEntityConfiguration> enumerates and describes all the configuration flags not considered in this tutorial.
 
 =cut
