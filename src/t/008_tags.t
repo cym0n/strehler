@@ -8,6 +8,7 @@ use FindBin;
 use Data::Dumper;
 
 use t::testapp::lib::Site;
+use t::testapp::lib::Site::Dummy;
 
 Site::reset_database();
 
@@ -164,7 +165,53 @@ Test::TCP::test_tcp(
         $response_content =~ s/\n//g;
         like($response_content, qr/$tags_open_string/, "Image - Open Tags - Correct AJAX response on edit");
 
-        #ARTICLE - OPEN - FRESH BOX SELECTING CATEGORY
+       
+        unlink 't/testapp/public/upload/strehler.jpg';
+
+        #DUMMY - CONFIGURED - ADD
+        $res = $ua->post($site . "/admin/dummy/add",
+                         {
+                           'category' => $cat_conf->get_attr('id'),
+                           'subcategory' => undef,
+                           'tags' => 'tag1',
+                           'text' => 'dummy configured tags'
+                          });
+        my $dummies = Site::Dummy->get_list();
+        my $dummy_configured = $dummies->{'to_view'}->[0];
+        my $dummy_configured_id = $dummy_configured->{'id'};
+        my $dummy_configured_object = Site::Dummy->new($article_configured_id);
+        is($article_configured_object->get_tags(), 'tag1', "Dummy - Configured Tags - Tags correctly saved");
+
+        #DUMMY - OPEN - ADD
+        $res = $ua->post($site . "/admin/dummy/add",
+                         { 
+                           'category' => $cat_open->get_attr('id'),
+                           'subcategory' => undef,
+                           'tags' => 'foo',
+                           'text' => 'dummy open tags'
+                          });
+        $dummies = Site::Dummy->get_list();
+        my $dummy_open = $dummies->{'to_view'}->[0];
+        my $dummy_open_id = $dummy_open->{'id'};
+        my $dummy_open_object = Site::Dummy->new($dummy_open_id);
+        is($dummy_open_object->get_tags(), 'foo', "Dummy - Open Tags - Tags correctly saved");
+        
+        $ua->default_header('X-Requested-With' => "XMLHttpRequest");
+
+        #DUMMY - CONFIGURED - EDIT (AJAX CALL TEST)
+        $ua->default_header('X-Requested-With' => "XMLHttpRequest");
+        $res = $ua->get($site . "/admin/dummy/tagform/$dummy_configured_id");
+        $response_content = $res->content;
+        $response_content =~ s/\n//g;
+        like($response_content, qr/$tags_configured_string/, "Dummy - Configured Tags - Correct AJAX response on edit");
+
+        #DUMMY - OPEN - EDIT (AJAX CALL TEST)
+        $res = $ua->get($site . "/admin/dummy/tagform/$dummy_open_id");
+        $response_content = $res->content;
+        $response_content =~ s/\n//g;
+        like($response_content, qr/$tags_open_string/, "Dummy - Open Tags - Correct AJAX response on edit");
+
+         #ARTICLE - OPEN - FRESH BOX SELECTING CATEGORY
         $res = $ua->get($site . "/admin/category/tagform/article/".$cat_open->get_attr('id'));
         $response_content = $res->content;
         $response_content =~ s/\n//g;
@@ -182,13 +229,24 @@ Test::TCP::test_tcp(
         $response_content =~ s/\n//g;
         like($response_content, qr/$tags_open_string_default/, "Image - Open Tags - Box generated on category select OK");
 
-        #IMAGE - OPEN - FRESH BOX SELECTING CATEGORY
+        #IMAGE - CONFIGURED - FRESH BOX SELECTING CATEGORY
         $res = $ua->get($site . "/admin/category/tagform/image/".$cat_conf->get_attr('id'));
         $response_content = $res->content;
         $response_content =~ s/\n//g;
         like($response_content, qr/$tags_configured_string_default/, "Image - Configured Tags - Box generated on category select OK");
 
-        unlink 't/testapp/public/upload/strehler.jpg';
+        #DUMMY - OPEN - FRESH BOX SELECTING CATEGORY
+        $res = $ua->get($site . "/admin/category/tagform/dummy/".$cat_open->get_attr('id'));
+        $response_content = $res->content;
+        $response_content =~ s/\n//g;
+        like($response_content, qr/$tags_open_string_default/, "Dummy - Open Tags - Box generated on category select OK");
+
+        #DUMMY - CONFIGURED - FRESH BOX SELECTING CATEGORY
+        $res = $ua->get($site . "/admin/category/tagform/dummy/".$cat_conf->get_attr('id'));
+        $response_content = $res->content;
+        $response_content =~ s/\n//g;
+        like($response_content, qr/$tags_configured_string_default/, "Dummy - Configured Tags - Box generated on category select OK");
+
     },
     server => sub {
         use Dancer2;

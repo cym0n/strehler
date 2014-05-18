@@ -27,6 +27,7 @@ Strehler:
             auto: 1
             label: Dummy
             class: Site::Dummy
-            form: forms/dummy.yml
+            #WARNING: path is made this way for test purpose
+            form: t/testapp/forms/dummy.yml
             categorized: 1
 

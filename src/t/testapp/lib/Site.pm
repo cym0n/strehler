@@ -18,6 +18,7 @@ sub reset_database
     $schema->resultset('Description')->delete_all();
     $schema->resultset('Image')->delete_all();
     $schema->resultset('Tag')->delete_all();
+    $schema->resultset('Dummy')->delete_all();
 }
 
 get '/:lang/get-last-by-order/:cat' => sub {

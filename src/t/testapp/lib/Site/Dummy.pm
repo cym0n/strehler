@@ -15,3 +15,5 @@ sub metaclass_data
                          multilang_children => undef );
     return $element_conf{$param};
 }
+
+1;
