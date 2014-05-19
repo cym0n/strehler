@@ -1,0 +1,58 @@
+=head1 NAME
+
+Strehler::Manual::Configuration - How to configure Strehler on Dancer2 
+
+=head1 Configuration
+
+Here is an example configuration for Strehler, code to add to your B<config.yml> under your Dancer2 site.
+
+    Strehler:
+        admin_secured: 0
+        languages: ['it', 'en']
+        default_language: 'it'
+        timezone: 'Europe/Rome'
+        extra_menu: [...]
+
+Let's see wwhat all this means.
+
+=over 4
+
+=item admin_secured
+
+With 0 can turn off the login in the backend. You should use this configuration only for development purpose, never in production.
+
+=item languages
+
+All the managed languages. For every language Strehler will ask multilanguage data on entry creation.
+
+=item default_language
+
+The default language
+
+=item timezone
+
+Timezone that will be used to display timestamp columns
+
+=item extra_menu
+
+Extra_menu part is described in the L<Strehler::Manual::ExtraEntityConfiguration>
+
+=back
+
+=head2 Note about timezone
+
+Strehler saves datetime data in UTC and than displays it using the cofigurated timezone. Best practice to manage time data is:
+
+=over 4
+
+=item Use datetme type for database fields
+
+=item Use DateTime inflator in forms
+
+=item When you write a custom save of a form field remember to save the datetime object with timezone UTC.
+
+=back
+
+Standard entities obviously already follow these rules.
+
+=cut

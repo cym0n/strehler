@@ -207,7 +207,7 @@ Think about a situation where you have an Entity Site::Element::Foo with an attr
 
 If bar is a field elaborated from the form but not contained in the form, you can implement the logic to save it creating in your class a sub I<save_bar> that returns what you want to save. Again, look at L<Strehler::Element::Article>, save_slug method. In this case the hook receives the id of the object and the form object as input.
 
-Hooks will not be used in this tutorial.
+Hooks will not be used in this tutorial, but you can see how they work in the L<Strehler::Manual::MarkdownArticleTutorial>.
 
 =head2 STRELHER CONFIGURATION
 

@@ -1,5 +1,5 @@
 # ABSTRACT: Installation guide for Strehler
-package Strehler::Installation;
+package Strehler::Manual::Installation;
 
 =encoding utf8
 

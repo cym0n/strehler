@@ -1,0 +1,42 @@
+=head1 NAME
+
+Strehler::Manual::MarkdownArticleTutorial - A tutorial about how Element hooks work
+
+=head1 DESCRIPTION
+
+How form input is saved on the database can be changed through custom-created hooks. 
+In the same way we can decide to output data with APIs in a different way from how we stored it.
+In this little tutorial we'll make articles content automatically parsed with L<Text::Markdown> to be directly used in HTML pages.
+
+=head1 MARKDOWNARTICLE
+
+Strehler is shipped with no rich text editor and no rich text parser of the content you put in it.
+
+However, when you have large textarea as the content of the article (text field) you probably want it to be rendered as HTML to make it readable on a web page. 
+
+I hate WYSIWYG editors, they rarely work the right way, but I love the nerd solution of write all you want using L<Markdown notation|http://daringfireball.net/projects/markdown/syntax> and let the Markdown parser make all available for the net.
+
+How to make every article text field interpreted as a markdown text and rendered as HTML? Just with a bit of inerithance and Strehler magic!
+
+Let's create a new entity named MarkdownArticle:
+
+    package My::Site::MarkdownArticle;
+
+    use Moo;
+    use Text::Markdown 'markdown';
+
+    extends 'Strehler::Element::Article';
+
+What we want is that the B<text> property of the Article is not directly returned, but parsed before.
+We just need to define a sub text this way:
+
+    sub text
+    {
+        my $self = shift;
+        m $text = shift;
+        return markdown($text);
+    }
+
+An hook like this receive as input two parameter: the not-elaborated value (text, in this case) and its language, because it's a multilanguage attribute. We have no use for the language, but we can take text as is in the database, parse it with markdown and return back that instead of the bare string.
+
+You could use this entity without registering it on Strehler configuration. Just leave L<Strehler::Element::Article> for all backend activities and use MarkdownArticle just writing front-end page, where you want to see text rendered as HTML.
