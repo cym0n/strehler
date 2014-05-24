@@ -149,7 +149,7 @@ If role is equal to admin only admin user will see the entity.
 
 =head1 SEE ALSO
 
-L<Strehler::Manual::ExtraEntityTutorial> explain how to create a new entity and how configuration flags will be used.
+L<Strehler::Manual::ExtraEntityTutorial> explains how to create a new entity and how configuration flags will be used.
 
 =cut
 

@@ -1,9 +1,8 @@
-# ABSTRACT: Installation guide for Strehler
-package Strehler::Manual::Installation;
-
 =encoding utf8
 
-=pod
+=head1 NAME
+
+Strehler::Manual::Installation - How to install Strehler
 
 =head1 DESCRIPTION
 
@@ -103,9 +102,11 @@ Just type:
 
     strehler demo
 
-A complete Dancer2 app with Strehler installed will be created in a directory named B<StrehlerDemo>.Now type:
+A complete Dancer2 app with Strehler installed will be created in a directory named B<StrehlerDemo>. Now type:
 
     cd StrehlerDemo
     bin/app.pl
 
 Open your browser and go to http://localhost:3000/admin. Enter B<admin> as username and B<admin> as password then try out all the Strehler feature as in a real site.
+
+=cut

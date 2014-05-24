@@ -2,7 +2,7 @@
 
 Strehler::Manual::Configuration - How to configure Strehler on Dancer2 
 
-=head1 Configuration
+=head1 CONFIGURATION
 
 Here is an example configuration for Strehler, code to add to your B<config.yml> under your Dancer2 site.
 
@@ -45,11 +45,17 @@ Strehler saves datetime data in UTC and than displays it using the cofigurated t
 
 =over 4
 
-=item Use datetme type for database fields
+=item *
 
-=item Use DateTime inflator in forms
+Use DateTime type for database fields
 
-=item When you write a custom save of a form field remember to save the datetime object with timezone UTC.
+=item *
+
+Use DateTime inflator in forms
+
+=item * 
+
+When you write a custom save of a form field remember to save the DateTime object with timezone UTC.
 
 =back
 

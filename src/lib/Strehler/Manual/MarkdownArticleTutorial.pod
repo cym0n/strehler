@@ -33,10 +33,10 @@ We just need to define a sub text this way:
     sub text
     {
         my $self = shift;
-        m $text = shift;
+        my $text = shift;
         return markdown($text);
     }
 
-An hook like this receive as input two parameter: the not-elaborated value (text, in this case) and its language, because it's a multilanguage attribute. We have no use for the language, but we can take text as is in the database, parse it with markdown and return back that instead of the bare string.
+An hook like this receive as input two parameter: the not-elaborated value (text, in this case) and its language, because it's a multilanguage attribute. We have no use for the language, but we can take text as is in the database, parse it with markdown and return that back instead of the bare string.
 
-You could use this entity without registering it on Strehler configuration. Just leave L<Strehler::Element::Article> for all backend activities and use MarkdownArticle just writing front-end page, where you want to see text rendered as HTML.
+You could use this entity without registering it on Strehler configuration. Just leave L<Strehler::Element::Article> for all backend activities and use MarkdownArticle to write front-end pages, where you want to see text rendered as HTML.

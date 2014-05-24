@@ -2,9 +2,9 @@
 
 Strehler::Manual::ExtraEntityTutorial - How to add custom objects to a Strehler backend
 
-=head1 RAISE OF THE ROBOTS
+=head1 RISE OF THE ROBOTS
 
-So you have installed Strehler, but you need more power, you need a CRUD for something more specific than articles and images, but you want it in Strehler flavour. Usually this kind of tutorial uses books or CDs as example, but these are boring things. We'll create a collection of bad-ass giant robots.
+So you have installed Strehler, but you need more power, you need a CRUD for something more specific than articles and images, but you want it in Strehler flavour. Usually this kind of tutorial uses books or CDs as example, but those are boring things. We'll create a collection of bad-ass giant robots.
 
 =head2 DATABASE
 
@@ -14,44 +14,54 @@ These are the robot characteristics that we'll trace:
 
 =over 2
 
-=item name
+=item *
 
-=item pilot 
+name
 
-=item strength 
+=item *
 
-=item speed
+pilot 
 
-=item defence 
+=item *
+
+strength 
+
+=item *
+
+speed
+
+=item *
+
+defence 
 
 =back
 
-We'll trace also robots' descriptions, but as we will manage them as multilanguage field we'll talk about them in a second moment.
+We'll trace also robots' descriptions, but we'll talk about them in a second moment as they'll be multilanguage field .
 
-Considering this data structure you have to create database table for it by yourself, Strehler doesn't give you tools to manage database table out of the ones for tables of its own.
+Considering this data structure you have to create database table for it by yourself, Strehler doesn't give you tools to manage custom database tables.
 
 SQL script should be
 
     CREATE TABLE ROBOTS (
-    ID INTEGER PRIMARY KEY AUTO_INCREMENT,
-    NAME VARCHAR(50),
-    PILOT VARCHAR(50),
-    STRENGHT INTEGER,
-    SPEED INTEGER,
-    DEFENCE INTEGER,
-    CATEGORY INTEGER,
-    PUBLISHED TINYINT(1)
+        ID INTEGER PRIMARY KEY AUTO_INCREMENT,
+        NAME VARCHAR(50),
+        PILOT VARCHAR(50),
+        STRENGHT INTEGER,
+        SPEED INTEGER,
+        DEFENCE INTEGER,
+        CATEGORY INTEGER,
+        PUBLISHED TINYINT(1)
     );
 
-Table fields are more than data we asked for. ID si mandatory in B<every> Strehler entity table as primary key for it. We also decided to give this object two Strehler out-of-the-box featuers: published status and category. Designing the database is enough to add a CATEGORY column and a PUBLISHED one (INTEGER and TINYINT respectivly).
+Table fields are more than data elements from previous list. ID si mandatory in B<every> Strehler entity table as primary key for it. We also decided to give this object two Strehler out-of-the-box featuers: published status and category. For it is enough to add a CATEGORY column and a PUBLISHED one (INTEGER and TINYINT respectivly) to your table.
 
 For description, the multilangua field, we need a second table. Here's its script:
 
     CREATE TABLE ROBOTS_MULTI(
-    ID INTEGER PRIMARY KEY AUTO_INCREMENT,
-    ROBOT INTEGER,
-    DESCRIPTION VARCHAR(120),
-    LANGUAGE VARCHAR(2)
+        ID INTEGER PRIMARY KEY AUTO_INCREMENT,
+        ROBOT INTEGER,
+        DESCRIPTION VARCHAR(120),
+        LANGUAGE VARCHAR(2)
     );
 
 An ID as for the main table, a column for the foreign key on ROBOTS table (ROBOT) and a LANGUAGE VARCHAR(2) field. These elements are mandatory for a multilanguage Strehler table.
@@ -76,7 +86,7 @@ B<WARNING>: If you don't want to create indexes because, for example, you are wo
 
 =head2 Forms
 
-Strehler do no introspection to elaborate the form to create/edit robots so we have to write it by ourself. It's just HTML::FormFu syntax. You can do everything you want, just remember to keep fields names the same of the database fields names. For Strehler standard features use custom FormFu::Elements.
+Strehler does no introspection to elaborate the form to create/edit robots so we have to write forms by ourself. It's just L<HTML::FormFu> syntax. You can do everything you want, just remember to keep fields names the same of the database fields names. For Strehler standard features use custom FormFu::Elements.
 In this example we'll use L<Strehler::Formfu::Element::Category> and L<Strehler::Formfu::Element::Tags>.
 
     attributes:
@@ -115,7 +125,8 @@ In this example we'll use L<Strehler::Formfu::Element::Category> and L<Strehler:
             type: submit
             class: btn btn-primary
 
-Classes are assigned according to Strehler layout
+CSS classes are assigned according to Strehler layout.
+
 Multilang fields need a file by themselves
 
     elements:
@@ -124,7 +135,7 @@ Multilang fields need a file by themselves
 
 =head2 Class
 
-Now you need a class that will manage robots. Basic implementation of it is just an extension of Element with metaclass_data overridden. Class namespace is not important at all.
+Now you need a class that manage robots. Basic implementation of it is just an extension of Element with metaclass_data overridden. Class namespace is not important at all.
 
     package Site::Element::Robot;
 
@@ -160,7 +171,7 @@ Name of the module in DBIx::Class structure that manage the main table of the en
 
 =item category_accessor
 
-The relationship name in Category mdule. You can read it from Your::Module::Result::Category as here:
+The relationship name in Category module. You can read it from Your::Module::Result::Category as here:
 
     __PACKAGE__->has_many(
         "robots",
@@ -199,7 +210,7 @@ This configuration can be done through config.yml too, but this could make confi
 
 =head3 HOOKS
 
-Extending L<Strehler::Element> to create new entities allow you to override every method of that class to fit your needs. In particular, you'll probably work a lot with the B<get_form_data> and the B<save_form methods>, if the logic of your data is more complicated than expected by Strehler.
+Extending L<Strehler::Element> to create new entities allow you to override every method of that class to fit your needs. In particular, you'll probably work a lot with the B<get_form_data> and the B<save_form> methods, if the logic of your data is more complicated than expected by Strehler.
 
 There're also two hooks to make life easier. 
 
