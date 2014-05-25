@@ -68,7 +68,14 @@ sub get_attr
     my $accessor = $self->can($attribute);
     if($accessor && ! $bare)
     {
-        return $self->$accessor($self->row->$attribute);
+        if($self->row->result_source->has_column($attribute))
+        {
+            return $self->$accessor($self->row->$attribute);
+        }
+        else
+        {
+            return $self->$accessor(undef);
+        }
     }
     if($attribute eq 'category')
     {
@@ -121,18 +128,23 @@ sub get_attr_multilang
     my $attribute = shift;
     my $lang = shift;
     my $bare = shift;
+    my $accessor = $self->can($attribute);
     my $children = $self->row->can($self->multilang_children());
     return undef if not $children;
     my $content = $self->row->$children->find({'language' => $lang});
+    my $content_attribute = undef;
+    if($content && $content->result_source->has_column($attribute))
+    {
+        $content_attribute = $content->$attribute;
+    }
+    if($accessor && ! $bare)
+    {
+        return $self->$accessor($content_attribute, $lang);
+    }
     if($content)
     {
         if($content->result_source->has_column($attribute))
         {
-            my $accessor = $self->can($attribute);
-            if($accessor && ! $bare)
-            {
-                return $self->$accessor($content->$attribute, $lang);
-            }
             if($content->result_source->column_info($attribute)->{'data_type'} eq 'timestamp' || $content->result_source->column_info($attribute)->{'data_type'} eq 'datetime')
             {
                 my $ts = $content->$attribute;
@@ -219,6 +231,32 @@ sub max_category_order
     return $max || 0;
 }
 
+sub get_data_fields
+{
+    my $self = shift;
+    if($self->data_fields())
+    {
+        return $self->data_fields();
+    }
+    else
+    {
+        return $self->row->result_source->columns;
+    }
+}
+
+sub get_multilang_data_fields
+{
+    my $self = shift;
+    my $children = shift;
+    if($self->multilang_data_fields())
+    {
+        return $self->multilang_data_fields();
+    }
+    else
+    {
+        return $self->row->$children->result_source->columns
+    }
+}
 
 
 
@@ -226,7 +264,7 @@ sub get_basic_data
 {
     my $self = shift;
     my %data;
-    foreach my $c ($self->row->result_source->columns)
+    foreach my $c ($self->get_data_fields())
     {
         $data{$c} = $self->get_attr($c);
     }
@@ -243,7 +281,7 @@ sub get_ext_data
     my $children = $self->row->can($self->multilang_children());
     if($children)
     {
-        foreach my $c ($self->row->$children->result_source->columns)
+        foreach my $c ($self->get_multilang_data_fields($children))
         {
             if($c ne 'id' && $c ne $self->item_type() && $c ne 'language')
             {

@@ -139,7 +139,7 @@ default: generic list view as in the Strehler package
 Let you use a different view for listing entity entries.
 Entries will be passed to the view as "elements" array, with all the basic data of the entity.
 
-=item role
+=item allowed_role
 
 default: ""
 

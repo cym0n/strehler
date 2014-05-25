@@ -229,4 +229,8 @@ You can use this only on elements with a publish_date field (like articles). Con
 
 =back
 
+=head1 SEE ALSO
+
+L<Strehler::Element::Role::Configured> for Element functions related to its configuration.
+
 =cut
