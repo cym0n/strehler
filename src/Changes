@@ -1,3 +1,13 @@
+1.1.10
+======
+
+_Sun May 25 2014_
+
+* data_fields and multilang_data_fields introduced in Streher::Element
+* get_attr has now a bare flag
+* Bugfix
+* Documentation
+
 1.1.9
 =====
 
