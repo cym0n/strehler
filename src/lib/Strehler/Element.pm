@@ -64,8 +64,9 @@ sub get_attr
 {
     my $self = shift;
     my $attribute = shift;
+    my $bare = shift || 0;
     my $accessor = $self->can($attribute);
-    if($accessor)
+    if($accessor && ! $bare)
     {
         return $self->$accessor($self->row->$attribute);
     }

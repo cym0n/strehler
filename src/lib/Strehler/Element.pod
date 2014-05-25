@@ -54,19 +54,23 @@ Return 1 if user, considering his $user_role, has rights to access the entity.
 
 =item get_attr
 
-Arguments: $attr
+Arguments: $attr, $bare
 
 Return Value: $attr_value
 
 Return the value for the attribute (the database column) named $attr.
 
+If $bare is true (1) database value is given back ignoring possible hook for the attribute.
+
 =item get_attr_multilang
 
-Arguments: $attr, $lang
+Arguments: $attr, $lang, $bare
 
 Return Value: $attr_value
 
 Return the value for the multilanguage attribute named $attr in the language $lang
+
+If $bare is true (1) database value is given back ignoring possible hook for the attribute.
 
 =item has_language
 
