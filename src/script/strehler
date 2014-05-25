@@ -2,6 +2,7 @@
 
 use v5.10;
 use Cwd;
+use File::Copy;
 use File::Copy::Recursive 'dircopy';
 use File::Path 'remove_tree';
 use Dancer2::Core::Runner;
