@@ -64,6 +64,29 @@ sub class_from_entity
     }
 }
 
+sub class_from_plural
+{
+    my $plural = shift;
+    foreach my $class ('Strehler::Element::Article', 'Strehler::Element::Image', 'Strehler::Element::User', 'Strehler::Element::Log')
+    {
+        eval("require $class");
+        if($class->plural() eq $plural)
+        {
+            return $class;
+        }
+    }
+    foreach my $entity (keys config->{'Strehler'}->{'extra_menu'})
+    {
+        my $entity_class = config->{'Strehler'}->{'extra_menu'}->{$entity}->{'class'};
+        eval("require $entity_class");
+        if($entity_class->plural() eq $plural)
+        {
+            return $entity_class;
+        }
+    }
+    return undef;
+}
+
 =encoding utf8
 
 =head1 NAME

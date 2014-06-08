@@ -3,6 +3,7 @@ package Strehler::Element::Role::Configured;
 use Moo::Role;
 use Dancer2;
 use Dancer2::Plugin::DBIC;
+use Lingua::EN::Inflect qw(PL classical);
 
 requires 'metaclass_data'; 
 
@@ -17,6 +18,14 @@ sub item_type
 {
     my $self = shift;
     return $self->metaclass_data('item_type');
+}
+sub plural
+{
+    my $self = shift;
+    classical(1);
+    my $plural = PL($self->item_type());
+    $plural = $plural . 's' if $plural eq $self->item_type();
+    return $plural;
 }
 
 sub ORMObj
