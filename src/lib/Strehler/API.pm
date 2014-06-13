@@ -25,6 +25,7 @@ get '/:entity/:id' => sub {
     }
     my $class = Strehler::Helpers::class_from_entity($entity);
     pass if ! $class;
+    pass if ! $class->exposed();
     my %data = $class->new($id)->get_ext_data($lang);    
     my $serializer = Dancer2::Serializer::JSON->new();
     my $serialized = $serializer->serialize(\%data);
@@ -41,6 +42,7 @@ get '/:entities' => sub {
     my $entities = params->{entities};
     my $class = Strehler::Helpers::class_from_plural($entities);
     pass if ! $class;
+    pass if ! $class->exposed();
     my $data = $class->get_list({entries_for_page => 3});    
     my $serializer = Dancer2::Serializer::JSON->new();
     my $serialized = $serializer->serialize($data->{to_view}, {allow_blessed=>1,convert_blessed=>1});

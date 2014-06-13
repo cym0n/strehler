@@ -21,7 +21,10 @@ sub metaclass_data
 }
 
 #Standard configuration overrides
-
+sub exposed
+{
+    return config->{'Strehler'}->{'extra_menu'}->{'log'}->{exposed} || 0;
+}
 sub label
 {
     return config->{'Strehler'}->{'extra_menu'}->{'log'}->{label} || "Logs";

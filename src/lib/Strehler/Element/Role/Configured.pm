@@ -54,6 +54,11 @@ sub auto
     my $self = shift;
     return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{auto} || 1;
 }
+sub exposed
+{
+     my $self = shift;
+     return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{exposed} || 1;
+}
 sub label
 {
     my $self = shift;
@@ -135,6 +140,7 @@ sub entity_data
 {
     my $self = shift;
     my @attributes = ('auto', 
+                      'exposed',
                    'label', 
                    'class', 
                    'creatable', 
@@ -232,6 +238,10 @@ Wrapper for Dancer2 schema keyword, used internally to allow developer to use a 
 =item *
 
 auto
+
+=item *
+
+exposed
 
 =item *
 

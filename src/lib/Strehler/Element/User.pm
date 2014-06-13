@@ -19,7 +19,10 @@ sub metaclass_data
 }
 
 #Standard configuration overrides
-
+sub exposed
+{
+    return config->{'Strehler'}->{'extra_menu'}->{'user'}->{exposed} || 0;
+}
 sub label
 {
     return config->{'Strehler'}->{'extra_menu'}->{'user'}->{label} || "Users";
