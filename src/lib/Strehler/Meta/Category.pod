@@ -35,7 +35,7 @@ If you know category name and eventually the name of its parent you can call the
 
 explode_name is a shortcut for this, easier to use:
 
-    my $cat = Strehler::Meta:Category->explode_name("$parent/$category");
+    my $cat = Strehler::Meta::Category->explode_name("$parent/$category");
 
 All these methods return a Strehler::Meta::Category object, also in case the id (or the name) of the category in not present in the DB. In this case the object will be empty. You can test it with the exists method
 
