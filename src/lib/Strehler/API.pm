@@ -43,16 +43,52 @@ get '/**/' => sub {
     my ($entities, $category, $subcategory) = @{$attributes};
     my $callback = params->{'callback'} || undef;
     my $lang = params->{'lang'} || config->{'Strehler'}->{'default_language'};
+    my $order = params->{'order'};
+    my $order_by = params->{'order_by'};
+    my $page = params->{'page'};
 
     my $class = Strehler::Helpers::class_from_plural($entities);
-    my $category_obj = Strehler::Meta::Category->explode_name("$category/$subcategory");
     return pass if ! $class;
     return pass if ! $class->exposed();
-    if(! $category_obj->exists())
+
+    my $category_id = undef;
+    my $ancestor = undef;
+    if($category)
     {
-        return error_handler(404, "Category doesn't exists");
+        $subcategory ||= "";
+        my $category_obj = Strehler::Meta::Category->explode_name("$category/$subcategory");
+        if(! $category_obj->exists())
+        {
+            return error_handler(404, "Category doesn't exists");
+        }
+        if($subcategory)
+        {
+            $category_id = $category_obj->get_attr('id');
+            $ancestor = undef;
+        }
+        else
+        {
+            $ancestor = $category_obj->get_attr('id');
+            $category_id = undef;
+        }
     }
-    my $data = $class->get_list({entries_for_page => 3});    
+    else
+    {
+        $category_id = undef;
+        $ancestor = undef;
+    }
+    my $parameters = {
+            order => $order,
+            order_by => $order_by,
+            language => $lang,
+            entries_for_page => 20,
+            page => $page,
+            ext => 1,
+            category_id => $category_id,
+            ancestor => $ancestor
+        };
+
+    my $data = $class->get_list($parameters);    
     if($callback)
     {
         content_type('application/javascript');
