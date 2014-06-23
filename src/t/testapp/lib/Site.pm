@@ -6,6 +6,7 @@ use lib "$FindBin::Bin/testapp/lib";
 use Dancer2;
 use Dancer2::Plugin::DBIC;
 use Strehler::Admin;
+use Strehler::API;
 
 sub reset_database
 {
