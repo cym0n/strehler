@@ -5,6 +5,7 @@ use Test::More;
 use Test::TCP;
 use LWP::UserAgent;
 use FindBin;
+use Dancer2::Serializer::JSON;
 use Data::Dumper;
 
 use t::testapp::lib::Site;
@@ -72,8 +73,50 @@ Test::TCP::test_tcp(
                            'title_en' => 'Automatic test 2 - title - EN',
                            'text_en' => 'Automatic test 2 - body - EN'
                           });
+        
+        #TEST 
+        my $serializer = Dancer2::Serializer::JSON->new();        
+        my $content;        
+        my @elements;
+
         $res = $ua->get($site . "/api/v1/articles/");
         is($res->code, 200, "Articles api correctly called");
+        $content = $serializer->deserialize($res->content);
+        @elements = @{$content->{to_view}};
+        is(@elements, 2, "Elements retrived: 2");
+        is($elements[0]->{'title'}, 'Automatic test 2 - title - IT', "Ordered by ID, desc");
+        my $bad_id = $elements[0]->{'id'} + $elements[1]->{'id'} + 1; #ID to test 404 
+
+        $res = $ua->get($site . "/api/v1/articles/?order_by=display_order&order=asc");
+        $content = $serializer->deserialize($res->content);
+        @elements = @{$content->{to_view}};
+        is($elements[0]->{'title'}, 'Automatic test 1 - title - IT', "Ordered by display order, asc");
+
+        $res = $ua->get($site . "/api/v1/articles/?lang=en");
+        $content = $serializer->deserialize($res->content);
+        @elements = @{$content->{to_view}};
+        is($elements[0]->{'title'}, 'Automatic test 2 - title - EN', "Different language");
+
+        $res = $ua->get($site . "/api/v1/articles/prova/foo/");
+        is($res->code, 200, "Articles api correctly called on category");
+        $content = $serializer->deserialize($res->content);
+        @elements = @{$content->{to_view}};
+        is(@elements, 1, "Elements retrived: 1");
+        is($elements[0]->{'title'}, 'Automatic test 2 - title - IT', "Correct element retrieved");
+
+        my $element_id = $elements[0]->{'id'};
+        $res = $ua->get($site . "/api/v1/article/" . $element_id);
+        is($res->code, 200, "Single article API correctly called");
+        $content = $serializer->deserialize($res->content);
+        is($content->{'title'}, 'Automatic test 2 - title - IT', "Correct element retrieved");            
+
+        $res = $ua->get($site . "/api/v1/article/" . $element_id . '?callback=foo');
+        is($res->code, 200, "Single article API correctly called as JSONP");
+        like($res->content, qr/^foo\(.*?\)/, "JSONP padding present");
+
+        $res = $ua->get($site . "/api/v1/article/" . $bad_id);
+        is($res->code, 404, "Element not found");
+
     },
     server => sub {
         use Dancer2;
