@@ -47,7 +47,13 @@ Tell Strehler to use standard implementation for all the backend navigations. Wi
 
 default: 1
 
-Data about the entity are is automatically exposed through Strehler's APIs.
+Data about the entity is automatically exposed through Strehler's APIs.
+
+=item plural
+
+default: a label deriver from item_type using L<Lingua::EN::Inflect>
+
+Label that will be used to build API paths.
 
 =item label
 

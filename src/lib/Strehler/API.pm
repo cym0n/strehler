@@ -49,6 +49,7 @@ get '/**/' => sub {
     my $order = params->{'order'};
     my $order_by = params->{'order_by'};
     my $page = params->{'page'};
+    my $entries_for_page = params->{'entries_for_page'} || 20;
 
     my $class = Strehler::Helpers::class_from_plural($entities);
     return pass if ! $class;
@@ -84,7 +85,7 @@ get '/**/' => sub {
             order => $order,
             order_by => $order_by,
             language => $lang,
-            entries_for_page => 20,
+            entries_for_page => $entries_for_page,
             page => $page,
             ext => 1,
             published => 1,
@@ -150,35 +151,16 @@ Strehler::API - App that gives a RESTful interface to Strehler data
 
 =head1 DESCRIPTION
 
-Strehker::API is an out-of-the-box API system designed on top of Strehler backend to give back contents created with Strehler backend in a JSON (or JSONp) shape.
-It's main purpose is to make Strehler a complete server for client-side applications designed using advanced javascript, as Angular.js.
+Strehler::API is an out-of-the-box API system designed to give back contents created with Strehler backend in a JSON (or JSONp) shape.
+It's main purpose is to make Strehler a complete server for client-side applications designed using advanced javascript, as L<Angular.js|https://angularjs.org/>.
 
-Articles and Images are exposed by API for default, all the others custom entities introduced can be exposed as well.
+Articles and Images are exposed through API by default, all the other custom entities can be exposed as well. Exposed flag was created for that purpose.
 
 All the API calls are under B</api/v1/>
 
-=head1 SYNOPSIS
+=head1 API REFERENCE
 
-    wget http://localhost:3000/api/v1/article/61
-
-    --2014-06-29 11:48:52--  http://localhost:3000/api/v1/article/61
-    Resolving localhost (localhost)... 127.0.0.1
-    Connecting to localhost (localhost)|127.0.0.1|:3000... connected.
-    HTTP request sent, awaiting response... 200 OK
-    Length: 225 [application/json]
-    Saving to: '61'
-
-    100%[======================================>] 225         --.-K/s   in 0s      
-
-    2014-06-29 11:48:54 (38.4 MB/s) - '61' saved [225/225]
-
-    cat 61
-    
-    {"display_order":"1","category_name":"newcategory/newnew","image":"/upload/Poland-icon.png","published":null,"publish_date":null,"text":"domo domo domo","slug":"61-domo-domo","title":"domo domo","category":"newnew","id":"61"}
-
-=head1 API reference
-
-Strehler::API are read-only API so there're just two calls you can do, both in GET, to obtain data.
+Strehler::API are read-only API so there're just two calls you can do, both GET, to obtain data.
 
 =over 4
 
@@ -186,9 +168,39 @@ Strehler::API are read-only API so there're just two calls you can do, both in G
 
 This API just return all the data related to entity $entity with id $entity_id. 
 Data is always the extended data from get_ext_data in L<Strehler::Element>. You can pass to the call B<lang> as parameter to obtain data in a certain language. If no lang parameter is provided, data is returned using the default language.
-If the entity is publishable, only data from published articles is returned. 
+If the entity is publishable, only data from published articles is returned. Calling for an unpublished article return 404. 
+
+B<Example>: /api/v1/article/15
+
+=item /api/v1/$plural_entity/$category/$subcategory/
+
+This API returns in a JSON format a call to get_list sub from L<Strehler::Element>. So data structure is:
+
+    {
+      page => 1,          #page retrieved
+      last_page => 3,     #maximum callable page number
+      to_view => $objects #list of objects, all returned with their extended data.
+    } 
+
+$plural_entity is the plural name of the entity. You can let Strehler derives it by itself from entity name using L<Lingua::EN::Inflect> or you can configure it in the config.yml or in the class as all other attributes.
+
+$category and $subcategory are optional. If you call the API using them you'll retrieve all the elements under $category/$subcategory category. Pay attention that if you just call /api/v1/$plural_entity/$category/ system will return the objects under $category and all the objects under $category's subcategories.
 
 
+API output is controlled by many parameters (a subset of get_list available parameters):
+
+    lang: output language, as for single item API
+    order, order_by: to change the way elements are ordered
+    page: to control pagination
+    entries_for_page: to say how many elements display every page
+
+B<Example>: /api/v1/articles/foo/bar/
+
+=back
+
+=head2 JSONP CALLBACK
+
+Adding B<callback> parameter to any API, return format will be JSONp instead of JSON.
 
 =cut
 
