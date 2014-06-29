@@ -73,6 +73,37 @@ Test::TCP::test_tcp(
                            'title_en' => 'Automatic test 2 - title - EN',
                            'text_en' => 'Automatic test 2 - body - EN'
                           });
+        $res = $ua->post($site . "/admin/article/add",
+                         { 'image' => undef,
+                           'category' => $ancestor_cat_id,
+                           'subcategory' => $child_cat_id,
+                           'tags' => '',
+                           'display_order' => 3,
+                           'publish_date' => '',
+                           'title_it' => 'Automatic test 3 - title - IT',
+                           'text_it' => 'Automatic test 3 - body - IT',
+                           'title_en' => 'Automatic test 3 - title - EN',
+                           'text_en' => 'Automatic test 3 - body - EN'
+                          });              
+        #Dummy articles published
+        
+        my $not_published_id = undef;
+        my $bad_id = 0;
+        
+        my $all_created = Strehler::Element::Article->get_list();
+        for(@{$all_created->{to_view}})
+        {
+            my $el = $_;
+            $bad_id += $el->{'id'};
+            if($el->{'title'} ne 'Automatic test 3 - title - IT')
+            {
+                $ua->get($site . "/admin/article/turnon/" . $el->{'id'});
+            }
+            else
+            {
+                $not_published_id = $el->{'id'};
+            }
+        }
         
         #TEST 
         my $serializer = Dancer2::Serializer::JSON->new();        
@@ -85,7 +116,6 @@ Test::TCP::test_tcp(
         @elements = @{$content->{to_view}};
         is(@elements, 2, "Elements retrived: 2");
         is($elements[0]->{'title'}, 'Automatic test 2 - title - IT', "Ordered by ID, desc");
-        my $bad_id = $elements[0]->{'id'} + $elements[1]->{'id'} + 1; #ID to test 404 
 
         $res = $ua->get($site . "/api/v1/articles/?order_by=display_order&order=asc");
         $content = $serializer->deserialize($res->content);
@@ -115,6 +145,9 @@ Test::TCP::test_tcp(
         like($res->content, qr/^foo\(.*?\)/, "JSONP padding present");
 
         $res = $ua->get($site . "/api/v1/article/" . $bad_id);
+        is($res->code, 404, "Element not found");
+        
+        $res = $ua->get($site . "/api/v1/article/" . $not_published_id);
         is($res->code, 404, "Element not found");
 
     },
