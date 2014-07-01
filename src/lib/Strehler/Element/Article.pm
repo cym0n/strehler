@@ -117,29 +117,20 @@ sub image
         return undef;
     }
 }
-sub save_slug
-{
-    my $self = shift;
-    my $id = shift;
-    my $form = shift;
-    my $lan = shift;
-    if($form->param_value('title_' . $lan))
-    {
-        return $id . '-' . Strehler::Helpers::slugify($form->param_value('title_' . $lan));
-    }
-    else
-    {
-        return undef;
-    }
-}
 
-#Method to manage slugs
 sub get_by_slug
 {
     my $self = shift;
     my $slug = shift;
     my $language = shift;
-    my $chapter = $self->get_schema()->resultset('Content')->find({ slug => $slug, language => $language });
+
+    my $chapter;
+    if(1)
+    {
+        my $children = $self->multilang_children();
+        @chapters = $self->get_schema()->resultset($self->ORMObj())->search_related($children, { slug => $slug, language => $language });
+        $chapter = $chapters[0];
+    }
     if($chapter)
     {
         return $self->new($chapter->article->id);
