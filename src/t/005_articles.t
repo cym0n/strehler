@@ -59,6 +59,7 @@ Test::TCP::test_tcp(
         my $article_id = $article->{'id'};
         my $article_object = Strehler::Element::Article->new($article_id);
         ok($article_object->exists(), "Article correctly inserted");
+        is($article_object->get_attr_multilang('slug', 'it'), $article_id . '-automatic-test-title-it', "Slug correctly created");
 
         #TURN ON
         $res = $ua->get($site . "/admin/article/turnon/$article_id");

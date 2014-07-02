@@ -59,3 +59,5 @@ sub get_by_slug
         return undef;
     }
 }
+
+1;

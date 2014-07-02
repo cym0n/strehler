@@ -6,6 +6,7 @@ use Dancer2 0.11;
 use Dancer2::Plugin::DBIC;
 
 extends 'Strehler::Element';
+with 'Strehler::Element::Role::Slugged';
 
 #Standard element implementation
 
@@ -118,29 +119,6 @@ sub image
     }
 }
 
-sub get_by_slug
-{
-    my $self = shift;
-    my $slug = shift;
-    my $language = shift;
-
-    my $chapter;
-    if(1)
-    {
-        my $children = $self->multilang_children();
-        @chapters = $self->get_schema()->resultset($self->ORMObj())->search_related($children, { slug => $slug, language => $language });
-        $chapter = $chapters[0];
-    }
-    if($chapter)
-    {
-        return $self->new($chapter->article->id);
-    }
-    else
-    {
-        return undef;
-    }
-}
-
 =encoding utf8
 
 =head1 NAME
@@ -160,21 +138,10 @@ Articles can be retrived using slug through the get_by_slug function.
 
     my $article = Strehler::Element::Article->get_by_slug('a-slug-suitable-for-web', $language)
 
-=head1 FUNCTIONS
+=head1 FEATURES
 
-=over 4
+It implements L<Strehler::Element::Role::Slugged> so you can use slugs to refer to articles
 
-=item get_by_slug
-
-arguments: $slug, $language
-
-retur value: $article
-
-Retrive the Article $article using the slug generated in automatic by CMS. Language is given because a slug can exist under a language but not under another.
-
-If no article with give slug is present, function return undef.
-
-=back
 
 =cut
 

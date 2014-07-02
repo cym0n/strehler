@@ -141,19 +141,19 @@ sub entity_data
     my $self = shift;
     my @attributes = ('auto', 
                       'exposed',
-                   'label', 
-                   'class', 
-                   'creatable', 
-                   'updatable', 
-                   'deletable',
-                   'categorized',
-                   'ordered',  
-                   'dated',
-                   'publishable',
-                   'custom_list_view',
-                   'form',
-                   'multilang_form',
-                   'allowed_role');
+                      'label', 
+                      'class', 
+                      'creatable', 
+                      'updatable', 
+                      'deletable',
+                      'categorized',
+                      'ordered',  
+                      'dated',
+                      'publishable',
+                      'custom_list_view',
+                      'form',
+                      'multilang_form',
+                      'allowed_role');
     my %entity_data;
     foreach my $attr (@attributes)
     {
