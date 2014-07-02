@@ -6,7 +6,6 @@ use Dancer2::Plugin::DBIC;
 use Strehler::Meta::Tag;
 use Strehler::Meta::Category;
 use Strehler::Helpers;
-use Data::Dumper;
 
 with 'Strehler::Element::Role::Configured';
 
@@ -815,6 +814,7 @@ sub save_form
     
     my $el_row;
     my $el_data;
+    my %standby_accessors;
     foreach my $column ($self->get_schema()->resultset($self->ORMObj())->result_source->columns)
     {
         if($column ne 'category' && $column ne 'id' && $column ne 'published')
@@ -845,8 +845,14 @@ sub save_form
                 my $accessor = $self->can('save_' . $column);
                 if($accessor)
                 {
-                    $el_data->{$column} = $self->$accessor($id, $form, undef);
-
+                    if($id)
+                    {
+                        $el_data->{$column} = $self->$accessor($id, $form, undef);
+                    }
+                    else
+                    {
+                        $standby_accessors{$column} = $accessor;
+                    }
                 }
             }
         }
@@ -873,6 +879,13 @@ sub save_form
     {
         $el_row = $self->get_schema()->resultset($self->ORMObj())->create($el_data);
     }
+    my $standby_data;
+    foreach(keys %standby_accessors)
+    {
+        my $accessor = $standby_accessors{$_};
+        $standby_data->{$_} = $self->$accessor($el_row->id, $form, undef);
+    }
+    $el_row->update($standby_data);
     my $children = undef;
     if($id)
     {

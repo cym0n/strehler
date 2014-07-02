@@ -83,6 +83,8 @@ __PACKAGE__->add_columns(
   { data_type => "date", is_nullable => 1 },
   "published",
   { data_type => "tinyint", is_nullable => 1, size => 1 },
+   "slug",
+  { data_type => "varchar", is_nullable => 1, size => 120 },
 );
 
 =head1 PRIMARY KEY

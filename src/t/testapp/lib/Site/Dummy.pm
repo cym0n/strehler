@@ -17,4 +17,15 @@ sub metaclass_data
     return $element_conf{$param};
 }
 
+sub to_slug
+{
+    my $self = shift;
+    my $lan = shift;
+    return 'text';
+}
+
+sub multilang_slug
+{
+    return 0;
+}
 1;
