@@ -4,6 +4,7 @@ use Moo;
 use Dancer2;
 
 extends 'Strehler::Element';
+with 'Strehler::Element::Role::Slugged';
 
 sub metaclass_data 
 {
