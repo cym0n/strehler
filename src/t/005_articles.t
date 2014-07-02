@@ -34,6 +34,8 @@ Test::TCP::test_tcp(
         my $cat = Strehler::Meta::Category->new({ category => 'prova' });
         my $cat_id = $cat->get_attr('id');
 
+        ok(Strehler::Element::Article->slugged(), "Article has slug");
+
         #LIST
         $res = $ua->get($site . "/admin/article/list");
         is($res->code, 200, "Articles page correctly accessed");

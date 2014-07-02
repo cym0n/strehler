@@ -59,6 +59,11 @@ sub exposed
      my $self = shift;
      return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{exposed} || 1;
 }
+sub slugged
+{
+    my $self = shift;
+    return $self->can('get_by_slug');
+}
 sub label
 {
     my $self = shift;
@@ -141,6 +146,7 @@ sub entity_data
     my $self = shift;
     my @attributes = ('auto', 
                       'exposed',
+                      'slugged',
                       'label', 
                       'class', 
                       'creatable', 
@@ -186,6 +192,8 @@ Every "flag function" just read the role value from Dancer2 config.yml.
 Creating new entities you can set their flags in config.yml or override Configured role's functions.
 
 Overriding functions has priority on config.yml.
+
+Slugged attribute is special, it's based on introspection on the class. You can't change it in config.yml and overriding it could be a bad idea.
 
 =head1 FUNCTIONS
 

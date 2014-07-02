@@ -35,6 +35,8 @@ Test::TCP::test_tcp(
         my $cat = Strehler::Meta::Category->new({ category => 'prova' });
         my $cat_id = $cat->get_attr('id');
 
+        ok(! Strehler::Element::Image->slugged(), "Image hasn't slug");
+
         #LIST
         $res = $ua->get($site . "/admin/image/list");
         is($res->code, 200, "Images page correctly accessed");
