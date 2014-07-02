@@ -54,12 +54,16 @@ Test::TCP::test_tcp(
         my $dummy_object = Site::Dummy->new($dummy_id);
         ok($dummy_object->exists(), "Dummy object correctly inserted");
         is($dummy_object->get_attr('slug'), $dummy_id . '-a-dumb-text', "Slug correctly created");
-
+        
+        #CALL BY SLUG
+        $res = $ua->get($site . "/dummyslug/".$dummy_object->get_attr('slug'));        
+        is($res->content, $dummy_id, "Get by Slug on dummy");
+        
         #DELETE
-        #$ua->default_header('X-Requested-With' => undef);
-        #$res = $ua->post($site . "/admin/dummy/delete/$dummy_id");
-        #$dummy_object = Site::Dummy->new($dummy_id);
-        #ok(! $dummy_object->exists(), "Dummy object correctly deleted");
+        $ua->default_header('X-Requested-With' => undef);
+        $res = $ua->post($site . "/admin/dummy/delete/$dummy_id");
+        $dummy_object = Site::Dummy->new($dummy_id);
+        ok(! $dummy_object->exists(), "Dummy object correctly deleted");
 
     },
     server => sub {

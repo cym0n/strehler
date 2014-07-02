@@ -7,6 +7,7 @@ use Dancer2;
 use Dancer2::Plugin::DBIC;
 use Strehler::Admin;
 use Strehler::API;
+#use Site::Dummy;
 
 sub reset_database
 {
@@ -47,5 +48,9 @@ get '/:lang/slug/:slug' => sub {
     my %data = $a->get_ext_data(params->{'lang'});
     return $data{'title'};
 };
-
+get '/dummyslug/:slug' => sub {
+    my $a = Site::Dummy->get_by_slug(params->{'slug'}, undef);
+    my %data = $a->get_ext_data(params->{'lang'});
+    return $data{'id'};
+};
 1;
