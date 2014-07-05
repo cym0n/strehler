@@ -140,6 +140,12 @@ Test::TCP::test_tcp(
         $content = $serializer->deserialize($res->content);
         is($content->{'title'}, 'Automatic test 2 - title - IT', "Correct element retrieved");            
 
+        my $element_slug = $elements[0]->{'slug'};
+        $res = $ua->get($site . "/api/v1/article/slug/" . $element_slug);
+        is($res->code, 200, "Single article API by slug correctly called");
+        $content = $serializer->deserialize($res->content);
+        is($content->{'title'}, 'Automatic test 2 - title - IT', "Correct element retrieved using slug");            
+
         $res = $ua->get($site . "/api/v1/article/" . $element_id . '?callback=foo');
         is($res->code, 200, "Single article API correctly called as JSONP");
         like($res->content, qr/^foo\(.*?\)/, "JSONP padding present");

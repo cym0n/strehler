@@ -10,6 +10,37 @@ prefix '/api/v1';
 
 set layout => undef;
 
+get '/:entity/slug/:slug' => sub {
+    my $entity = params->{entity};
+    my $slug = params->{'slug'};
+    my $callback = params->{'callback'} || undef;
+    my $lang = params->{'lang'} || config->{'Strehler'}->{'default_language'};
+
+    my $class = Strehler::Helpers::class_from_entity($entity);
+    return pass if ! $class;
+    return pass if ! $class->exposed();
+    return pass if ! $class->slugged();
+    my $obj = $class->get_by_slug($slug, $lang);
+    if(! $obj)
+    {
+        return error_handler(404, "Element doesn't exists");
+    }
+    if($obj->publishable() && ! $obj->get_attr('published')) 
+    {
+        return error_handler(404, "Element doesn't exists");
+    }
+    my %data = $obj->get_ext_data($lang);    
+    if($callback)
+    {
+        content_type('application/javascript');
+    }
+    else
+    {
+        content_type('application/json');
+    }
+    return serialize(\%data, $callback);
+};
+
 get '/:entity/:id' => sub {
     my $entity = params->{entity};
     my $id = params->{'id'};
@@ -171,6 +202,10 @@ Data is always the extended data from get_ext_data in L<Strehler::Element>. You 
 If the entity is publishable, only data from published articles is returned. Calling for an unpublished article return 404. 
 
 B<Example>: /api/v1/article/15
+
+=item /api/v1/$entity/slug/$slug
+
+As the previous API, using article slug instead of ID. It works only with slugged entities, entities that has L<Strehler::Element::Role:Slugged> as L<Strehler::Element::Article>.
 
 =item /api/v1/$plural_entity/$category/$subcategory/
 
