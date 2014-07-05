@@ -131,13 +131,6 @@ Base Strehler content, it's used to create general articles, multilanguage.
 
 Its main title is the title in the language configured as default.
 
-It also manages slugs, automatically generated using L<Strehler::Helpers> function slugify.
-Articles can be retrived using slug through the get_by_slug function.
-
-=head1 SYNOPSIS
-
-    my $article = Strehler::Element::Article->get_by_slug('a-slug-suitable-for-web', $language)
-
 =head1 FEATURES
 
 It implements L<Strehler::Element::Role::Slugged> so you can use slugs to refer to articles
