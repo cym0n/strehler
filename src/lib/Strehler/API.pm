@@ -10,6 +10,28 @@ prefix '/api/v1';
 
 set layout => undef;
 
+my $root_path = __FILE__;
+$root_path =~ s/API\.pm//;
+
+set views => $root_path . 'views';
+
+get '/reference' => sub {
+    my @entities = Strehler::Helpers::entities_list();
+    my @single_calls;
+    my @plural_calls;
+    foreach my $e (@entities)
+    {
+        my $class = Strehler::Helpers::class_from_entity($e);
+        next if ! $class->exposed();
+        push @single_calls, '/api/v1/' . $e . '/&lt;id&gt;';
+        push @single_calls, '/api/v1/' . $e . '/slug/&lt;slug&gt;';
+        push @plural_calls, '/api/v1/' . $class->plural() . '/';
+        push @plural_calls, '/api/v1/' . $class->plural() . '/&lt;category&gt;/&lt;subcategory&gt;/';
+    }
+
+    template "api/reference", { page_title => "API reference", single_calls => \@single_calls, plural_calls => \@plural_calls }, { layout => 'light-admin' };
+};
+
 get '/:entity/slug/:slug' => sub {
     my $entity = params->{entity};
     my $slug = params->{'slug'};
@@ -230,6 +252,10 @@ API output is controlled by many parameters (a subset of get_list available para
     entries_for_page: to say how many elements display every page
 
 B<Example>: /api/v1/articles/foo/bar/
+
+=item /api/v1/reference
+
+Returns a web page where all the available APIs are listed. Automatically generated.
 
 =back
 

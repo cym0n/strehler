@@ -32,6 +32,12 @@ sub get_categorized_entities
     }
     return @entities;
 }
+sub entities_list
+{
+    my @standard_entities = ('article', 'image', 'user', 'log');
+    my @configured_entities = keys %{config->{'Strehler'}->{'extra_menu'}};
+    return (@standard_entities, @configured_entities);
+}
 
 sub class_from_entity
 {
