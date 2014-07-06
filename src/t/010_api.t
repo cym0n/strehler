@@ -85,8 +85,14 @@ Test::TCP::test_tcp(
                            'title_en' => 'Automatic test 3 - title - EN',
                            'text_en' => 'Automatic test 3 - body - EN'
                           });              
+        $res = $ua->post($site . "/admin/dummy/add",
+                         { 'category' => $ancestor_cat_id,
+                           'subcategory' => undef,
+                           'tags' => 'tag1',
+                           'text' => 'A dumb text',
+                         });
+
         #Dummy articles published
-        
         my $not_published_id = undef;
         my $bad_id = 0;
         
@@ -155,6 +161,27 @@ Test::TCP::test_tcp(
         
         $res = $ua->get($site . "/api/v1/article/" . $not_published_id);
         is($res->code, 404, "Element not found");
+
+        $res = $ua->get($site . "/api/v1/dummies/");
+        is($res->code, 200, "Dummies api correctly called");
+        $content = $serializer->deserialize($res->content);
+        @elements = @{$content->{to_view}};
+        is(@elements, 1, "Dummy elements retrived: 1");
+        is($elements[0]->{'text'}, 'A dumb text', "Dummy - Ordered by ID, desc");
+
+        my $dummy_id = $elements[0]->{'id'};
+        $res = $ua->get($site . "/api/v1/dummy/" . $dummy_id);
+        is($res->code, 200, "Single dummy API correctly called");
+        $content = $serializer->deserialize($res->content);
+        is($content->{'text'}, 'A dumb text', "Dummy - Correct element retrieved");            
+
+        my $dummy_slug = $elements[0]->{'slug'};
+        $res = $ua->get($site . "/api/v1/dummy/slug/" . $dummy_slug);
+        is($res->code, 200, "Single dummy API by slug correctly called");
+        $content = $serializer->deserialize($res->content);
+        is($content->{'text'}, 'A dumb text', "Dummy - Correct element retrieved using slug");            
+
+
 
     },
     server => sub {
