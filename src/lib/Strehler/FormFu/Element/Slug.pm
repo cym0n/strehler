@@ -34,13 +34,13 @@ No parameters, no labels.
 
     <div>
         <label>Slug [Automatic]</label>
-        <span name="slug_it" class="span8 slug">99-lorem-ipsum</span>
+        <span name="slug" class="span8 slug">99-lorem-ipsum</span>
     </div>   
 
 =head1 YAML CONFIGURATION
 
     - name: slug
-      label: "Slug [Automatic]
+      label: "Slug [Automatic]"
       type: label
       attributes:
         class: "span8 slug"

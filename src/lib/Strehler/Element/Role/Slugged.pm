@@ -72,9 +72,9 @@ Strehler::Element::Role::Slugged - A role to manage element's slug
 
 A slugged Strehler element provides an authomatic management of a slug (multilanguage or not). Slug can then be used to retrieve the element itself.
 
-Default implementation that come with the role is the one used by L<Strehler::Element::Article> but methods can be rewritten for different behaviours.
+Default implementation that come with the role is the one used by L<Strehler::Element::Article> but methods can be overridden for different behaviours.
 
-A slugged element must include, in its database representation, a field named slug, in the main table or in the table of multilanguage contents.
+A slugged element must include, in its database representation, a field named slug (VARCHAR), in the main table or in the table of multilanguage contents.
 
 =head1 SYNOPSIS
 
