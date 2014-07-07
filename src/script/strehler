@@ -281,7 +281,7 @@ sub demo_components
     {
         print "\nCOPY FAILED! A problem occured: $!\n\n";
     }
-    say "Config.yml...";
+    say "config.yml...";
     copy($origin . "/config.yml", $destination . '/config.yml');
     if($!)
     {
@@ -289,6 +289,12 @@ sub demo_components
     }
     say "Demo.pm...";
     copy($origin . "/Demo.pm.ex", $destination . '/lib/Demo.pm');
+    if($!)
+    {
+        print "\nCOPY FAILED! A problem occured: $!\n\n";
+    }
+    say "Site.pm...";
+    copy($origin . "/Site.pm.ex", $destination . '/lib/Site.pm');
     if($!)
     {
         print "\nCOPY FAILED! A problem occured: $!\n\n";
@@ -301,6 +307,18 @@ sub demo_components
     }
     say "strehler-home.tt...";
     copy($origin . "/strehler-home.tt", $destination . '/views/strehler-home.tt');
+    if($!)
+    {
+        print "\nCOPY FAILED! A problem occured: $!\n\n";
+    }
+    say "home.tt...";
+    copy($origin . "/home.tt", $destination . '/views/home.tt');
+    if($!)
+    {
+        print "\nCOPY FAILED! A problem occured: $!\n\n";
+    }
+    say "main.tt...";
+    copy($origin . "/main.tt", $destination . '/views/layouts/main.tt');
     if($!)
     {
         print "\nCOPY FAILED! A problem occured: $!\n\n";
