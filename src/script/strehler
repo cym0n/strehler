@@ -126,7 +126,7 @@ sub statics
     else
     { 
         mkdir $destination . '/upload';
-        say "Creating upload directory...";
+        say "Creating upload directory... $destination/upload";
         if($!)
         {
             print "UPLOAD DIRECTORY CREATION FAILED! A problem occured: $!\n\n";
