@@ -317,6 +317,12 @@ sub demo_components
     {
         print "\nCOPY FAILED! A problem occured: $!\n\n";
     }
+    say "article.tt...";
+    copy($origin . "/article.tt", $destination . '/views/article.tt');
+    if($!)
+    {
+        print "\nCOPY FAILED! A problem occured: $!\n\n";
+    }
     say "main.tt...";
     copy($origin . "/main.tt", $destination . '/views/layouts/main.tt');
     if($!)
