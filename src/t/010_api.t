@@ -128,6 +128,11 @@ Test::TCP::test_tcp(
         @elements = @{$content->{to_view}};
         is($elements[0]->{'title'}, 'Automatic test 1 - title - IT', "Ordered by display order, asc");
 
+        $res = $ua->get($site . "/api/v1/articles/?entries_per_page=1");
+        $content = $serializer->deserialize($res->content);
+        @elements = @{$content->{to_view}};
+        is($#elements, 0, "Entries for page configured to 1");
+
         $res = $ua->get($site . "/api/v1/articles/?lang=en");
         $content = $serializer->deserialize($res->content);
         @elements = @{$content->{to_view}};

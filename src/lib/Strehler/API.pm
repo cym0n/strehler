@@ -102,8 +102,8 @@ get '/**/' => sub {
     my $order = params->{'order'};
     my $order_by = params->{'order_by'};
     my $page = params->{'page'};
-    my $entries_for_page = params->{'entries_for_page'} || 20;
-
+    my $entries_per_page = params->{'entries_per_page'} || 20;
+    
     my $class = Strehler::Helpers::class_from_plural($entities);
     return pass if ! $class;
     return pass if ! $class->exposed();
@@ -138,7 +138,7 @@ get '/**/' => sub {
             order => $order,
             order_by => $order_by,
             language => $lang,
-            entries_for_page => $entries_for_page,
+            entries_per_page => $entries_per_page,
             page => $page,
             ext => 1,
             published => 1,
@@ -249,7 +249,7 @@ API output is controlled by many parameters (a subset of get_list available para
     lang: output language, as for single item API
     order, order_by: to change the way elements are ordered
     page: to control pagination
-    entries_for_page: to say how many elements display every page
+    entries_per_page: to say how many elements display every page
 
 B<Example>: /api/v1/articles/foo/bar/
 

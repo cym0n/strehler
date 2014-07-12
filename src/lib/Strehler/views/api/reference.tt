@@ -14,7 +14,7 @@
         <li>order</li>
         <li>order_by</li>
         <li>page</li>
-        <li>entries_for_page</li>
+        <li>entries_per_page</li>
     </ul>
 <hr />
 <h2>API for single elements</h2>
