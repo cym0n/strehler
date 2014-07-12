@@ -13,7 +13,7 @@ function renderImages(data) {
     var len = data.to_view.length;
     for(var i=0; i<len; i++)
     {
-        text += '<div class="span3"><img style="height:80px" src="'+data.to_view[i].image+'" /></div>';
+        text += '<div class="span3"><a href="'+data.to_view[i].image+'" target="_blank"><img style="height:80px" src="'+data.to_view[i].image+'" /></a></div>';
     }
     document.getElementById('image-list').innerHTML = text;
 }
@@ -26,12 +26,12 @@ function renderImages(data) {
         <p>This is just a dummy page to display Strehler contents. It's very simple because Strehler main target is giving a good backend for your sites leaving you free to make the frontend the way you like most. So, this page just display contents created with Strehler and it's not about what Strehler can do for you!</p>
         <p>This page uses Strehler API system to display contents. It's not necessary to implement frontend this way, you can use Strehler contents in server-side generated pages. Single article pages are realized this way.</p>
     </div>
-    <h2>Recent articles</h2>
+    <h2>Recent publised articles (8 elements)</h2>
     <div id="article-list" class="row">
     </div>
-    <h2>Recent images</h2>
+    <h2>Recent images (3 elements)</h2>
     <div id="image-list" class="row">
     </div>
 </div>
-<script type="text/javascript" src="/api/v1/articles/?callback=renderArticles"></script>
-<script type="text/javascript" src="/api/v1/images/?callback=renderImages&entries_for_page=3"></script>
+<script type="text/javascript" src="/api/v1/articles/?callback=renderArticles&entries_per_page=8"></script>
+<script type="text/javascript" src="/api/v1/images/?callback=renderImages&entries_per_page=3"></script>
