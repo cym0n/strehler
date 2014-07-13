@@ -170,16 +170,21 @@ Main class method to retrieve elements. There're many query_params you can use.
     page => $page. Default is 1
     language => $lang # The language for multilanguage attributes. 
                       # Default is Strehler configured default language
-    published => $pub # Retrive only published elements (for publishable elements)
+    published => $pub # Retrieve only published elements (for publishable elements)
     tag => $tag # Retrieve elements with a certain tag
     category => $category # Retrieve elements with a certain category
                           # Category can be written in the form $parent/$cat
     category_id => $category_id # Retrieve elements with the category with that id
-    ext => 1 # Return elements with al data (get_ext_data is invoked)
+    ext => 1 # Return elements with all data (get_ext_data is invoked)
+    join => $tables #Tables to join for search purpose. Can be an array reference or a single element.
+    ancestor => $category_id # Similar to $category_id, but a query with this parameter will retrieve 
+                             # from considered category and all its subcategories
+                             
+            
 
-order_by attribute can be written as a field of the multilanguage children table. For example articles can be ordered using contents.title. In this case contents table will be filtered on language field, using only the considered language in the query.
+order_by attribute can be written as a field of the multilanguage children table. For example articles can be ordered using contents.title. In this case contents table will be filtered on language field, using only the considered language in the query. It's not necessary to specify contents table in the join parameter. Tables pointed out in the order by field will be joined automatically.
 
-All the parameters can be combined togheter.
+All the parameters can be combined together.
 
 The method return a pointer to an hash composed by:
 
