@@ -21,16 +21,14 @@ sub slugify
 
 sub get_categorized_entities
 {
-    my @entities = ('article', 'image'); #standard entities for Strehler
-    my $extra = config->{'Strehler'}->{'extra_menu'};
-    for(keys %{$extra})
+    my @entities = entities_list();
+    my @out;
+    for(@entities)
     {
-        if(config->{'Strehler'}->{'extra_menu'}->{$_}->{'categorized'})
-        {
-            push @entities, $_;
-        }
+        my $cl = class_from_entity($_);
+        push @out, $_ if $cl->categorized();
     }
-    return @entities;
+    return @out;
 }
 sub entities_list
 {

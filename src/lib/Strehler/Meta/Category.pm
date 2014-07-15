@@ -12,11 +12,14 @@ has row => (
 sub BUILDARGS {
    my ( $class, @args ) = @_;
    my $category = undef;
+
+   # Create category using category table ID
    if($#args == 0)
    {
         my $id = shift @args; 
         $category = $class->get_schema()->resultset('Category')->find($id);
    }
+   # Create category giving a row retrived using DBIx::Class
    elsif($#args == 1)
    {
        if($args[0] eq 'row')
@@ -26,6 +29,7 @@ sub BUILDARGS {
    }
    else
    {
+        # Create category using name as $parent/$category (used by explode_name)
         my %hash_args =  @args;
         if($hash_args{'parent'})
         {
