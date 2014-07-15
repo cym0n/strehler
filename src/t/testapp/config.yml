@@ -30,4 +30,10 @@ Strehler:
             #WARNING: path is made this way for test purpose
             form: t/testapp/forms/dummy.yml
             categorized: 1
+        foo:
+            auto: 1
+            class: Site::Dummy
+        puppet:
+            auto: 1
+            class: Site::Puppet
 
