@@ -28,11 +28,13 @@ Test::TCP::test_tcp(
         $res = $ua->get($site . "/admin/category/add");
         my $entity_string = '<div class="alert alert-info">.*All.*</div>';
         like($res->content, qr/$entity_string/s, "All present in category add page for tags");
-        foreach my $t ('article', 'image', 'dummy')
+        foreach my $t ('article', 'image', 'dummy', 'foo')
         {
             my $entity_string = '<div class="alert alert-info">.*Per ' . $t . '.*</div>';
             like($res->content, qr/$entity_string/s, "$t present in category add page for tags");
         }
+        $entity_string = '<div class="alert alert-info">.*Per puppet.*</div>';
+        unlike($res->content, qr/$entity_string/s, "Puppet not present in category add page for tags");
 
         $res = $ua->post($site . "/admin/category/add",
                          { 'category' => 'prova',
