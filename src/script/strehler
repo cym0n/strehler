@@ -98,19 +98,23 @@ sub statics
     if(-d $destination . '/strehler')
     {
         say "Deleting old $destination" . '/strehler';
-        remove_tree($destination . '/strehler');
-        if($!)
+        my $deleted = remove_tree($destination . '/strehler');
+        if($deleted == 0)
         {
             print "COPY FAILED! Impossibile to delete old directory: $!\n\n";
             $nocopy = 1;
+        }
+        else
+        {
+            say "$deleted old files correctly removed";
         }
     }
     if(! $nocopy)
     {
         $File::Copy::Recursive::CPRFComp = 1;
         say "Copying statics from $origin to $destination...";
-        dircopy($origin, $destination);
-        if($!)
+        my $done = dircopy($origin, $destination);
+        if(! $done)
         {
             print "COPY FAILED! A problem occured: $!\n\n";
         }
@@ -125,9 +129,9 @@ sub statics
     }
     else
     { 
-        mkdir $destination . '/upload';
+        my $done = mkdir $destination . '/upload';
         say "Creating upload directory... $destination/upload";
-        if($!)
+        if(! $done)
         {
             print "UPLOAD DIRECTORY CREATION FAILED! A problem occured: $!\n\n";
         }
@@ -259,8 +263,8 @@ sub layout
     }
 
     say "Copying layout from $origin to $destination...";
-    copy($origin, $destination . '/admin.tt');
-    if($!)
+    my $done = copy($origin, $destination . '/admin.tt');
+    if(! $done)
     {
         print "\nCOPY FAILED! A problem occured: $!\n\n";
     }
@@ -275,58 +279,26 @@ sub demo_components
     my $origin = $strehler_root . '/demo';
     my $app_directory = getcwd();
     my $destination = $app_directory;
+    
+    my %demo_resources = (
+        'config.yml' => 'config.yml',
+        'Demo.pm.ex' => 'lib/Demo.pm',
+        'Site.pm.ex' => 'lib/Site.pm',
+        'app.pl' => 'bin/app.pl',
+        'strehler-home.tt' => 'views/strehler-home.tt',
+        'home.tt' => 'views/home.tt',
+        'article.tt' => 'views/article.tt',
+        'main.tt' => 'views/layouts/main.tt'
+    );
     say "Demo resources will be injected in the app...";
     say "$origin -> $destination";
-    if($!)
+    foreach my $file (keys %demo_resources)
     {
-        print "\nCOPY FAILED! A problem occured: $!\n\n";
-    }
-    say "config.yml...";
-    copy($origin . "/config.yml", $destination . '/config.yml');
-    if($!)
-    {
-        print "\nCOPY FAILED! A problem occured: $!\n\n";
-    }
-    say "Demo.pm...";
-    copy($origin . "/Demo.pm.ex", $destination . '/lib/Demo.pm');
-    if($!)
-    {
-        print "\nCOPY FAILED! A problem occured: $!\n\n";
-    }
-    say "Site.pm...";
-    copy($origin . "/Site.pm.ex", $destination . '/lib/Site.pm');
-    if($!)
-    {
-        print "\nCOPY FAILED! A problem occured: $!\n\n";
-    }
-    say "app.pl...";
-    copy($origin . "/app.pl", $destination . '/bin/app.pl');
-    if($!)
-    {
-        print "\nCOPY FAILED! A problem occured: $!\n\n";
-    }
-    say "strehler-home.tt...";
-    copy($origin . "/strehler-home.tt", $destination . '/views/strehler-home.tt');
-    if($!)
-    {
-        print "\nCOPY FAILED! A problem occured: $!\n\n";
-    }
-    say "home.tt...";
-    copy($origin . "/home.tt", $destination . '/views/home.tt');
-    if($!)
-    {
-        print "\nCOPY FAILED! A problem occured: $!\n\n";
-    }
-    say "article.tt...";
-    copy($origin . "/article.tt", $destination . '/views/article.tt');
-    if($!)
-    {
-        print "\nCOPY FAILED! A problem occured: $!\n\n";
-    }
-    say "main.tt...";
-    copy($origin . "/main.tt", $destination . '/views/layouts/main.tt');
-    if($!)
-    {
-        print "\nCOPY FAILED! A problem occured: $!\n\n";
+        say $demo_resources{$file} . "...";
+        my $done = copy($origin . "/" . $file, $destination . '/' . $demo_resources{$file});
+        if(! $done)
+        {
+            print "\nCOPY FAILED! A problem occured: $!\n\n";
+        }
     }
 }
