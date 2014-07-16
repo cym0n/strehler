@@ -1,12 +1,12 @@
 1.2.0
 =====
 
-_..._
+_Wen Jul 16 2014_
 
 * RESTful APIs
 * Slugged role
 * Dummy frontend site for demo
-* Small bugfix
+* Bugfix and refactoring
 
 1.1.10
 ======
