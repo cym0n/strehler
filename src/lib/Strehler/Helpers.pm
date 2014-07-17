@@ -79,7 +79,7 @@ sub class_from_plural
             return $class;
         }
     }
-    foreach my $entity (keys config->{'Strehler'}->{'extra_menu'})
+    foreach my $entity (keys %{config->{'Strehler'}->{'extra_menu'}})
     {
         my $entity_class = config->{'Strehler'}->{'extra_menu'}->{$entity}->{'class'};
         eval("require $entity_class");

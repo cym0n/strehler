@@ -1,3 +1,10 @@
+1.2.1
+=====
+
+_Thu Jul 17 2014_
+
+* Bugfix on Strehler::Helpers that made package lose compatibility with older perl
+
 1.2.0
 =====
 
