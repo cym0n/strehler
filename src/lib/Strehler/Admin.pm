@@ -39,6 +39,7 @@ set views => $root_path . 'views';
 get '/' => sub {
     my %navbar;
     $navbar{'home'} = "active";
+    my $check_cat = Strehler::Meta::Category->no_categories();
     template "admin/index", { navbar => \%navbar};
 };
 
@@ -89,6 +90,15 @@ any '/image/add' => sub
 {
     my $form = form_image('add');
     my $params_hashref = params;
+    my $check_cat = Strehler::Meta::Category->no_categories();
+    if($check_cat)
+    {
+        debug "Checked!";
+        my $message = "No category in the system. Create a category before creating categorized content.";    
+        my $return = dancer_app->prefix . "/";
+        template "admin/message", { message => $message, backlink => $return };
+    }
+
     $form = tags_for_form($form, $params_hashref);
     $form->process($params_hashref);
     if($form->submitted_and_valid)
@@ -143,6 +153,14 @@ any '/article/add' => sub
 {
     my $form = form_article(); 
     my $params_hashref = params;
+
+    if(Strehler::Meta::Category->no_categories())
+    {
+        my $message = "No category in the system. Create a category before creating categorized content.";    
+        my $return = dancer_app->prefix . "/";
+        template "admin/message", { message => $message, backlink => $return };
+    }
+
     $form = tags_for_form($form, $params_hashref);
     $form->process($params_hashref);
     if($form->submitted_and_valid)
@@ -613,6 +631,13 @@ any '/:entity/add' => sub
     {
         return pass;
     }
+    if(Strehler::Meta::Category->no_categories() and $class->categorized())
+    {
+        my $message = "No category in the system. Create a category before creating categorized content.";    
+        my $return = dancer_app->prefix . "/";
+        template "admin/message", { message => $message, backlink => $return };
+    }
+
     send_error("Access denied", 403) && return if ( ! $class->check_role(session->read('role')));
     my $form = form_generic($class->form(), $class->multilang_form(), 'add'); 
     my $params_hashref = params;
