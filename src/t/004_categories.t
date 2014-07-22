@@ -70,8 +70,10 @@ Test::TCP::test_tcp(
 
         #DELETE
         $ua->default_header('X-Requested-With' => undef);
+        $res = $ua->get($site . "/admin/category/delete/$cat_id");
+        is($res->code, 200, "Category deletion answers (GET) OK");
         $res = $ua->post($site . "/admin/category/delete/$cat_id");
-        is($res->code, 200, "Category deletion answers OK");
+        is($res->code, 200, "Category deletion answers (POST) OK");
         my $cat_again = Strehler::Meta::Category->new({ category => 'prova' });
         ok(! $cat_again->exists(), "Category deleted");
 
