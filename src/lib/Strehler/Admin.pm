@@ -333,7 +333,7 @@ get '/category/delete/:id' => sub
     else
     {
         my %data = $category->get_basic_data();
-        template "admin/delete", { what => "la categoria", el => \%data, backlink => dancer_app->prefix . '/category' };
+        template "admin/delete", { what => "category", el => \%data, backlink => dancer_app->prefix . '/category' };
     }
 };
 post '/category/delete/:id' => sub

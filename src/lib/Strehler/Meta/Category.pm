@@ -82,6 +82,7 @@ sub get_basic_data
     my %data;
     $data{'id'} = $self->get_attr('id');
     $data{'name'} = $self->get_attr('category');
+    $data{'title'} = $self->get_attr('category');
     $data{'ext_name'} = $self->ext_name;
     if(! $self->get_attr('parent'))
     {
@@ -105,9 +106,8 @@ sub has_elements
     my $category_row = $self->row;
     for my $e (Strehler::Helpers::get_categorized_entities())
     {
-        my $class = Strehler::Helpers::get_entity_attr($e, 'class');
-        eval "require $class";
-        my $accessor = $class->category_accessor($category_row);
+        my $cl = Strehler::Helpers::class_from_entity($e);
+        my $accessor = $cl->category_accessor($category_row);
         return 1 if($category_row->$accessor->count() > 0);
     }
     return 0;
@@ -117,6 +117,13 @@ sub is_parent
    my $self = shift;
    return $self->row->categories->count() > 0;  
 }
+sub no_categories
+{
+    my $self = shift;
+    my $how_many = $self->get_schema()->resultset('Category')->search({}); 
+    return $how_many == 0;
+}
+
 sub max_article_order
 {
     my $self = shift;
