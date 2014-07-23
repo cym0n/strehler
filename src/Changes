@@ -1,3 +1,11 @@
+1.2.2
+=====
+
+_Wed Jul 23 2014_
+
+* Bugfix on category deletion
+* Error message when user try to create a categorized entity but no category is in the system.
+
 1.2.1
 =====
 
