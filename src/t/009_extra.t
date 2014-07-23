@@ -23,6 +23,14 @@ Test::TCP::test_tcp(
         push @{ $ua->requests_redirectable }, 'POST';
         $res = $ua->post($site . "/admin/login", { user => 'admin', password => 'admin' });
 
+        #Dummy add is blocked when no category is in the system [Dummy is a categorized entity
+        $res = $ua->get($site . "/admin/dummy/add");
+        like($res->content, qr/No category in the system/, "Dummy (categorized entity) add blocked because no category");
+
+        #Puppet add is not blocked when no category is in the system [Dummy is a categorized entity
+        $res = $ua->get($site . "/admin/puppet/add");
+        like($res->content, qr/Submit/, "Puppet (not categorized entity) add allowed also with no category");
+
         #Dummy category created for test purpose
         $res = $ua->post($site . "/admin/category/add",
                          { 'category' => 'prova',
@@ -36,7 +44,7 @@ Test::TCP::test_tcp(
         my $cat = Strehler::Meta::Category->new({ category => 'prova' });
         my $cat_id = $cat->get_attr('id');
 
-        ok(Site::Dummy->slugged(), "Dummy has slug");
+        ok(Site::Dummy->slugged(), "[configuration] Dummy has slug");
 
         #LIST
         $res = $ua->get($site . "/admin/dummy/list");

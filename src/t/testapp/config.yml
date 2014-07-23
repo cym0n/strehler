@@ -35,5 +35,7 @@ Strehler:
             class: Site::Dummy
         puppet:
             auto: 1
+            label: Puppet
             class: Site::Puppet
+            form: t/testapp/forms/dummy.yml
 

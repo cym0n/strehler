@@ -21,6 +21,10 @@ Test::TCP::test_tcp(
         push @{ $ua->requests_redirectable }, 'POST';
         $res = $ua->post($site . "/admin/login", { user => 'admin', password => 'admin' });
 
+        #Article add is blocked when no category is in the system
+        $res = $ua->get($site . "/admin/article/add");
+        like($res->content, qr/No category in the system/, "Article add blocked because no category");
+
         #Dummy category created for test purpose
         $res = $ua->post($site . "/admin/category/add",
                          { 'category' => 'prova',
@@ -34,7 +38,7 @@ Test::TCP::test_tcp(
         my $cat = Strehler::Meta::Category->new({ category => 'prova' });
         my $cat_id = $cat->get_attr('id');
 
-        ok(Strehler::Element::Article->slugged(), "Article has slug");
+        ok(Strehler::Element::Article->slugged(), "[configuration] Article has slug");
 
         #LIST
         $res = $ua->get($site . "/admin/article/list");
