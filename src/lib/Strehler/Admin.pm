@@ -93,10 +93,10 @@ any '/image/add' => sub
     my $check_cat = Strehler::Meta::Category->no_categories();
     if($check_cat)
     {
-        debug "Checked!";
         my $message = "No category in the system. Create a category before creating categorized content.";    
         my $return = dancer_app->prefix . "/";
-        template "admin/message", { message => $message, backlink => $return };
+        my $create = dancer_app->prefix . "/category/add";
+        return template "admin/no_category", { message => $message, backlink => $return, createlink => $create };
     }
 
     $form = tags_for_form($form, $params_hashref);
@@ -154,11 +154,13 @@ any '/article/add' => sub
     my $form = form_article(); 
     my $params_hashref = params;
 
-    if(Strehler::Meta::Category->no_categories())
+    my $check_cat = Strehler::Meta::Category->no_categories();
+    if($check_cat)
     {
         my $message = "No category in the system. Create a category before creating categorized content.";    
         my $return = dancer_app->prefix . "/";
-        template "admin/message", { message => $message, backlink => $return };
+        my $create = dancer_app->prefix . "/category/add";
+        return template "admin/no_category", { message => $message, backlink => $return, createlink => $create };
     }
 
     $form = tags_for_form($form, $params_hashref);
@@ -631,11 +633,14 @@ any '/:entity/add' => sub
     {
         return pass;
     }
-    if(Strehler::Meta::Category->no_categories() and $class->categorized())
+
+    my $check_cat = Strehler::Meta::Category->no_categories();
+    if($check_cat and $class->categorized())
     {
         my $message = "No category in the system. Create a category before creating categorized content.";    
         my $return = dancer_app->prefix . "/";
-        template "admin/message", { message => $message, backlink => $return };
+        my $create = dancer_app->prefix . "/category/add";
+        return template "admin/no_category", { message => $message, backlink => $return, createlink => $create };
     }
 
     send_error("Access denied", 403) && return if ( ! $class->check_role(session->read('role')));

@@ -1,0 +1,9 @@
+<div class="well">
+    <div class="row">
+        <p class="text-center">[% message %]</p>
+    </div>
+    <div class="row">
+        <a class="span3 offset3 btn btn-primary" href="[% createlink %]">Let's create a category</a>
+        <a class="span3 btn" href="[% backlink %]">Back to homepage</a>
+    </div>
+</div>
