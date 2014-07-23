@@ -62,6 +62,32 @@ Test::TCP::test_tcp(
         my $cat2 = Strehler::Meta::Category->new({ category => 'prova2' });
         my $cat2_id = $cat2->get_attr('id');
 
+        $res = $ua->post($site . "/admin/category/add",
+                         { 'category' => 'child',
+                           'parent' => $cat_id,
+                           'tags-all' => '',
+                           'default-all' => '',
+                           'tags-article' => 'tagart1,tagart2,tagart3',
+                           'default-article' => '',
+                           'tags-image' => '',
+                           'default-image' => '' });
+        my $cat3 = Strehler::Meta::Category->explode_name("prova/child");
+        ok($cat3->exists(), "Child category inserted and retrieved");
+        my $cat3_id = $cat3->get_attr('id');
+
+        $res = $ua->post($site . "/admin/article/add",
+                         { 'image' => undef,
+                           'category' => $cat3_id,
+                           'subcategory' => undef,
+                           'tags' => 'tag1',
+                           'display_order' => 14,
+                           'publish_date' => '12/03/2014',
+                           'title_it' => 'Automatic test - title - IT',
+                           'text_it' => 'Automatic test - body - IT',
+                           'title_en' => 'Automatic test - title - EN',
+                           'text_en' => 'Automatic test - body - EN'
+                          });
+
         #SELECT
         my $select_string = '<option value="' . $cat->get_attr('id') . '">prova</option>';
         $ua->default_header('X-Requested-With' => "XMLHttpRequest");
@@ -70,9 +96,16 @@ Test::TCP::test_tcp(
 
         #DELETE
         $ua->default_header('X-Requested-With' => undef);
-        $res = $ua->post($site . "/admin/category/delete/$cat_id");
-        is($res->code, 200, "Category deletion answers OK");
-        my $cat_again = Strehler::Meta::Category->new({ category => 'prova' });
+        $res = $ua->get($site . "/admin/category/delete/$cat_id");
+        like($res->content, qr/has subcategories/, "Deletion forbidden for subcategory");
+        $res = $ua->get($site . "/admin/category/delete/$cat3_id");
+        like($res->content, qr/is not empty/, "Deletion forbidden for contents");
+        $res = $ua->get($site . "/admin/category/delete/$cat2_id");
+        is($res->code, 200, "Category deletion answers (GET) OK");
+        like($res->content, qr/Delete $cat2_id of category/, "Deletion allowed, confirm requested");
+        $res = $ua->post($site . "/admin/category/delete/$cat2_id");
+        is($res->code, 200, "Category deletion answers (POST) OK");
+        my $cat_again = Strehler::Meta::Category->new({ category => 'prova2' });
         ok(! $cat_again->exists(), "Category deleted");
 
     },
