@@ -11,6 +11,7 @@ use Strehler;
 use Strehler::Schema;
 use Term::ReadKey;
 use Authen::Passphrase::BlowfishCrypt;
+use DBI;
 
 my $strehler_root = $INC{'Strehler.pm'};
 $strehler_root =~ s/\.pm$//;
@@ -209,6 +210,19 @@ sub initdb
         $user = undef;
         $password = undef;
     }
+
+    #DBI used just to check database connection
+    my $connection_status = DBI->connect($dsn, $user, $password);    
+    if(! $connection_status)
+    {
+       print "\nConnection to database $dsn (user: $user, password: $password) failed!\nInit db operation aborted\n\n"; 
+       exit();
+    }
+    else
+    {
+        $connection_status->disconnect();
+    }
+
     my $schema = Strehler::Schema->connect($dsn, $user, $password);
     $schema->deploy( { add_drop_table => 1 } );
     my $user_password;
