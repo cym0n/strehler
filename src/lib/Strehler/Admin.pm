@@ -660,7 +660,7 @@ any '/:entity/add' => sub
     }
     my $fake_tags = $form->get_element({ name => 'tags'});
     $form->remove_element($fake_tags) if($fake_tags);
-    template "admin/generic_add", { entity => $entity, label => $class->label(), form => $form->render() }
+    template "admin/generic_add", { entity => $entity, label => $class->label(), form => $form->render(), custom_snippet => $class->custom_snippet() }
 };
 get '/:entity/edit/:id' => sub {
     my $id = params->{id};
@@ -679,7 +679,7 @@ get '/:entity/edit/:id' => sub {
         return pass;
     }
     $form->default_values($form_data);
-    template "admin/generic_add", {  entity => $entity, label => $class->label(), id => $id, form => $form->render() }
+    template "admin/generic_add", {  entity => $entity, label => $class->label(), id => $id, form => $form->render(), custom_snippet => $el->custom_snippet() }
 };
 post '/:entity/edit/:id' => sub
 {
@@ -705,7 +705,8 @@ post '/:entity/edit/:id' => sub
         Strehler::Element::Log->write(session->read('user'), 'edit', $entity, $id);
         redirect dancer_app->prefix . '/' . $entity . '/list';
     }
-    template "admin/generic_add", { entity => $entity, label => $class->label(), id => $id, form => $form->render() }
+    my $el = $class->new($id);
+    template "admin/generic_add", { entity => $entity, label => $class->label(), id => $id, form => $form->render(),  custom_snippet => $el->custom_snippet()}
 };
 
 ##### Helpers #####
