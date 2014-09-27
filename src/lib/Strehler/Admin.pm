@@ -654,7 +654,7 @@ any '/:entity/add' => sub
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
-        my $id = $class->save_form(undef, $form);
+        my $id = $class->save_form(undef, $form, request->uploads());
         Strehler::Element::Log->write(session->read('user'), 'add', $entity, $id);
         redirect dancer_app->prefix . '/' . $entity . '/list';
     }
@@ -701,7 +701,7 @@ post '/:entity/edit/:id' => sub
     $form->process($params_hashref);
     if($form->submitted_and_valid)
     {
-        $class->save_form($id, $form);
+        $class->save_form($id, $form, request->uploads());
         Strehler::Element::Log->write(session->read('user'), 'edit', $entity, $id);
         redirect dancer_app->prefix . '/' . $entity . '/list';
     }
