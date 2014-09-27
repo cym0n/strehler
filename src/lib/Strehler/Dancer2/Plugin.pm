@@ -7,9 +7,9 @@ use Dancer2::Plugin;
 on_plugin_import {
     my $dsl = shift;
     $dsl->prefix('/admin');
-    $dsl->set(layout => 'admin');
     $dsl->app->add_hook(
         Dancer2::Core::Hook->new(name => 'before', code => sub {
+                $dsl->set(layout => 'admin');
                 my $context = shift;
                 return if(! $dsl->config->{Strehler}->{admin_secured});
                 if((! $context->session->read('user')) && $context->request->path_info ne $dsl->dancer_app->prefix . '/login')
