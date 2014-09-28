@@ -1,3 +1,12 @@
+X.X.X
+=====
+
+_..._
+
+* Connection checked before initdb
+* Data from File fields is now passed to generic save_form 
+* You can display what you want in the empty half of add template
+
 1.2.2
 =====
 
