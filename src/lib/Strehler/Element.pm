@@ -977,4 +977,10 @@ sub check_role
     }
 }
 
+sub custom_add_snippet
+{
+    return undef;
+}
+
+
 1;

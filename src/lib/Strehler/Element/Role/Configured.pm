@@ -141,10 +141,6 @@ sub allowed_role
         return undef;
     }
 }
-sub custom_snippet
-{
-    return undef;
-}
 sub entity_data
 {
     my $self = shift;
@@ -163,8 +159,7 @@ sub entity_data
                       'custom_list_view',
                       'form',
                       'multilang_form',
-                      'allowed_role',
-                      'custom_snippet');
+                      'allowed_role');
     my %entity_data;
     foreach my $attr (@attributes)
     {
