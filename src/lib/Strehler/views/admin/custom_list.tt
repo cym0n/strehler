@@ -19,6 +19,7 @@
             [% FOREACH el IN elements %]
             <tr>
                 [% INCLUDE custom_list %]
+                [% IF publishable %]
                 <td>
                 [% IF el.published == 1 %]
                     <span class="inlist-icon icon-large icon-ok"></span>
