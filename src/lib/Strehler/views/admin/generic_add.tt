@@ -3,9 +3,14 @@
 </div>
 [% IF custom_snippet %]
 <div class="span6">
+    [% custom_snippet %]
 </div>
+[% maincolumnspan = 6 %]
+[% ELSE %]
+[% maincolumnspan = 9 %]
 [% END %]
-<div class="content wine span6">
+
+<div class="content wine span[% maincolumnspan %]">
     <div>
     [% form %]
     </div>
