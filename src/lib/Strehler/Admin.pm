@@ -448,7 +448,8 @@ any '/:entity/list' => sub
     }
     send_error("Access denied", 403) && return if ( ! $class->check_role(session->read('role')));
 
-    my $custom_list_view = $class->custom_list_view() || 'admin/generic_list';
+    my $custom_list_template = $class->custom_list_template();
+    my $list_view = $custom_list_template ? 'admin/custom_list' : 'admin/generic_list';
     
     my $page = exists params->{'page'} ? params->{'page'} : session $entity . '-page';
     my $cat_param = exists params->{'cat'} ? params->{'cat'} : session $entity . '-cat-filter';
@@ -513,7 +514,7 @@ any '/:entity/list' => sub
     session $entity . '-order-by' => $order_by;
     session $entity . '-search' => $search;
     session $entity . '-ancestor' => $ancestor;
-    template $custom_list_view, { (entity => $entity, elements => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, search => $search, order => $order, order_by => $order_by, fields => $class->fields_list(), last_page => $elements->{'last_page'}), $class->entity_data() };
+    template $list_view, { (entity => $entity, elements => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, search => $search, order => $order, order_by => $order_by, fields => $class->fields_list(), last_page => $elements->{'last_page'}), $class->entity_data(), custom_list_template => $custom_list_template };
 };
 get '/:entity/turnon/:id' => sub
 {

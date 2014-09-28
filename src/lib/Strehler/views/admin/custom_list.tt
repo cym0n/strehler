@@ -1,0 +1,58 @@
+[% PROCESS admin/blocks/listblocks.tt %]
+[% PROCESS $custom_list_template %]
+<div class="span12">
+    <h1>[% label %]</h1>
+</div>
+<div class="span12">
+
+</div>
+<div class="content articlelist span12">
+        [% INCLUDE tools %]
+        [% IF creatable %]
+            [% INCLUDE pager %]
+        [% ELSE %]
+            [% INCLUDE pager_no_new %]
+        [% END %]
+        <table class="table table-striped">
+        [% INCLUDE listhead %]
+        <tbody>
+            [% FOREACH el IN elements %]
+            <tr>
+                [% INCLUDE custom_list %]
+                <td>
+                [% IF el.published == 1 %]
+                    <span class="inlist-icon icon-large icon-ok"></span>
+                [% ELSE %]
+                    <span class="inlist-icon icon-large icon-remove"></span>
+                [% END %]
+                </td>
+                [% END %]
+                <td>
+                    <div class="btn-group span2 offset1">
+                        [% IF updatable %]
+                        <a href="/admin/[% entity %]/edit/[% el.id %]" class="btn">Edit</a>
+                        [% END %]
+                        [% IF deletable %]
+                        <a href="/admin/[% entity %]/delete/[% el.id %]" class="btn">Delete</a>
+                        [% END %]
+                        [% IF publishable %]
+                        [% IF el.published == 1 %]
+                            <a href="/admin/[% entity %]/turnoff/[% el.id %]" class="btn">Offline</a>
+                        [% ELSE %]
+                            <a href="/admin/[% entity %]/turnon/[% el.id %]" class="btn">Online</a>
+                        [% END %]
+                        [% END %]
+                    </div>
+                </td>
+            </tr>
+            [% END %]
+        </tbody>
+        </table>
+        [% IF creatable %]
+            [% INCLUDE pager %]
+        [% ELSE %]
+            [% INCLUDE pager_no_new %]
+        [% END %]
+</div>
+[% INCLUDE filterscripts %]
+
