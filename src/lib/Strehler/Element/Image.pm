@@ -7,6 +7,10 @@ use Data::Dumper;
 
 extends 'Strehler::Element';
 
+my $form_path = __FILE__;
+$form_path =~ s/Image\.pm//;
+$form_path .= "../forms/";
+
 #Standard element implementation
 
 sub metaclass_data 
@@ -38,6 +42,15 @@ sub class
 {
     return __PACKAGE__;
 }
+sub form
+{
+    return $form_path . '/admin/image.yml';
+}
+sub multilang_form
+{
+    return $form_path . '/admin/image_multilang.yml';
+}
+
 
 #Main title redefined to fetch title from multilang attributes
 sub main_title
@@ -78,9 +91,10 @@ sub save_form
 {
     my $self = shift;
     my $id = shift;
-    my $img = shift;
     my $form = shift;
+    my $uploads = shift;
         
+    my $img = $uploads->{'photo'};
     my $ref; 
     my $path;
     my $public;
@@ -138,6 +152,20 @@ sub search_box
     $parameters->{'search'} = { 'descriptions.title' => { 'like', "%$string%" } };
     $parameters->{'join'} = 'descriptions';
     return $self->get_list($parameters);
+}
+
+sub custom_add_snippet
+{
+    my $self = shift;
+    if(ref($self))
+    {
+        return "<p>Image:</p>" .
+               '<img class="span2" src=' . $self->get_attr('image') . " />"; 
+    }
+    else
+    {
+        return undef;
+    }
 }
 
 =encoding utf8
