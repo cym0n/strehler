@@ -977,15 +977,6 @@ sub check_role
     }
 }
 
-sub custom_add_snippet
-{
-    return undef;
-}
-
-sub custom_list_template
-{
-    return undef;
-}
 
 
 1;

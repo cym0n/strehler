@@ -144,12 +144,11 @@ default: 0
 Say if entity uses Strehler publish feature 
 To use it, the entity must ave a column PUBLISHED (TINYINT) in its database table.
 
-=item custom_list_view
+=item custom_list_template
 
-default: generic list view as in the Strehler package
+default: undef
 
-Let you use a different view for listing entity entries.
-Entries will be passed to the view as "elements" array, with all the basic data of the entity.
+This method can be overriden to return path to a custom template that represent the line of an element in the list view. Writing it, consider that the element will be passed to it as the object el.
 
 =item allowed_role
 
@@ -159,9 +158,44 @@ If role is equal to admin only admin user will see the entity.
 
 =back
 
+=head1 OVERRIDABLE METHODS
+
+These methods can only be overriden inside a subclass of Element to obtain a customization.
+
+=over 4
+
+=item data_fields
+
+return undef
+
+This method can be overriden to give back different fields from the database columns in get_basic_data function.
+
+In a custom element make it return an array of strings.
+
+WARNING: behaviour unpredictable if any string is not a database column or a custom function.
+
+=item multilang_data_fields
+
+return undef
+
+This method can be overriden to give back different fields from the database columns in get_ext_data function (it controls multilang fields).
+
+In a custom element make it return an array of strings.
+
+WARNING: behaviour unpredictable if any string is not a database column of the multilang table or a custom function.
+
+=item custom_add_snippet
+
+return undef
+
+This method can be overriden to return an HTML snippet that will be displayed on the side of the edit form of the element.
+
+
+=back
+
 =head1 SEE ALSO
 
-L<Strehler::Manual::ExtraEntityTutorial> explains how to create a new entity and how configuration flags will be used.
+L<Strehler::Manual::ExtraEntityTutorial> explains how to create a new entity and how configuration flags can be used.
 
 =cut
 

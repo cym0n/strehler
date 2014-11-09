@@ -109,11 +109,6 @@ sub publishable
     my $self = shift;
     return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{publishable} || 0,
 }
-sub custom_list_view
-{
-    my $self = shift;
-    return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{custom_list_view} || undef;
-}
 sub form
 {
     my $self = shift;
@@ -141,6 +136,12 @@ sub allowed_role
         return undef;
     }
 }
+sub custom_list_template
+{
+    my $self = shift;
+    return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{custom_list_template} || undef;
+}
+
 sub entity_data
 {
     my $self = shift;
@@ -156,10 +157,10 @@ sub entity_data
                       'ordered',  
                       'dated',
                       'publishable',
-                      'custom_list_view',
                       'form',
                       'multilang_form',
-                      'allowed_role');
+                      'allowed_role',
+                      'custom_list_template');
     my %entity_data;
     foreach my $attr (@attributes)
     {
@@ -177,6 +178,11 @@ sub multilang_data_fields
 {
     return undef;
 }
+sub custom_add_snippet
+{
+    return undef;
+}
+
 =encoding utf8
 
 =head1 NAME
@@ -289,10 +295,6 @@ publishable
 
 =item *
 
-custom_list_view
-
-=item *
-
 form
 
 =item *
@@ -303,11 +305,37 @@ multilang_form
 
 allowed_role
 
+=item * 
+
+custom_list_template
+
 =back
 
-All these functions read from configuration file status of the property. They can be overriden to configure different values for properties in custom element with non configuration file involvement.
+All these functions read from configuration file the property. They can be overriden to configure different values for properties without involving configuration file.
 
 For the meaning of every flag see L<Strehler::Manual::ExtraEntityConfiguration>
+
+=item "complex info functions"
+
+=over 6
+
+=item * 
+
+data_fields
+
+=item *
+
+multilang_data_fields
+
+=item *
+
+custom_add_snippet
+
+=back
+
+All these functions have no reference in the configuration file, but overriding them you can obtain more customization.
+
+For the meaning of each function  see L<Strehler::Manual::ExtraEntityConfiguration>
 
 =item get_schema
 
@@ -320,26 +348,6 @@ Wrapper for Dancer2 schema keyword, used internally to allow developer to use a 
 return %data
 
 Return all the configuration for an element as an hash
-
-=item data_fields
-
-return undef
-
-This method can be overriden to give back different fields from the database columns in get_basic_data function.
-
-In a custom element make it return an array of strings.
-
-WARNING: behaviour unpredictable if any string is not a database column or a custom function.
-
-=item multilang_data_fields
-
-return undef
-
-This method can be overriden to give back different fields from the database columns in get_ext_data function (it controls multilang fields).
-
-In a custom element make it return an array of strings.
-
-WARNING: behaviour unpredictable if any string is not a database column of the multilang table or a custom function.
 
 
 =back
