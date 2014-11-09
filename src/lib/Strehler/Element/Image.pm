@@ -7,9 +7,10 @@ use Data::Dumper;
 
 extends 'Strehler::Element';
 
-my $form_path = __FILE__;
-$form_path =~ s/Image\.pm//;
-$form_path .= "../forms/";
+my $root_path = __FILE__;
+$root_path =~ s/Image\.pm//;
+my $form_path = $root_path . "../forms";
+my $views_path = $root_path . "../views";
 
 #Standard element implementation
 
@@ -166,6 +167,11 @@ sub custom_add_snippet
     {
         return undef;
     }
+}
+
+sub custom_list_template
+{
+    return $views_path . "/admin/blocks/image_list_block.tt";
 }
 
 =encoding utf8
