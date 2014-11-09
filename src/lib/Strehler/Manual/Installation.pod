@@ -48,6 +48,15 @@ B<BEWARE>: All the tables will be preceded by a B<DROP IF EXIST> command, so if 
 
 After using initdb command, if you chose to not use Strehler::Schema you can dump the schema using dbicdump from L<DBIx::Class::Schema::Loader>.
 
+=head2 TEMPLATE ENGINE
+
+Strehler uses Template Toolkit as template engine. Configure it in your config file this way:
+
+    template: "template_toolkit"
+    engines:
+        template_toolkit:
+            ENCODING: utf8
+
 =head2 STATIC CONTENTS
 
 Static contents (css and javascript) must be copied in the public directory of the project to make them available.
