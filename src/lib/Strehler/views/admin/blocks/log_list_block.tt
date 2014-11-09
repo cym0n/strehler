@@ -1,0 +1,9 @@
+[% BLOCK custom_list %]
+<td>[% el.id %]</td>
+<td>[% el.timestamp.strftime('%d-%m-%Y %T') %]</td>
+<td>[% el.user %]</td>
+<td>[% el.action %] [% el.entity_type %]</td>
+<td>
+<a href="/admin/[% el.entity_type %]/edit/[% el.entity_id %]">[% el.entity_id %]</a>
+</td>
+[% END %]

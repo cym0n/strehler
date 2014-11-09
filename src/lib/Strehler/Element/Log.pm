@@ -9,6 +9,11 @@ extends 'Strehler::Element';
 
 #Standard element implementation
 
+my $root_path = __FILE__;
+$root_path =~ s/Log\.pm//;
+my $form_path = $root_path . "../forms";
+my $views_path = $root_path . "../views";
+
 sub metaclass_data 
 {
     my $self = shift;
@@ -40,10 +45,6 @@ sub updatable
 sub deletable
 {
     return config->{'Strehler'}->{'extra_menu'}->{'log'}->{deletable} || 0;
-}
-sub custom_list_view
-{
-    return config->{'Strehler'}->{'extra_menu'}->{'log'}->{custom_list_view} || 'admin/log_list';
 }
 sub allowed_role
 {
@@ -103,6 +104,10 @@ sub fields_list
                );
     return \@fields;
     
+}
+sub custom_list_template
+{
+    return $views_path . "/admin/blocks/log_list_block.tt";
 }
 
 
