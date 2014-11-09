@@ -6,6 +6,9 @@ elements:
       label: Image
       attributes: 
         class: span5
+      validators:
+        - type: '+Strehler::FormFu::Validator::FilenameTooLong'
+          message: 'Filename is too long'
     - type: "+Strehler::FormFu::Element::Category"
     - type: "+Strehler::FormFu::Element::Tags"
     - name: save
