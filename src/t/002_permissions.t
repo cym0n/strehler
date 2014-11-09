@@ -6,7 +6,8 @@ use Test::TCP;
 use LWP::UserAgent;
 use FindBin;
 
-use t::testapp::lib::Site;
+$ENV{DANCER_CONFDIR} = 't/testapp';
+require t::testapp::lib::Site;
 
 
 Test::TCP::test_tcp(
@@ -29,14 +30,7 @@ Test::TCP::test_tcp(
     server => sub {
         my $port = shift;
         use Dancer2;
-        if($Dancer2::VERSION < 0.14)
-        {
-            Dancer2->runner->server->port($port);
-        }
-        else
-        {
-            Dancer2->runner->{'port'} = $port;
-        }
+        Dancer2->runner->{'port'} = $port;
         start;
     },
 );

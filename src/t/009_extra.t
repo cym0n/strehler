@@ -7,8 +7,9 @@ use LWP::UserAgent;
 use FindBin;
 use Data::Dumper;
 
-use t::testapp::lib::Site;
-use t::testapp::lib::Site::Dummy;
+$ENV{DANCER_CONFDIR} = 't/testapp';
+require t::testapp::lib::Site;
+require t::testapp::lib::Site::Dummy;
 
 Site::reset_database();
 
@@ -79,14 +80,7 @@ Test::TCP::test_tcp(
     server => sub {
         use Dancer2;
         my $port = shift;
-        if($Dancer2::VERSION < 0.14)
-        {
-            Site->runner->server->port($port);
-        }
-        else
-        {
-            Site->runner->{'port'} = $port;
-        }
+        Site->runner->{'port'} = $port;
         start;
     },
 );

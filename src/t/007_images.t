@@ -7,7 +7,8 @@ use LWP::UserAgent;
 use FindBin;
 use Data::Dumper;
 
-use t::testapp::lib::Site;
+$ENV{DANCER_CONFDIR} = 't/testapp';
+require t::testapp::lib::Site;
 
 Site::reset_database();
 
@@ -46,7 +47,7 @@ Test::TCP::test_tcp(
         $res = $ua->get($site . "/admin/image/list");
         is($res->code, 200, "Images page correctly accessed");
         $res = $ua->get($site . "/admin/image/list?order-by=descriptions.title&order=asc");
-        is($res->code, 200, "Images page correctly accessed (ordering parameters added");
+        is($res->code, 200, "Images page correctly accessed (ordering parameters added)");
 
         #ADD        
         $res = $ua->post($site . "/admin/image/add",
@@ -90,16 +91,8 @@ Test::TCP::test_tcp(
     server => sub {
         use Dancer2;
         my $port = shift;
-        if($Dancer2::VERSION < 0.14)
-        {
-            Dancer2->runner->server->port($port);
-        }
-        else
-        {
-            Dancer2->runner->{'port'} = $port;
-        }
+        Dancer2->runner->{'port'} = $port;
         start;
-        chdir "t/testapp";
     },
 );
 

@@ -45,8 +45,8 @@ on_plugin_import {
             }
             else
             {
-                $tokens->{'role'} = $dsl->context->session->read('role');
-                $tokens->{'user'} = $dsl->context->session->read('user');
+                $tokens->{'role'} = $dsl->app->session->read('role');
+                $tokens->{'user'} = $dsl->app->session->read('user');
             }
         }));
     };

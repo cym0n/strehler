@@ -6,10 +6,14 @@ logger: "console"
 log_level: "debug"
 warnings: 1
 
+public: t/testapp/public
+
 engines:
     template_toolkit:
         ENCODING: utf8
         DEFAULT: 'no.tt'
+
+session: YAML
 
 plugins:
   DBIC:

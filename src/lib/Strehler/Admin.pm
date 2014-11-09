@@ -30,7 +30,6 @@ my $root_path = __FILE__;
 $root_path =~ s/Admin\.pm//;
 
 my $form_path = $root_path . 'forms';
-my $public_path = $root_path . 'public/strehler';
 
 set views => $root_path . 'views';
 
