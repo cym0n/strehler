@@ -1,6 +1,6 @@
 package Strehler::Helpers;
 
-use Dancer2 0.11;
+use Dancer2 0.153002;
 use Unicode::Normalize;
 use Text::Unidecode;
 
