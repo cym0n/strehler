@@ -23,7 +23,6 @@ Test::TCP::test_tcp(
         like($res->decoded_content, qr/Authentication failed!/, "Inserting wrong credentials at login gives an error");
         $res = $ua->post($site . "/admin/login", { user => 'admin', password => 'admin' });
         like($res->decoded_content, qr/<b class="icon-user"><\/b>.*admin/, "Inserting correct credentials at login leads to Strehler homepage");
-
     },
     server => sub {
         my $port = shift;
