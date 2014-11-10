@@ -31,23 +31,43 @@ sub get_categorized_entities
     }
     return @out;
 }
+sub standard_entities
+{
+    return ('article', 'image', 'user', 'log');
+}
 sub entities_list
 {
-    my @standard_entities = ('article', 'image', 'user', 'log');
+    my @entities = standard_entities();
     my @configured_entities = keys %{config->{'Strehler'}->{'extra_menu'}};
-    return (@standard_entities, @configured_entities);
+    foreach my $e (@configured_entities)
+    {
+        push @entities, $e if(! grep {$_ eq $e} @entities);
+    }
+    return @entities;
 }
-sub visibility
+sub top_bars
 {
-    my %visibility;
-    foreach my $e (entities_list())
+    my @entities = entities_list();
+    my @editor_menu;
+    my @admin_menu;
+    foreach my $e (@entities)
     {
         my $c = class_from_entity($e);
-        $visibility{$e} = $c->visible();
-        $c->auto();
+        if($c->visible())
+        {
+            if($c->allowed_role() && $c->allowed_role() eq "admin")
+            {
+                push @admin_menu, { name => $e, label => $c->label() };
+            }
+            else
+            {
+                push @editor_menu, { name => $e, label => $c->label() };
+            }
+        }
     }
-    return %visibility;
+    return \@editor_menu, \@admin_menu;
 }
+
 
 sub class_from_entity
 {

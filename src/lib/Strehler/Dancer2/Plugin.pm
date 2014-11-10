@@ -49,8 +49,9 @@ on_plugin_import {
                 $tokens->{'role'} = $dsl->app->session->read('role');
                 $tokens->{'user'} = $dsl->app->session->read('user');
             }
-            my %visibility = Strehler::Helpers::visibility();
-            $tokens->{'visibility'} = \%visibility;
+            my ($editor_menu, $admin_menu) = Strehler::Helpers::top_bars();
+            $tokens->{'editor_menu'} = $editor_menu;
+            $tokens->{'admin_menu'} = $admin_menu;
         }));
     };
     
