@@ -644,7 +644,7 @@ sub get_list
         my $ids = $self->get_schema()->resultset('Tag')->search({tag => $args{'tag'}, item_type => $self->item_type()})->get_column('item_id');
         $search_criteria->{'id'} = { -in => $ids->as_query };
     }
-    my $search_rules = { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => $default_page, rows => $args{'entries_per_page'}, join => $args{'join'} };
+    my $search_rules = { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => $default_page, rows => $args{'entries_per_page'}, join => $args{'join'}, distinct => 1 };
 
     my $rs;
     if(exists $args{'category_id'} && $args{'category_id'})
@@ -688,10 +688,6 @@ sub get_list
     else
     {
         $rs = $self->get_schema()->resultset($self->ORMObj())->search($search_criteria, $search_rules);
-    }
-    if(grep {$_ eq $self->multilang_children()} @{$args{'join'}})
-    {
-        $rs = $rs->search({$self->multilang_children() . '.language' => $args{'language'}});
     }
  
     my $elements;
