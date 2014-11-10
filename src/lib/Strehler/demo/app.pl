@@ -3,8 +3,10 @@
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 
-use Site;
-use Demo;
-use Strehler::Admin;
-use Strehler::API;
+$ENV{DANCER_CONFDIR} = "$FindBin::Bin/../";
+
+require Site;
+require Demo;
+require Strehler::Admin;
+require Strehler::API;
 Demo->dance;

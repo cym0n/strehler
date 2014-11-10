@@ -9,6 +9,7 @@ _..._
 * Alignment with Dancer2 0.15x
 * Connection checked before initdb
 * Data from File fields is now passed to generic save_form (refactoring of Image) 
+* More bugfix and refactoring
 
 1.2.2
 =====

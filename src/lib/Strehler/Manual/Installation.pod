@@ -100,6 +100,45 @@ This directive B<must> be placed after the use directive for your main site modu
 
     Site->dance;
 
+=head2 DANCER_CONFDIR
+
+It's necessary to set environment variable B<DANCER_CONFDIR> to make Strehler work correctly. Value of this variable must be the directory where your config.yml is (usually your siteroot). The directory must be written as absolute path. 
+
+There are many ways to do this. Some of them are listed here:
+
+=head3 DIRECTLY IN THE APP.PL SCRIPT
+
+You can configure it just in your app.pl script, remember to use require keyword instead of use to load Strehler modules and put variable declaration before requires.
+
+    #!/usr/bin/env perl
+
+    use FindBin;
+    use lib "$FindBin::Bin/../lib";
+
+    $ENV{DANCER_CONFDIR} = 'my/conf/dir';
+    require Site;
+    require Strehler::Admin;
+
+    Site->dance;
+
+=head3 AS SHELL ENVIRONMENT VARIABLE
+
+You can follow standard methos for environment configuration, declaring in in your .profile
+
+    DANCER_CONFDIR=my/conf/dir
+
+or directly on the command line, when running the script
+
+    DANCER_CONFDIR=my/conf/dir perl bin/app.pl
+
+In my opinion this is the less elegant way to do this.
+
+=head3 IN YOUR UWSGI.CONF
+
+If you're running site under uwsgi, just configure it in the uwsgi.conf adding an env line.
+
+    env = DANCER_CONFDIR=my/conf/dir
+
 =head2 DANCE WITH STREHLER
 
 Run your site, go to yourdomain.com/admin, enter B<admin> as username and the password you chose during database init and enjoy Strehler!
