@@ -25,17 +25,27 @@
       </li>
       [% END %]
       <li class="[% navbar.home %]"><a href="/admin">Home</a></li>
+      [% IF visibility.image %]
       <li class="[% navbar.image %]"><a href="/admin/image">Images</a></li>
+      [% END %]
+      [% IF visibility.article %]
       <li class="[% navbar.article %]"><a href="/admin/article">Articles</a></li>
+      [% END %]
       [% FOREACH k in extramenu.keys %]
-          [% menuname = extramenu.$k.label %]
-          [% menulink = k %]
-          <li class="[% navbar.${menulink} %]"><a href="/admin/[% menulink %]">[% menuname %]</a></li>
+          [% IF visibility.$k %]
+            [% menuname = extramenu.$k.label %]
+            [% menulink = k %]
+            <li class="[% navbar.${menulink} %]"><a href="/admin/[% menulink %]">[% menuname %]</a></li>
+          [% END %]
       [% END %]
       [% IF role == 'admin' %]
       <li class="[% navbar.category %] first-admin"><a href="/admin/category">Categories</a></li>
+      [% IF visibility.user %]
       <li class="[% navbar.user %]"><a href="/admin/user">Users</a></li>
+      [% END %]
+      [% IF visibility.log %]
       <li class="[% navbar.log %]"><a href="/admin/log">Logs</a></li>
+      [% END %]
       [% END %]
     </ul>
 

@@ -3,6 +3,7 @@ package Strehler::Dancer2::Plugin;
     $Strehler::Dancer2::Plugin::VERSION = '1.0.0';
 }
 use Dancer2::Plugin;
+use Strehler::Helpers;
 
 on_plugin_import {
     my $dsl = shift;
@@ -48,6 +49,8 @@ on_plugin_import {
                 $tokens->{'role'} = $dsl->app->session->read('role');
                 $tokens->{'user'} = $dsl->app->session->read('user');
             }
+            my %visibility = Strehler::Helpers::visibility();
+            $tokens->{'visibility'} = \%visibility;
         }));
     };
     

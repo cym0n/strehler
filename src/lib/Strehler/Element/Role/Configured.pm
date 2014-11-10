@@ -49,15 +49,27 @@ sub get_schema
         return schema;
     }
 }
+sub _property
+{
+    my $self = shift;
+    my $prop = shift;
+    my $default = shift;
+    return exists config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{$prop} ? config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{$prop} : $default;
+}
+sub visible
+{
+    my $self = shift;
+    return $self->_property('visible', 1);
+}
 sub auto
 {
     my $self = shift;
-    return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{auto} || 1;
+    return $self->_property('auto', 1);
 }
 sub exposed
 {
-     my $self = shift;
-     return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{exposed} || 1;
+    my $self = shift;
+    return $self->_property('exposed', 1);
 }
 sub slugged
 {
@@ -67,66 +79,66 @@ sub slugged
 sub label
 {
     my $self = shift;
-    return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{label} || "???";
+    return $self->_property('label', '???');
 }
 sub class
 {
     my $self = shift;
-    return return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{class} || 'Strehler::Element';
+    return $self->_property('class', 'Strehler::Element');
 }
 sub creatable
 {
-     my $self = shift;
-     return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{creatable} || 1;
+    my $self = shift;
+    return $self->_property('creatable', 1);
 }
 sub updatable
 {
     my $self = shift;
-    return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{updatable} || 1;
+    return $self->_property('updatable', 1);
 }
 sub deletable
 {
     my $self = shift;
-    return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{deletable} || 1;
+    return $self->_property('deletable', 1);
 }
 sub categorized
 {
     my $self = shift;
-    return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{categorized} || 0;
+    return $self->_property('categorized', 0);
 }
 sub ordered
 {
     my $self = shift;
-    return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{ordered} || 0;
+    return $self->_property('ordered', 0);
 }
 sub dated
 {
     my $self = shift;
-    return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{dated} || 0;
+    return $self->_property('dated', 0);
 }
 sub publishable
 {
     my $self = shift;
-    return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{publishable} || 0,
+    return $self->_property('publishable', 0);
 }
 sub form
 {
     my $self = shift;
-    return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{form} || undef;
+    return $self->_property('form', undef);
 }
 sub multilang_form
 {
     my $self = shift;
-    return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{multilang_form} || undef;
+    return $self->_property('multilang_form', undef);
 }
 sub allowed_role
 {
     my $self = shift;
-    if(config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{allowed_role})
+    if(exists config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{allowed_role})
     {
         return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{allowed_role};
     }
-    elsif(config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{role}) 
+    elsif(exists config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{role}) 
     {
         #For retrocompatibility
         return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{role};
@@ -139,7 +151,7 @@ sub allowed_role
 sub custom_list_template
 {
     my $self = shift;
-    return config->{'Strehler'}->{'extra_menu'}->{$self->item_type()}->{custom_list_template} || undef;
+    return $self->_property('custom_list_template', undef);
 }
 
 sub entity_data
@@ -160,7 +172,8 @@ sub entity_data
                       'form',
                       'multilang_form',
                       'allowed_role',
-                      'custom_list_template');
+                      'custom_list_template',
+                      'visible');
     my %entity_data;
     foreach my $attr (@attributes)
     {
@@ -244,6 +257,12 @@ Return the name of the accessor used by DBIX::Class module to reference multilan
 return $schema
 
 Wrapper for Dancer2 schema keyword, used internally to allow developer to use a different schema from default for Strehler
+
+=item _property
+
+return $prop
+
+Generic function to manage flag properties.
 
 =item "flag functions"
 

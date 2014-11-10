@@ -3,6 +3,8 @@ X.X.X
 
 _..._
 
+* Visible flag
+* Check introduced to avoid loading files with name more than 50 characters
 * custom_list_view dismissed, add_custom_snippet and custom_list_template added
 * Alignment with Dancer2 0.15x
 * Connection checked before initdb

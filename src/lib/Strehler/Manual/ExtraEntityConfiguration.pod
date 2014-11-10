@@ -37,6 +37,14 @@ B<REMEMBER>: Overriding configuration methods has always priority on config.yml 
 
 =over 4
 
+=item visible
+
+default:
+
+Put this flag to 0 to make an entity disappear from the top bar. 
+
+B<Warning>: Category menu cannot be hidden
+
 =item auto
 
 default: 1

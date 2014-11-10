@@ -3,6 +3,7 @@ package Strehler::Helpers;
 use Dancer2 0.153002;
 use Unicode::Normalize;
 use Text::Unidecode;
+use Data::Dumper;
 
 
 #Barely copied from http://stackoverflow.com/questions/4009281/how-can-i-generate-url-slugs-in-perl
@@ -35,6 +36,17 @@ sub entities_list
     my @standard_entities = ('article', 'image', 'user', 'log');
     my @configured_entities = keys %{config->{'Strehler'}->{'extra_menu'}};
     return (@standard_entities, @configured_entities);
+}
+sub visibility
+{
+    my %visibility;
+    foreach my $e (entities_list())
+    {
+        my $c = class_from_entity($e);
+        $visibility{$e} = $c->visible();
+        $c->auto();
+    }
+    return %visibility;
 }
 
 sub class_from_entity
