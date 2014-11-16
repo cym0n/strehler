@@ -143,6 +143,17 @@ Now at the url http://YOURAPP/admin you'll find Strehler backend!
 
 For now, best place to learn how Strehler works is the github wiki: L<https://github.com/cym0n/strehler/wiki>
 
+=head1 AUTHOR
+
+Simone "Cymon" Fare'
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2014 by Simone "Cymon" Fare'.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
 =cut
 
 
