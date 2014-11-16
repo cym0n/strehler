@@ -22,27 +22,18 @@ sub metaclass_data
 #Standard configuration overrides
 sub exposed
 {
-    return config->{'Strehler'}->{'extra_menu'}->{'user'}->{exposed} || 0;
+    my $self = shift;
+    return $self->_property('exposed', 0);
 }
 sub label
 {
-    return config->{'Strehler'}->{'extra_menu'}->{'user'}->{label} || "Users";
+    my $self = shift;
+    return $self->_property('label', 'Users');
 }
 sub allowed_role
 {
-    if(config->{'Strehler'}->{'extra_menu'}->{'log'}->{allowed_role})
-    {
-        return config->{'Strehler'}->{'extra_menu'}->{'log'}->{allowed_role};
-    }
-    elsif(config->{'Strehler'}->{'extra_menu'}->{'log'}->{role}) 
-    {
-        #For retrocompatibility
-        return config->{'Strehler'}->{'extra_menu'}->{'log'}->{role};
-    }
-    else
-    {
-        return 'admin';
-    }
+    my $self = shift;
+    return $self->_property('allowed_role', 'admin');
 }
 sub class
 {

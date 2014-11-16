@@ -26,23 +26,28 @@ sub metaclass_data
 
 sub label
 {
-    return config->{'Strehler'}->{'extra_menu'}->{'article'}->{label} || "Articles";
+    my $self = shift;
+    return $self->_property('label', 'Articles');
 }
 sub categorized
 {
-    return config->{'Strehler'}->{'extra_menu'}->{'article'}->{categorized} || 1;
+    my $self = shift;
+    return $self->_property('categorized', 1);
 }
 sub ordered
 {
-    return config->{'Strehler'}->{'extra_menu'}->{'article'}->{ordered} || 1;
+    my $self = shift;
+    return $self->_property('ordered', 1);
 }
 sub dated
 {
-    return config->{'Strehler'}->{'extra_menu'}->{'article'}->{dated} || 1;
+    my $self = shift;
+    return $self->_property('dated', 1);
 }
 sub publishable
 {
-    return config->{'Strehler'}->{'extra_menu'}->{'article'}->{publishable} || 1;
+    my $self = shift;
+    return $self->_property('publishable', 1);
 }
 sub class
 {

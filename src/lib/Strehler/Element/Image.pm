@@ -29,11 +29,13 @@ sub metaclass_data
 
 sub label
 {
-    return config->{'Strehler'}->{'extra_menu'}->{'image'}->{label} || "Images";
+    my $self = shift;
+    return $self->_property('label', 'Images');
 }
 sub categorized
 {
-    return config->{'Strehler'}->{'extra_menu'}->{'image'}->{categorized} || 1;
+    my $self = shift;
+    return $self->_property('categorized', 1);
 }
 
 sub class
