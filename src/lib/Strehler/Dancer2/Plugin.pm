@@ -1,7 +1,5 @@
 package Strehler::Dancer2::Plugin;
-{
-    $Strehler::Dancer2::Plugin::VERSION = '1.0.0';
-}
+
 use strict;
 use Dancer2::Plugin;
 use Strehler::Helpers;
