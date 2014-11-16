@@ -5,6 +5,7 @@ use Cwd;
 use File::Copy;
 use File::Copy::Recursive 'dircopy';
 use File::Path 'remove_tree';
+use Dancer2;
 use Dancer2::Core::Runner;
 use Dancer2::Core::App;
 use Strehler;
@@ -12,6 +13,11 @@ use Strehler::Schema;
 use Term::ReadKey;
 use Authen::Passphrase::BlowfishCrypt;
 use DBI;
+
+BEGIN
+{
+    $ENV{DANCER_CONFDIR} = getcwd();
+}
 
 my $strehler_root = $INC{'Strehler.pm'};
 $strehler_root =~ s/\.pm$//;
@@ -156,34 +162,34 @@ sub initdb
 
     if(! $demo)
     {
-        my $runner = Dancer2::Core::Runner->new( caller => getcwd() . "/bin" );
-        my $app = Dancer2::Core::App->new(
-            name            => "dummy",
-            environment     => $runner->environment,
-            location        => $runner->location,
-            runner_config   => $runner->config,
-            postponed_hooks => $runner->postponed_hooks,
-        );
+        #    my $runner = Dancer2::Core::Runner->new( caller => getcwd() . "/bin" );
+        #my $app = Dancer2::Core::App->new(
+        #    name            => "dummy",
+        #    environment     => $runner->environment,
+        #    location        => $runner->location,
+        #    runner_config   => $runner->config,
+        #    postponed_hooks => $runner->postponed_hooks,
+        #);
   
-        if(! $app->config->{'plugins'}->{'DBIC'})
+        if(! config->{'plugins'}->{'DBIC'})
         {
             say "Can't read config.yml or no DBIC plugin configured in it\n";
             exit();
         }
         my $schema_name = $wanted_schema || 'default';
-        if(! $app->config->{'plugins'}->{'DBIC'}->{$schema_name} && $wanted_schema)
+        if(! config->{'plugins'}->{'DBIC'}->{$schema_name} && $wanted_schema)
         {
             say "Schema $wanted_schema doesn't exists in the config.yml file we're using!\n";
             exit();
         }
-        if(! $wanted_schema && ! $app->config->{'plugins'}->{'DBIC'}->{'default'})
+        if(! $wanted_schema && ! config->{'plugins'}->{'DBIC'}->{'default'})
         {
-            my @availables = keys %{$app->config->{'plugins'}->{'DBIC'}};
+            my @availables = keys %{config->{'plugins'}->{'DBIC'}};
             $schema_name = $availables[0];
         }
-        $dsn = $app->config->{'plugins'}->{'DBIC'}->{$schema_name}->{'dsn'};
-        $user = $app->config->{'plugins'}->{'DBIC'}->{$schema_name}->{'user'};
-        $password = $app->config->{'plugins'}->{'DBIC'}->{$schema_name}->{'pass'};
+        $dsn = config->{'plugins'}->{'DBIC'}->{$schema_name}->{'dsn'};
+        $user = config->{'plugins'}->{'DBIC'}->{$schema_name}->{'user'};
+        $password = config->{'plugins'}->{'DBIC'}->{$schema_name}->{'pass'};
         print "Schema: $schema_name\n\n";
         say "DSN: $dsn";
         say "User: $user";
@@ -228,16 +234,23 @@ sub initdb
     my $user_password;
     if(! $demo)
     {
-        ReadMode(2, *STDIN);
-        say "Enter password for admin:";
-        $user_password = <STDIN>;
-        say "Re-type password:";
-        my $user_password_confirm = <STDIN>;
-        ReadMode(0);
-        if(! ($user_password eq $user_password_confirm))
+        my $password_chosen;
+        while(! $password_chosen)
         {
-            say "Password inputs don't match!";
-            exit(0);
+            ReadMode(2, *STDIN);
+            say "Enter password for admin:";
+            $user_password = <STDIN>;
+            say "Re-type password:";
+            my $user_password_confirm = <STDIN>;
+            ReadMode(0);
+            if($user_password eq $user_password_confirm)
+            {
+                $password_chosen = 1;
+            }
+            else
+            {
+                say "Password inputs don't match!";
+            }
         }
         chomp $user_password;
     }
