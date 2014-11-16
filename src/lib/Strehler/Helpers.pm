@@ -1,9 +1,9 @@
 package Strehler::Helpers;
 
+use strict;
 use Dancer2 0.153002;
 use Unicode::Normalize;
 use Text::Unidecode;
-use Data::Dumper;
 
 
 #Barely copied from http://stackoverflow.com/questions/4009281/how-can-i-generate-url-slugs-in-perl

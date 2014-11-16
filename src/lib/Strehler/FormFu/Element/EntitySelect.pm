@@ -1,5 +1,8 @@
 package Strehler::FormFu::Element::EntitySelect;
+
+use strict;
 use Moose;
+
 extends 'HTML::FormFu::Element::Select';
 
 use Carp qw( croak );

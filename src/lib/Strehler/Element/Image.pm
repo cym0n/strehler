@@ -1,9 +1,9 @@
 package Strehler::Element::Image;
 
+use strict;
 use Moo;
 use Dancer2 0.153002;
 use Dancer2::Plugin::DBIC;
-use Data::Dumper;
 
 extends 'Strehler::Element';
 

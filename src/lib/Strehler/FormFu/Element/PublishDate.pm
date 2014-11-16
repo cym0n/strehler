@@ -1,5 +1,8 @@
 package Strehler::FormFu::Element::PublishDate;
+
+use strict;
 use Moose;
+
 extends 'HTML::FormFu::Element::Text';
 
 after BUILD => sub {

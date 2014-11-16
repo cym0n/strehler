@@ -1,5 +1,6 @@
 package Strehler::Admin;
 
+use strict;
 use Dancer2 0.153002;
 use Dancer2::Plugin::DBIC;
 use Dancer2::Plugin::Ajax;

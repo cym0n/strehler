@@ -1,5 +1,6 @@
 package Strehler::Element::Role::Configured;
 
+use strict;
 use Moo::Role;
 use Dancer2;
 use Dancer2::Plugin::DBIC;

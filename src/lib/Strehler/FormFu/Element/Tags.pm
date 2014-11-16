@@ -1,5 +1,8 @@
 package Strehler::FormFu::Element::Tags;
+
+use strict;
 use Moose;
+
 extends 'HTML::FormFu::Element::Block';
 
 after BUILD => sub {

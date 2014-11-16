@@ -1,6 +1,8 @@
 package Strehler::FormFu::Element::Slug;
 
+use strict;
 use Moose;
+
 extends 'HTML::FormFu::Element::Label';
 
 after BUILD => sub {

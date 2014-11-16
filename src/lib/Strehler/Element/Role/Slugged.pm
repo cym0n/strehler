@@ -1,5 +1,6 @@
 package Strehler::Element::Role::Slugged;
 
+use strict;
 use Moo::Role;
 use Dancer2;
 use Strehler::Helpers;
@@ -105,4 +106,8 @@ Slug is guaranteed unique because, in any case, element ID is preferred to the s
 Function to retrieve elements using slug.
 
 An element that implements this method returns true when slugged() function (L<Strehler::Element::Role::Configured>) is called.
+
+=back
+
+=cut
 

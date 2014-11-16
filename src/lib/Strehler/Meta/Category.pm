@@ -1,5 +1,6 @@
 package Strehler::Meta::Category;
 
+use strict;
 use Moo;
 use Dancer2;
 use Dancer2::Plugin::DBIC;
