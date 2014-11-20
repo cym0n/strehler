@@ -1,7 +1,7 @@
 package Strehler::API;
 
 use strict;
-use Dancer2 0.153002;
+use Dancer2 0.154000;
 use Dancer2::Serializer::JSON;
 use Strehler::Helpers;
 use Strehler::Meta::Category;
@@ -184,11 +184,7 @@ sub serialize
     my $content = shift;
     my $callback = shift;;
     my $serializer = Dancer2::Serializer::JSON->new();
-    my $serialized = $serializer->serialize($content, {allow_blessed=>1,convert_blessed=>1});
-    if($serializer->error)
-    {
-        return error_handler(500, "Serialization error: " . $serializer->error);
-    }
+    my $serialized = $serializer->serialize($content);
     if($callback)
     {
         $serialized = $callback . '( '. $serialized . ')';

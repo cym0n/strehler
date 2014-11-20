@@ -9,9 +9,11 @@ warnings: 1
 public: t/testapp/public
 
 engines:
-    template_toolkit:
-        ENCODING: utf8
-        DEFAULT: 'no.tt'
+    template:
+        template_toolkit:
+            ENCODING: utf8
+            DEFAULT: 'no.tt'
+template: "template_toolkit"
 
 session: YAML
 

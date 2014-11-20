@@ -70,14 +70,14 @@ Test::TCP::test_tcp(
         my $image_id = $image->{'id'};
         my $image_object = Strehler::Element::Image->new($image_id);
         ok($image_object->exists(), "Image correctly inserted");
-        
-        $res = $ua->get($site . "/upload/strehler.jpg");
-        is($res->code, 200, "Image resource in place");
 
         #AJAX CALL FOR ARTICLE EDIT
         $ua->default_header('X-Requested-With' => "XMLHttpRequest");
         $res = $ua->get($site . "/admin/image/src/$image_id");
         is($res->content, '/upload/strehler.jpg', "Ajax call for image source works");
+
+        $res = $ua->get($site . "/upload/strehler.jpg");
+        is($res->code, 200, "Image resource in place");
     
         #DELETE
         $ua->default_header('X-Requested-With' => undef);

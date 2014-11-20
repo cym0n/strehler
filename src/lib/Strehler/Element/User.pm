@@ -2,7 +2,7 @@ package Strehler::Element::User;
      
 use strict;
 use Moo;
-use Dancer2 0.153002;
+use Dancer2 0.154000;
 use Dancer2::Plugin::DBIC;
 use Authen::Passphrase::BlowfishCrypt;
 
