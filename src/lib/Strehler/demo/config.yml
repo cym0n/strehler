@@ -4,11 +4,12 @@ layout: "main"
 
 charset: "UTF-8"
 
-template: template_toolkit
 engines:
-    template_toolkit:
-        ENCODING: utf8
-        DEFAULT: 'no.tt'
+        template:
+            template_toolkit:
+                ENCODING: utf8
+                DEFAULT: 'no.tt'
+template: "template_toolkit"
     
 plugins:
     DBIC:
