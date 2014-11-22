@@ -52,10 +52,12 @@ After using initdb command, if you chose to not use Strehler::Schema you can dum
 
 Strehler uses Template Toolkit as template engine. Configure it in your config file this way:
 
-    template: "template_toolkit"
     engines:
-        template_toolkit:
-            ENCODING: utf8
+        template:
+            template_toolkit:
+                ENCODING: utf8
+                DEFAULT: 'no.tt'
+    template: "template_toolkit"
 
 =head2 STATIC CONTENTS
 
