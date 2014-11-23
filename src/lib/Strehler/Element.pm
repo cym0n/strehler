@@ -213,6 +213,18 @@ sub get_category_name
         return undef;
     }
 }
+sub get_category_id
+{
+    my $self = shift;
+    if($self->row->can('category'))
+    {
+            return $self->row->category->id;
+    }
+    else
+    {
+        return undef;
+    }
+}
 sub max_category_order
 {
     my $self = shift;
@@ -387,7 +399,7 @@ sub next_in_category_by_order
 {
     my $self = shift;
     my $language = shift;
-    my $category = $self->get_schema()->resultset('Category')->find( { category => $self->get_category_name() } );
+    my $category = $self->get_schema()->resultset('Category')->find($self->get_category_id());
     my $category_access = $self->category_accessor($category);
     my $criteria = { display_order => { '>', $self->get_attr('display_order') }};
     if($self->publishable())
@@ -413,7 +425,7 @@ sub prev_in_category_by_order
 {
     my $self = shift;
     my $language = shift;
-    my $category = $self->get_schema()->resultset('Category')->find( { category => $self->get_category_name() } );
+    my $category = $self->get_schema()->resultset('Category')->find($self->get_category_id());
     my $category_access = $self->category_accessor($category);
     my $criteria = { display_order => { '<', $self->get_attr('display_order') }};
     if($self->publishable())
@@ -438,7 +450,7 @@ sub next_in_category_by_date
 {
     my $self = shift;
     my $language = shift;
-    my $category = $self->get_schema()->resultset('Category')->find( { category => $self->get_category_name() } );
+    my $category = $self->get_schema()->resultset('Category')->find($self->get_category_id());
     my $category_access = $self->category_accessor($category);
     my $criteria = {publish_date => { '>', $self->get_attr('publish_date') }};
     if($self->publishable())
@@ -463,7 +475,7 @@ sub prev_in_category_by_date
 {
     my $self = shift;
     my $language = shift;
-    my $category = $self->get_schema()->resultset('Category')->find( { category => $self->get_category_name() } );
+    my $category = $self->get_schema()->resultset('Category')->find($self->get_category_id());
     my $category_access = $self->category_accessor($category);
     my $criteria = { publish_date => { '<', $self->get_attr('publish_date') }};
     if($self->publishable())
