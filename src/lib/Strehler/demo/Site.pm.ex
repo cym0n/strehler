@@ -1,6 +1,7 @@
 package Site;
 use Dancer2;
 use Strehler::Element::Article;
+use Strehler::Dancer2::Plugin::EX;
 use Data::Dumper;
 
 set layout => 'main';
@@ -16,4 +17,7 @@ get '/article/:slug' => sub {
     my %data = $article->get_ext_data($language);
     template 'article', { article => \%data };
 };
+
+slug '/ex/:slug', 'element';
+list '/exlist/:category', 'list';
 true;
