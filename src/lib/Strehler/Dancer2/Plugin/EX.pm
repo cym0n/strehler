@@ -28,19 +28,23 @@ register 'slug' => sub {
         else
         {
             my %article_data = $article->get_ext_data($language);
-            my $next_slug = undef;
-            my $prev_slug = undef;
+
+            my $next_data = undef;
             my $next = $article->next_in_category_by_order($language);
             if($next->exists())
             {
-                $next_slug = $next->get_attr_multilang('slug', $language);
+                my %next_data_hash = $next->get_ext_data($language);
+                $next_data = \%next_data_hash;
             }
+
+            my $prev_data = undef;
             my $prev = $article->prev_in_category_by_order($language);
             if($prev->exists())
             {
-                $prev_slug = $prev->get_attr_multilang('slug', $language);
+                my %prev_data_hash = $prev->get_ext_data($language);
+                $prev_data = \%prev_data_hash;
             }
-            $dsl->template($template, { element => \%article_data, prev_slug => $prev_slug, next_slug => $next_slug, %{$extra_data} });
+            $dsl->template($template, { element => \%article_data, prev => $prev_data, next => $next_data, %{$extra_data} });
         }
     };
 
