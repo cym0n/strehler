@@ -44,7 +44,7 @@ register 'slug' => sub {
                 my %prev_data_hash = $prev->get_ext_data($language);
                 $prev_data = \%prev_data_hash;
             }
-            $dsl->template($template, { element => \%article_data, prev => $prev_data, next => $next_data, %{$extra_data} });
+            $dsl->template($template, { language => $language, element => \%article_data, prev => $prev_data, next => $next_data, %{$extra_data} });
         }
     };
 
