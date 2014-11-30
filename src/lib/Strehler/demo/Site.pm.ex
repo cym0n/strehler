@@ -18,7 +18,7 @@ get '/article/:slug' => sub {
     template 'article', { article => \%data };
 };
 
-slug '/ex/:slug', 'element';
+slug '/ex/slug/:slug', 'element';
 list '/exlist/:category', 'list';
 latest_page '/expage/latest', 'element', { element => { category => 'releone' }};
 true;
