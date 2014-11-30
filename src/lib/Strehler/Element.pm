@@ -416,7 +416,8 @@ sub next_in_category_by_order
     my $language = shift;
     my $category = $self->get_schema()->resultset('Category')->find($self->get_category_id());
     my $category_access = $self->category_accessor($category);
-    my $criteria = { display_order => { '>', $self->get_attr('display_order') }};
+    my $my_order = $self->get_attr('display_order') || 0;
+    my $criteria = { display_order => { '>',  $my_order}};
     if($self->publishable())
     {
         $criteria->{'published'} = 1;
@@ -442,7 +443,8 @@ sub prev_in_category_by_order
     my $language = shift;
     my $category = $self->get_schema()->resultset('Category')->find($self->get_category_id());
     my $category_access = $self->category_accessor($category);
-    my $criteria = { display_order => { '<', $self->get_attr('display_order') }};
+    my $my_order = $self->get_attr('display_order') || 0;
+    my $criteria = { display_order => { '<', $my_order }};
     if($self->publishable())
     {
         $criteria->{'published'} = 1;
