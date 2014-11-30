@@ -468,8 +468,9 @@ sub next_in_category_by_date
     my $self = shift;
     my $language = shift;
     my $category = $self->get_schema()->resultset('Category')->find($self->get_category_id());
+    my $my_date = $self->get_attr('publish_date') || DateTime->from_epoch( epoch => 0);
     my $category_access = $self->category_accessor($category);
-    my $criteria = {publish_date => { '>', $self->get_attr('publish_date') }};
+    my $criteria = {publish_date => { '>', $my_date }};
     if($self->publishable())
     {
         $criteria->{'published'} = 1;
@@ -494,7 +495,8 @@ sub prev_in_category_by_date
     my $language = shift;
     my $category = $self->get_schema()->resultset('Category')->find($self->get_category_id());
     my $category_access = $self->category_accessor($category);
-    my $criteria = { publish_date => { '<', $self->get_attr('publish_date') }};
+    my $my_date = $self->get_attr('publish_date') || DateTime->from_epoch( epoch => 0);
+    my $criteria = { publish_date => { '<', $my_date }};
     if($self->publishable())
     {
         $criteria->{'published'} = 1;
