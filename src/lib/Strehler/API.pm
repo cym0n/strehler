@@ -51,7 +51,7 @@ get '/:entity/slug/:slug' => sub {
     {
         return error_handler(404, "Element doesn't exists");
     }
-    my %data = $obj->get_ext_data($lang);    
+    my %data = $obj->get_json_data($lang);    
     if($callback)
     {
         content_type('application/javascript');
@@ -81,7 +81,7 @@ get '/:entity/:id' => sub {
     {
         return error_handler(404, "Element doesn't exists");
     }
-    my %data = $obj->get_ext_data($lang);    
+    my %data = $obj->get_json_data($lang);    
     if($callback)
     {
         content_type('application/javascript');
@@ -140,7 +140,7 @@ get '/**/' => sub {
             language => $lang,
             entries_per_page => $entries_per_page,
             page => $page,
-            ext => 1,
+            json => 1,
             published => 1,
             category_id => $category_id,
             ancestor => $ancestor

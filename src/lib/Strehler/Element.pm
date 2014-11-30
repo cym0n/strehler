@@ -304,6 +304,21 @@ sub get_ext_data
     return %data;
 }
 
+sub get_json_data
+{
+    my $self = shift;
+    my $language = shift;
+    my %data = $self->get_ext_data($language);
+    foreach my $key (keys %data)
+    {
+        if(ref $data{$key} eq 'DateTime')
+        {
+            $data{$key} = $data{$key}->epoch();
+        }
+    }
+    return %data;
+}
+
 sub main_title
 {
     my $self = shift;
@@ -721,13 +736,20 @@ sub get_list
     {
         my $img = $self->new($_->id);
         my %el;
-        if(exists $args{'ext'})
+        if(exists $args{'json'})
         {
-            %el = $img->get_ext_data($args{'language'});
+            %el = $img->get_json_data($args{'language'});
         }
         else
         {
-            %el = $img->get_basic_data();
+            if(exists $args{'ext'})
+            {
+                %el = $img->get_ext_data($args{'language'});
+            }
+            else
+            {
+                %el = $img->get_basic_data();
+            }
         }
         push @to_view, \%el;
     }
