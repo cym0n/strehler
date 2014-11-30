@@ -68,7 +68,7 @@ Test::TCP::test_tcp(
                            'subcategory' => $child_cat_id,
                            'tags' => '',
                            'display_order' => 2,
-                           'publish_date' => '',
+                           'publish_date' => '13/11/2009',
                            'title_it' => 'Automatic test 2 - title - IT',
                            'text_it' => 'Automatic test 2 - body - IT',
                            'title_en' => 'Automatic test 2 - title - EN',
