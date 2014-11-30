@@ -28,22 +28,36 @@ register 'slug' => sub {
         else
         {
             my %article_data = $article->get_ext_data($language);
-
+            my $next = undef;
+            my $prev = undef;
             my $next_data = undef;
-            my $next = $article->next_in_category_by_order($language);
-            if($next->exists())
+            my $prev_data = undef;
+            if($class->ordered())
+            {
+                $next = $article->next_in_category_by_order($language);
+                $prev = $article->prev_in_category_by_order($language);
+            }
+            elsif($class->dated()) 
+            {
+                $next = $article->next_in_category_by_date($language);
+                $prev = $article->prev_in_category_by_date($language);
+            }
+            else
+            {
+                $next = undef;
+                $prev = undef;
+            }
+            if($prev && $prev->exists())                
+            {
+                my %prev_data_hash = $prev->get_ext_data($language);
+                $prev_data = \%prev_data_hash;
+            }
+            if($next && $next->exists())
             {
                 my %next_data_hash = $next->get_ext_data($language);
                 $next_data = \%next_data_hash;
             }
 
-            my $prev_data = undef;
-            my $prev = $article->prev_in_category_by_order($language);
-            if($prev->exists())
-            {
-                my %prev_data_hash = $prev->get_ext_data($language);
-                $prev_data = \%prev_data_hash;
-            }
             $dsl->template($template, { language => $language, element => \%article_data, prev => $prev_data, next => $next_data, %{$extra_data} });
         }
     };

@@ -10,7 +10,7 @@ function renderArticles(data) {
     {
         for(var i=0; i<len; i++)
         {
-            text += '<div class="span3"><a href="/article/'+data.to_view[i].slug+'">'+data.to_view[i].title+"</a></div>";
+            text += '<div class="span3"><a href="/ex/slug/'+data.to_view[i].slug+'">'+data.to_view[i].title+"</a></div>";
         }
         document.getElementById('article-list').innerHTML = text;
     }
@@ -46,6 +46,9 @@ function renderImages(data) {
     <h2>Recent images (3 elements)</h2>
     <div id="image-list" class="row">
     </div>
+    <h2>More pages...</h2>
+    <a href="/ex/list/dummy">Articles published under dummy category</a><br />
+    <a href="/ex/mypage">Page with many contents</a>
 </div>
 <script type="text/javascript" src="/api/v1/articles/?callback=renderArticles&entries_per_page=8"></script>
 <script type="text/javascript" src="/api/v1/images/?callback=renderImages&entries_per_page=3"></script>

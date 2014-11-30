@@ -314,7 +314,8 @@ sub demo_components
         'app.pl' => 'bin/app.pl',
         'strehler-home.tt' => 'views/strehler-home.tt',
         'home.tt' => 'views/home.tt',
-        'article.tt' => 'views/article.tt',
+        'element.tt' => 'views/element.tt',
+        'dummy_list.tt' => 'views/dummy_list.tt',
         'main.tt' => 'views/layouts/main.tt'
     );
     say "Demo resources will be injected in the app...";

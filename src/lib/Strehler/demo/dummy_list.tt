@@ -1,0 +1,33 @@
+<div class="container">
+    <div class="page-header">
+            <h1>Strehler demo list page</h1>
+    </div>
+    <div>
+        <p>If you want to see an article listed here, put it in a category named &quot;dummy&quot; and publish it</p>
+        <p>This page uses <strong>EX plugin</strong> for route configuration</p>
+    </div>
+    <div class="well">
+        <div>
+            <p><span>Pages: </span>
+            [% pageof = 1 %]
+            [% WHILE  pageof <= last_page %]
+                [% IF pageof == page %]
+                    <span>[%pageof %]</span>
+                [% ELSE %]
+                    <span><a href="#">[%pageof %]</a></span>
+                [% END %]
+                [% pageof = pageof + 1 %]
+            [% END %]
+            </p>
+        </div>
+        <hr />
+        <div>
+            [% FOREACH e IN elements %]
+                <a href="/ex/slug/[% e.slug %]">[% e.title %]</a><br />
+            [% END%]
+        </div>
+    </div>
+    <div>
+        <a href="/">&lt; Back to home</a>
+    </div>
+</div>
