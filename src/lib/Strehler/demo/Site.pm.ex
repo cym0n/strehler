@@ -20,4 +20,5 @@ get '/article/:slug' => sub {
 
 slug '/ex/:slug', 'element';
 list '/exlist/:category', 'list';
+latest_page '/expage/latest', 'element', { element => { category => 'releone' }};
 true;

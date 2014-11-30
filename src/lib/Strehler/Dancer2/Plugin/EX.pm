@@ -73,6 +73,50 @@ register 'list' => sub {
 
 };
 
+sub latest_elements
+{
+    my $dsl = shift;
+    my $request = shift;
+    my $language = $dsl->params->{language} || $dsl->config->{'Strehler'}->{'default_language'};
+    my %out;
+    foreach my $k (keys %{$request})
+    {
+        my $local_language = $request->{$k}->{'language'} || $language;
+        my $category = $request->{$k}->{'category'};
+        my $item_type = $request->{$k}->{'item-type'} || 'article';
+        my $by = $request->{$k}->{'by'} || 'date';
+
+        my $class = Strehler::Helpers::class_from_entity($item_type);
+        my $element;
+        if($by eq 'date')
+        {
+           $element = $class->get_last_by_date($category, $language);
+        }
+        else
+        {
+           $element = $class->get_last_by_order($category, $language);
+        }
+        my %element_data = $element->get_ext_data($language);
+        $out{$k} = \%element_data;
+    }
+    return %out;
+}
+
+register 'latest' => sub {
+        my $dsl = shift;
+        my $request = shift;
+        return latest_elements($dsl, $request);
+};
+register 'latest_page' => sub {
+    my ($dsl, $pattern, $template, $request, $extra_data) = @_;
+    $extra_data ||= {};
+    my $latest_route = sub {
+        $dsl->template( $template, {latest_elements($dsl, $request), %{$extra_data}}); 
+    };
+    $dsl->any( ['get'] => $pattern, $latest_route);
+};
+
+
 register_plugin;
 
 1;
