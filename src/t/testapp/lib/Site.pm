@@ -5,9 +5,11 @@ use lib "$FindBin::Bin/../lib";
 use lib "$FindBin::Bin/testapp/lib";
 use Dancer2;
 use Dancer2::Plugin::DBIC;
+use Strehler::Dancer2::Plugin::EX;
 use Strehler::Admin;
 use Strehler::API;
-#use Site::Dummy;
+
+set views => "$FindBin::Bin/testapp/views";
 
 sub reset_database
 {
@@ -22,6 +24,10 @@ sub reset_database
     $schema->resultset('Tag')->delete_all();
     $schema->resultset('Dummy')->delete_all();
 }
+
+slug '/ex/slug/:slug', 'element';
+list '/ex/list/dummy', 'dummy_list', { category => 'dummy' };
+latest_page '/ex/mypage', 'mypage', { upper => { category => 'upper' }, lower => { category => 'lower' }};
 
 get '/:lang/get-last-by-order/:cat' => sub {
     my $art = Strehler::Element::Article->get_last_by_order(params->{'cat'}, params->{'lang'});
@@ -53,4 +59,5 @@ get '/dummyslug/:slug' => sub {
     my %data = $a->get_ext_data(params->{'lang'});
     return $data{'id'};
 };
+
 1;
