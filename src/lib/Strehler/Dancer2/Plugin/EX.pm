@@ -110,8 +110,15 @@ sub latest_elements
         {
            $element = $class->get_last_by_order($category, $language);
         }
-        my %element_data = $element->get_ext_data($language);
-        $out{$k} = \%element_data;
+        if($element)
+        {
+            my %element_data = $element->get_ext_data($language);
+            $out{$k} = \%element_data;
+        }
+        else
+        {
+            $out{$k} = undef;
+        }
     }
     return %out;
 }

@@ -1,0 +1,46 @@
+<div class="container">
+    <div class="page-header">
+            <h1>Strehler demo composite page</h1>
+    </div>
+    <div>
+        <p>This page contains two contents, one from category &quot;upper&quot; and one from category &quot;lower&quot;.</p>
+        <p> Retrieved contents are the most recent for their category, considering the publish date. This is an example about using Strehler to have a minimal version control on contents.</p>
+        <p>Route was configured using <strong>EX plugin</strong>.</p> 
+    </div>
+    <div class="well">
+        [% IF upper %]
+        <h2><center>[% upper.title %]</center></h2>
+        <hr />
+        <div class="row">
+        [% IF upper.image %]
+        <div class="span3"><img src="[% upper.image %]" style="max-height:400px" /></div>
+        [% END %]
+        <div class="span7">[% upper.text %]</div>
+        </div>
+        [% ELSE %]
+        <div class="row">
+            <p>Add a content to the upper category to see something here</p>
+        </div>
+        </div>
+        [% END %]
+    </div>
+    <div class="well">
+        [% IF lower %]
+        <h2><center>[% lower.title %]</center></h2>
+        <hr />
+        <div class="row">
+        [% IF lower.image %]
+        <div class="span3"><img src="[% lower.image %]" style="max-height:400px" /></div>
+        [% END %]
+        <div class="span7">[% lower.text %]</div>
+        </div>
+        [% ELSE %]
+        <div class="row">
+            <p>Add a content to the upper category to see something here</p>
+        </div>
+        [% END %]
+    </div>
+     <div>
+        <a href="/">&lt; Back to home</a><br /><br />
+    </div>
+</div>

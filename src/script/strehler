@@ -316,6 +316,7 @@ sub demo_components
         'home.tt' => 'views/home.tt',
         'element.tt' => 'views/element.tt',
         'dummy_list.tt' => 'views/dummy_list.tt',
+        'mypage.tt' => 'views/mypage.tt',
         'main.tt' => 'views/layouts/main.tt'
     );
     say "Demo resources will be injected in the app...";

@@ -20,5 +20,5 @@ get '/' => sub {
 
 slug '/ex/slug/:slug', 'element';
 list '/ex/list/dummy', 'dummy_list', { category => 'dummy' };
-latest_page '/expage/latest', 'element', { element => { category => 'releone' }};
+latest_page '/ex/mypage', 'mypage', { upper => { category => 'upper' }, lower => { category => 'lower' }};
 true;
