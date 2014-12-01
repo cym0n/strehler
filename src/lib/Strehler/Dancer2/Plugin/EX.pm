@@ -21,9 +21,9 @@ register 'slug' => sub {
         $extra_data ||= {};
 
         my $article = $class->get_by_slug($slug, $language);
-        if( ! $article->exists() || ($category && $article->get_category_name() ne $category))
+        if( ! $article || ! $article->exists() || ($category && $article->get_category_name() ne $category))
         {
-            return undef;
+            $dsl->send_error("Not found", 404);
         }
         else
         {
