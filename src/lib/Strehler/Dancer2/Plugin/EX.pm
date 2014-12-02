@@ -142,4 +142,90 @@ register_plugin;
 
 1;
 
+=encoding utf8
+
+=head1 NAME
+
+Strehler::Dancer2::Plugin::EX - Plugin for easy and fast site building!
+
+=head1 DESCRIPTION
+
+Using Strehler object to build a frontend may be a little messy because someone could need many instructions also to do simple things. EX plugin gives to the developer easy shortcuts, useful for standard scenarios, to write just elegant frontend code.
+
+=head1 SYNOPSIS
+
+Here is the route definition for Strehler Demo site, using EX plugin.
+
+    get '/' => sub {template 'home';};
+
+    slug '/ex/slug/:slug', 'element';
+    list '/ex/list/dummy', 'dummy_list', { category => 'dummy' };
+    latest_page '/ex/mypage', 'mypage', 
+        { upper => { category => 'upper' }, 
+          lower => { category => 'lower' }};
+
+=head1 FUNCTIONS
+
+All the functions available to generate routes are in the form:
+
+keyword 'pattern/to/match', 'template', { options }
+
+=head2 SLUG
+
+Slug keyword allows you to retrieve data from a slugged entity and pass it to a template as I<element>.
+
+Slug must be passed as a param named slug, in any way Dancer2 accept it.
+
+Slug keyword passes to the template also the data about the previous and the next element in category (by order or publish date) as prev and next.
+
+=head3 PARAMETERS
+
+=over 4
+
+=item item-type
+
+The entity. It must be configured in Strehler configuration.
+
+=item language
+
+The language to use. If no language is configured plugin will try for a language entry in params. If also this solution will fail it will use the default language.
+
+=item category
+
+To restrict slugged entity retrieving just to a certain category.
+
+=item extra_data
+
+Hash reference. Any other variable you want for the template.
+
+=back
+
+=head2 LIST
+
+List keyword gives you a list of entities' data in the template variable named elements. A route designed using list keyword accepts as params page and order to navigate the list. All the configuration parameter are passed to the template in template variables with the same name.
+
+=head3 PARAMETERS
+
+=over 4
+
+=item item-type
+
+The entity. It must be configured in Strehler configuration.
+
+=item language
+
+The language to use. If no language is configured plugin will try for a language entry in params. If also this solution will fail it will use the default language.
+
+=item category
+
+To restrict list retrieving just to a certain category.
+
+=item entries-per-page
+
+To change the length of a page.
+
+=item extra_data
+
+Hash reference. Any other variable you want for the template.
+
 
