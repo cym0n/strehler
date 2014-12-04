@@ -4,7 +4,7 @@ use strict;
 use Dancer2 0.154000;
 use Dancer2::Plugin::DBIC;
 use Dancer2::Plugin::Ajax;
-use Strehler::Dancer2::Plugin;
+use Strehler::Dancer2::Plugin::Admin;
 use HTML::FormFu 1.00;
 use HTML::FormFu::Element::Block;
 use Authen::Passphrase::BlowfishCrypt;
@@ -852,7 +852,7 @@ Strehler::Admin - App holding the routes used by Strehler backend
 
 Strehler::Admin holds all the routes used by Strehler to erogate views. It also contains some helpers, mostly about form management, called inside routes.
 
-The use of the L<Strehler::Dancer2::Plugin> makes all the routes to have /admin as prefix.
+The use of the L<Strehler::Dancer2::Plugin::Admin> makes all the routes to have /admin as prefix.
 
 Routes have the structure:
 

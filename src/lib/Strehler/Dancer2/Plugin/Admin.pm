@@ -1,4 +1,4 @@
-package Strehler::Dancer2::Plugin;
+package Strehler::Dancer2::Plugin::Admin;
 
 use strict;
 use Dancer2::Plugin;
@@ -61,11 +61,11 @@ register_plugin for_versions => [ 2 ];
 
 =head1 NAME
 
-Strehler::Dancer2::Plugin - Dancer2 Plugin to write new routes in the Strehler Backend
+Strehler::Dancer2::Plugin::Admin - Dancer2 Plugin to write new routes in the Strehler Backend
 
 =head1 DESCRIPTION
 
-Dancer2 Strehler plugin allow you to write an app with new routes to be used in Strehler Backend, protected with Strehler login, and rendered with the Strehler context.
+Dancer2 Strehler Admin plugin allows you to write an app with new routes to be used in Strehler Backend, protected with Strehler login, and rendered with the Strehler context.
 
 This element hasn't the standard Dancer2::Plugin namespace because it makes sense only in a Strehler system.
 
@@ -74,7 +74,7 @@ This element hasn't the standard Dancer2::Plugin namespace because it makes sens
     package MyBackend;
 
     use Dancer2;
-    use Strehler::Dancer2::Plugin;
+    use Strehler::Dancer2::Plugin::Admin; 
 
 If you want to write a module like this, you have to launch the command
 
@@ -109,13 +109,13 @@ B<views/strelher-home.tt>
 
 =item 3.
 
-Write a module with Strehler::Dancer2::Plugin overriding '/' route, calling the new template.
+Write a module with Strehler::Dancer2::Plugin::Admin overriding '/' route, calling the new template.
 
 B<lib/MyBackend.pm>
 
     package MyBackend;
     use Dancer2;
-    use Strehler::Dancer2::Plugin;
+    use Strehler::Dancer2::Plugin::Admin;
 
     get '/' => sub {
         template 'strehler-home';
