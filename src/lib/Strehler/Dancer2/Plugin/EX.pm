@@ -101,12 +101,12 @@ sub latest_elements
         my $by = $request->{$k}->{'by'} || 'date';
 
         my $class = Strehler::Helpers::class_from_entity($item_type);
-        my $element;
+        my $element = undef;
         if($by eq 'date')
         {
            $element = $class->get_last_by_date($category, $language);
         }
-        else
+        elsif($by eq 'order')
         {
            $element = $class->get_last_by_order($category, $language);
         }
@@ -168,7 +168,9 @@ Here is the route definition for Strehler Demo site, using EX plugin.
 
 All the functions available to generate routes are in the form:
 
-keyword 'pattern/to/match', 'template', { options }
+keyword 'pattern/to/match', 'template', { options }, { extra_data }
+
+extra_data is just an hash reference to any variable you want in the template.
 
 =head2 SLUG
 
@@ -193,10 +195,6 @@ The language to use. If no language is configured plugin will try for a language
 =item category
 
 To restrict slugged entity retrieving just to a certain category.
-
-=item extra_data
-
-Hash reference. Any other variable you want for the template.
 
 =back
 
@@ -228,4 +226,48 @@ To change the length of a page.
 
 Hash reference. Any other variable you want for the template.
 
+=back
 
+=head2 LATEST_PAGE
+
+Consider a scenario where you need to update a content once in a while and you don't really need to keep an archive for it. You could always updating the same content, but why don't exploit Strehler power to have a little of version control?
+
+Latest_page retrieve data from latest content (by publish_date or by orded) in a category and can be used to manage multiple contents. This way you can build a customized page with all the area freely editable.
+
+=head3 PARAMETERS
+
+Latest_page parameters are organized as a hash of hashes where every key of the primary hash is the name of the template variable where content data will be stored. Each key points to an hash of parameters for retrieving the content.
+
+For each elements parameters are quite the same of the previous keywords.
+
+=over 4
+
+=item item-type
+
+The entity. It must be configured in Strehler configuration.
+
+=item language
+
+The language to use. If no language is configured plugin will try for a language entry in params. If also this solution will fail it will use the default language.
+
+=item category
+
+To restrict list retrieving just to a certain category.
+
+=item by
+
+It can assume values "date" or "order", it's the criteria to calculate latest article.
+
+=back
+
+=head2 LATEST
+
+As latest_page, but returns an hash and not a route, so you can use it when calling the template in a more complex situation.
+
+    template 'the_page', { parameter => 'yadda', 
+                           parameter2 => 'badda', 
+                           latest { a_page => { category => 'cat1' }, 
+                                    another => { category => 'cat2' }}
+                         };
+
+=cut
