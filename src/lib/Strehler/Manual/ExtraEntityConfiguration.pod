@@ -152,6 +152,12 @@ default: 0
 Say if entity uses Strehler publish feature 
 To use it, the entity must ave a column PUBLISHED (TINYINT) in its database table.
 
+=item auto_publish
+
+default: 0
+
+A publishable content appear already online at creation. Can be put offline.
+
 =item custom_list_template
 
 default: undef

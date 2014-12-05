@@ -122,6 +122,11 @@ sub publishable
     my $self = shift;
     return $self->_property('publishable', 0);
 }
+sub auto_publish
+{
+    my $self = shift;
+    return $self->_property('auto_publish', 0);
+}
 sub form
 {
     my $self = shift;
@@ -170,6 +175,7 @@ sub entity_data
                       'ordered',  
                       'dated',
                       'publishable',
+                      'auto_publish',
                       'form',
                       'multilang_form',
                       'allowed_role',
@@ -312,6 +318,10 @@ dated
 =item *
 
 publishable
+
+=item *
+
+auto_publish
 
 =item *
 

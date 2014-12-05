@@ -905,6 +905,10 @@ sub save_form
             $el_data->{'category'} = $category;
         }
     }
+    if($self->publishable() && $self->auto_publish() && ! $id)
+    {
+        $el_data->{'published'} = 1;
+    }
     if($id)
     {
         $el_row = $self->get_schema()->resultset($self->ORMObj())->find($id);
