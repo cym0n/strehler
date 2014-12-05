@@ -9,6 +9,7 @@ use FindBin;
 $ENV{DANCER_CONFDIR} = 't/testapp';
 require t::testapp::lib::Site;
 
+Site::reset_database();
 
 Test::TCP::test_tcp(
     client => sub {

@@ -23,6 +23,7 @@ sub reset_database
     $schema->resultset('Image')->delete_all();
     $schema->resultset('Tag')->delete_all();
     $schema->resultset('Dummy')->delete_all();
+    $schema->resultset('User')->search({ user => { 'not in' => ['admin', 'editor']}})->delete_all();
 }
 
 slug '/ex/slug/:slug', 'element';
