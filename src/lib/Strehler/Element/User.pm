@@ -81,10 +81,9 @@ sub save_form
     
     my $user_row;
     my $clean_password = $form->param_value('password');
-    my $ppr = Authen::Passphrase::BlowfishCrypt->new(
-                cost => 8, salt_random => 1,
-                passphrase => $clean_password);
-    my $user_data ={ user => $form->param_value('user'), password_hash => $ppr->hash_base64, password_salt => $ppr->salt_base64, role => $form->param_value('role') };
+    my $user_data = $self->generate_crypted_password($clean_password);
+    $user_data->{ user } = $form->param_value('user');
+    $user_data->{ role } = $form->param_value('role');
     my $already_user = $self->get_schema()->resultset($self->ORMObj())->find({user => $form->param_value('user')});
     return -1 if($already_user && ! $id);
     if($id)
@@ -97,6 +96,30 @@ sub save_form
         $user_row = $self->get_schema()->resultset($self->ORMObj())->create($user_data);
     }
     return $user_row->id;  
+}
+
+sub save_password
+{
+    my $self = shift;
+    my $id = shift;
+    my $form = shift;
+
+    my $clean_password = $form->param_value('password');
+    my $user_data = $self->generate_crypted_password($clean_password);
+    my $user_row = $self->get_schema()->resultset($self->ORMObj())->find($id);
+    return -1 if( ! $user_row );
+    $user_row->update($user_data);
+    return $user_row->id;
+}
+
+sub generate_crypted_password
+{
+    my $self = shift;
+    my $clean_password = shift;
+    my $ppr = Authen::Passphrase::BlowfishCrypt->new(
+                cost => 8, salt_random => 1,
+                passphrase => $clean_password);
+    return { password_hash => $ppr->hash_base64, password_salt => $ppr->salt_base64 };
 }
 
 sub valid_login
@@ -116,6 +139,21 @@ sub valid_login
         }
     }
     return undef;
+}
+
+sub get_from_username
+{
+    my $self = shift;
+    my $username = shift;
+    my $rs = $self->get_schema()->resultset($self->ORMObj())->find({'user' => $username});
+    if($rs && $rs->user eq $username)
+    {
+        return $self->new($rs->id);
+    }
+    else
+    {
+        return undef;
+    }
 }
 
 =encoding utf8
