@@ -1,13 +1,13 @@
-???
+1.4.0
 ===
 
-_???_
+_Sat Dec 6 2014_
 
 * auto_publish flag
 * EX Plugin
-* Change password for all users
-* Bugfix on retrieving next article and previous article
+* Change password for user
 * ATTENTION: Strehler::Dancer2::Plugin is now Strehler::Dancer2::Plugin::Admin
+* Bugfix
 
 1.3.3
 =====
