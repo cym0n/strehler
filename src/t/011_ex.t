@@ -25,6 +25,12 @@ Test::TCP::test_tcp(
         is($res->code, 200, "list works correctly with an empty list");
         $res = $ua->get($site . "/ex/mypage");
         is($res->code, 200, "composite page works correctly with empty contents");
+        $res = $ua->get($site . "/exref/slug/not-existent");
+        is($res->code, 404, "404 returned when bad slug called (parameters as hash)");
+        $res = $ua->get($site . "/exref/list/dummy");
+        is($res->code, 200, "list works correctly with an empty list (parameters as hash)");
+        $res = $ua->get($site . "/exref/mypage");
+        is($res->code, 200, "composite page works correctly with empty contents (parameters as hash)");
         $ua->post($site . "/admin/login", { user => 'admin', password => 'admin' });
 
         $res = $ua->post($site . "/admin/category/add",
@@ -109,6 +115,12 @@ Test::TCP::test_tcp(
         is($res->code, 200, "list works correctly with contents");
         $res = $ua->get($site . "/ex/mypage");
         is($res->code, 200, "composite page works correctly with contents");
+        $res = $ua->get($site . "/exref/slug/" . $slug);
+        is($res->code, 200, "200 returned when good slug called (parameters as hash)");
+        $res = $ua->get($site . "/exref/list/dummy");
+        is($res->code, 200, "list works correctly with contents (parameters as hash)");
+        $res = $ua->get($site . "/exref/mypage");
+        is($res->code, 200, "composite page works correctly with contents (parameters as hash)");
     },
     server => sub {
         use Dancer2;

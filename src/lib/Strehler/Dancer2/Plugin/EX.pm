@@ -99,7 +99,7 @@ register 'list' => sub {
             $entries_per_page = $item_data->{'entries-per-page'} || $entries_per_page;
             $category = $item_data->{'category'} || undef;
             $order_by = $item_data->{'order-by'} || $order_by;
-            $order = $item_data->{'order'} | undef;
+            $order = $item_data->{'order'} || undef;
         }
         else
         {
