@@ -33,6 +33,10 @@ The default language
 
 Timezone that will be used to display timestamp columns
 
+=item default_entity
+
+Used by EX plugin. Default element will be the entity used by EX plugin when no entity is specified. It not specifed, it's 'article'
+
 =item extra_menu
 
 Extra_menu part is described in the L<Strehler::Manual::ExtraEntityConfiguration>

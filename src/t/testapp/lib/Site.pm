@@ -27,8 +27,8 @@ sub reset_database
 }
 
 slug '/ex/slug/:slug', 'element';
-list '/ex/list/dummy', 'dummy_list', { category => 'dummy' };
-latest_page '/ex/mypage', 'mypage', { upper => { category => 'upper' }, lower => { category => 'lower' }};
+list '/ex/list/dummy', 'dummy_list', 'dummy';
+latest_page '/ex/mypage', 'mypage', { upper => 'upper', lower => 'lower' };
 
 get '/:lang/get-last-by-order/:cat' => sub {
     my $art = Strehler::Element::Article->get_last_by_order(params->{'cat'}, params->{'lang'});

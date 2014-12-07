@@ -13,11 +13,23 @@ register 'slug' => sub {
     my $slug_route = sub {
         my $slug = $dsl->params->{slug};
 
-        my $item_type = $item_data->{'item-type'} || 'article';
+        my $item_type = $dsl->config->{'Strehler'}->{'default_entity'} || 'article';
+        my $language  = $dsl->params->{'language'} ||$dsl->config->{'Strehler'}->{'default_language'};
+        my $category = undef;
+
+        if($item_data && ref($item_data))
+        {
+            $item_type = $item_data->{'item-type'} || $item_type;
+            $language  = $item_data->{'language'}  || $language;
+            $category  = $item_data->{'category'}  || undef;
+        }
+        else
+        {
+            $category  = $item_data;
+        }
+            
         my $template = $template || 'slug';
         my $class = Strehler::Helpers::class_from_entity($item_type);
-        my $language = $item_data->{'language'} || $dsl->params->{'language'} ||$dsl->config->{'Strehler'}->{'default_language'};
-        my $category = $item_data->{'category'} || $dsl->params->{'category'} || undef;
         $extra_data ||= {};
 
         my $article = $class->get_by_slug($slug, $language);
@@ -70,17 +82,41 @@ register 'list' => sub {
 
     my $list_route = sub {
         my $page = $dsl->params->{'page'} || 1;
-        my $order = $dsl->params->{'order'} || 'desc';
         my $template = $template || 'list';
         $extra_data ||= {};
 
-        my $item_type = $item_data->{'item-type'} || 'article';
+        my $item_type =  $dsl->config->{'Strehler'}->{'default_entity'} ||  'article';
+        my $language = $dsl->params->{language} || $dsl->config->{'Strehler'}->{'default_language'};
+        my $entries_per_page = $dsl->params->{'entries-per-page'} || undef;
+        my $category = undef;
+        my $order_by = $dsl->params->{'order-by'} || undef;
+        my $order = $dsl->params->{'order'} || undef;
+
+        if($item_data && ref($item_data))
+        {
+            $item_type = $item_data->{'item-type'} || $item_type;
+            $language = $item_data->{'language'} || $language;
+            $entries_per_page = $item_data->{'entries-per-page'} || $entries_per_page;
+            $category = $item_data->{'category'} || undef;
+            $order_by = $item_data->{'order-by'} || $order_by;
+            $order = $item_data->{'order'} | undef;
+        }
+        else
+        {
+            $category = $item_data;
+        }
         my $class = Strehler::Helpers::class_from_entity($item_type);
-        my $language = $item_data->{'language'} || $dsl->params->{language} || $dsl->config->{'Strehler'}->{'default_language'};
-        my $category = $item_data->{'category'} || $dsl->params->{category} || undef;
-        my $entries_per_page = $item_data->{'entries-per-page'} || $dsl->params->{'entries-per-page'} || 20;
-        my $elements = $class->get_list({ page => $page, entries_per_page => $entries_per_page, category => $category, language => $language, ext => 1, published => 1, order => $order});
-        $dsl->template( $template, {  elements => $elements->{'to_view'}, page => $page, order => $order, last_page => $elements->{'last_page'}, category => $category, item_type => $item_type, language => $language, %{$extra_data}}); 
+         
+        my %parameters = ( page => $page, 
+                           entries_per_page => $entries_per_page, 
+                           category => $category, 
+                           language => $language, 
+                           order => $order, 
+                           order_by => $order_by );
+        my %get_list_parameters = ( %parameters, ( ext => 1, published => 1 ));               
+        my $elements = $class->get_list(\%get_list_parameters);
+        my %template_parameters = ( %parameters, ( item_type => $item_type, elements => $elements->{'to_view'}, last_page => $elements->{'last_page'}), %{$extra_data}); 
+        $dsl->template( $template, \%template_parameters); 
     };
 
     $dsl->any( ['get'] => $pattern, $list_route);
@@ -95,10 +131,22 @@ sub latest_elements
     my %out;
     foreach my $k (keys %{$request})
     {
-        my $local_language = $request->{$k}->{'language'} || $language;
-        my $category = $request->{$k}->{'category'};
-        my $item_type = $request->{$k}->{'item-type'} || 'article';
-        my $by = $request->{$k}->{'by'} || 'date';
+        my $local_language = $language;
+        my $category = undef;
+        my $item_type = $dsl->config->{'Strehler'}->{'default_entity'} || 'article';
+        my $by = 'date';
+
+        if(ref($request->{$k}))
+        {
+            $local_language = $request->{$k}->{'language'} || $language;
+            $category = $request->{$k}->{'category'} || undef;
+            $item_type = $request->{$k}->{'item-type'} || $item_type;
+            $by = $request->{$k}->{'by'} || $by;
+        }
+        else
+        {
+            $category = $request->{$k};
+        }
 
         my $class = Strehler::Helpers::class_from_entity($item_type);
         my $element = undef;
@@ -159,16 +207,18 @@ Here is the route definition for Strehler Demo site, using EX plugin.
     get '/' => sub {template 'home';};
 
     slug '/ex/slug/:slug', 'element';
-    list '/ex/list/dummy', 'dummy_list', { category => 'dummy' };
+    list '/ex/list/dummy', 'dummy_list', 'dummy';
     latest_page '/ex/mypage', 'mypage', 
-        { upper => { category => 'upper' }, 
-          lower => { category => 'lower' }};
+        { upper => 'upper', 
+          lower => 'lower' };
 
 =head1 FUNCTIONS
 
 All the functions available to generate routes are in the form:
 
 keyword 'pattern/to/match', 'template', { options }, { extra_data }
+
+When you have to configure just the category where contenst are, you can pass it just as its name instead of options hash. All the others values will be the default ones. If you want to use as default an item_type different from article default_entity Strehler parameter will come useful to you.
 
 extra_data is just an hash reference to any variable you want in the template.
 
@@ -221,6 +271,16 @@ To restrict list retrieving just to a certain category.
 =item entries-per-page
 
 To change the length of a page.
+
+=item order-by
+
+To decide what database field to use to order elements. 
+
+Pay attention: an ordered entity will use display_order by default, a dated (but not ordered) entity publish_date. Otherwise, id will be used.
+
+=item order
+
+'asc' or 'desc' 
 
 =item extra_data
 
