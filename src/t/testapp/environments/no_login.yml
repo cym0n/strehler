@@ -1,0 +1,4 @@
+#Dummy file to turn of login and make testing easier
+
+Strehler:
+    admin_secured: 0

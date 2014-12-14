@@ -10,7 +10,6 @@ use Plack::Test;
 use HTTP::Request;
 use HTTP::Request::Common;
 use HTTP::Cookies;
-use Data::Dumper;
 
 $ENV{DANCER_CONFDIR} = 't/testapp';
 require Strehler::Admin;
