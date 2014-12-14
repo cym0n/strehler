@@ -1,6 +1,7 @@
 package Strehler::Admin;
 
 use strict;
+use Cwd 'abs_path';
 use Dancer2 0.154000;
 use Dancer2::Plugin::DBIC;
 use Dancer2::Plugin::Ajax;
@@ -27,7 +28,8 @@ else
     @languages = ('en');
 }
 
-my $root_path = __FILE__;
+my $module_file_path = __FILE__;
+my $root_path = abs_path($module_file_path);
 $root_path =~ s/Admin\.pm//;
 
 my $form_path = $root_path . 'forms';

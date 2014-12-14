@@ -1,0 +1,13 @@
+elements:
+    - name: text
+      label: text
+    - type: "+Strehler::FormFu::Element::Category"
+    - type: "+Strehler::FormFu::Element::Tags"
+    - type: Block
+      name: save
+      tag: button
+      content: Submit
+      attributes:
+        type: submit
+        class: btn btn-primary
+      

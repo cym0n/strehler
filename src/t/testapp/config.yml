@@ -1,0 +1,47 @@
+appname: "Testapp"
+
+charset: "UTF-8"
+
+logger: "console"
+log_level: "debug"
+warnings: 1
+
+public: t/testapp/public
+
+engines:
+    template:
+        template_toolkit:
+            ENCODING: utf8
+            DEFAULT: 'no.tt'
+template: "template_toolkit"
+
+session: YAML
+
+plugins:
+  DBIC:
+    default:
+      dsn: dbi:SQLite:dbname=t/testapp/test.sqlite
+      schema_class: TestDB
+
+Strehler:
+    admin_secured: 1
+    languages: ['it', 'en']
+    default_language: 'it'
+    timezone: 'Europe/Rome'
+    extra_menu:
+        dummy:
+            auto: 1
+            label: Dummy
+            class: Site::Dummy
+            #WARNING: path is made this way for test purpose
+            form: t/testapp/forms/dummy.yml
+            categorized: 1
+        foo:
+            auto: 1
+            class: Site::Dummy
+        puppet:
+            auto: 1
+            label: Puppet
+            class: Site::Puppet
+            form: t/testapp/forms/dummy.yml
+
