@@ -1,0 +1,7 @@
+#Dummy file for an environment with no login and articles that go directly online (test for auto_online flag)
+
+Strehler:
+    admin_secured: 0
+    extra_menu:
+        article:
+            auto_publish: 1
