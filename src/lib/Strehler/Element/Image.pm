@@ -1,13 +1,15 @@
 package Strehler::Element::Image;
 
 use strict;
+use Cwd 'abs_path';
 use Moo;
 use Dancer2 0.154000;
 use Dancer2::Plugin::DBIC;
 
 extends 'Strehler::Element';
 
-my $root_path = __FILE__;
+my $module_file_path = __FILE__;
+my $root_path = abs_path($module_file_path);
 $root_path =~ s/Image\.pm//;
 my $form_path = $root_path . "../forms";
 my $views_path = $root_path . "../views";
