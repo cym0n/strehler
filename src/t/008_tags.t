@@ -14,8 +14,9 @@ $ENV{DANCER_CONFDIR} = 't/testapp';
 $ENV{DANCER_ENVIRONMENT} = 'no_login';
 require Strehler::Admin;
 require t::testapp::lib::Site;
+require t::testapp::lib::TestSupport;
 
-Site::reset_database();
+TestSupport::reset_database();
 
 my $app = Strehler::Admin->to_app;
 

@@ -13,10 +13,11 @@ use HTTP::Request::Common;
 $ENV{DANCER_CONFDIR} = 't/testapp';
 $ENV{DANCER_ENVIRONMENT} = 'auto_online';
 require t::testapp::lib::Site;
+require t::testapp::lib::TestSupport;
 require Strehler::Admin;
 require Strehler::API;
 
-Site::reset_database();
+TestSupport::reset_database();
 
 my $admin_app = Strehler::Admin->to_app;
 my $site_app = Site->to_app;
@@ -133,4 +134,6 @@ test_psgi $site_app, sub {
     is($res->code, 200, "list works correctly with contents (parameters as hash)");
     $res = $cb->(GET "/exref/mypage");
     is($res->code, 200, "composite page works correctly with contents (parameters as hash)");
-}
+};
+
+done_testing;
