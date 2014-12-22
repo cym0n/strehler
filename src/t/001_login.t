@@ -16,6 +16,8 @@ $ENV{DANCER_CONFDIR} = 't/testapp';
 require Strehler::Admin;
 require t::testapp::lib::TestSupport;
 
+TestSupport::reset_database();
+
 my $app = Strehler::Admin->to_app;
 
 test_psgi $app, sub {
