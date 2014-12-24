@@ -841,6 +841,13 @@ sub get_form_data
     return $data;
 }
 
+sub form_modifications
+{
+    my $self = shift;
+    my $form = shift;
+    return $form;
+}
+
 sub save_form
 {
     my $self = shift;

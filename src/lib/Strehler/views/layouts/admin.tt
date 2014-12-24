@@ -12,6 +12,10 @@
 <script src="[% request.uri_base %]/strehler/bootstrap/js/bootstrap.min.js"></script>
 <script src="[% request.uri_base %]/strehler/bootstrap/datepicker/js/bootstrap-datepicker.js"></script>
 <script src="[% request.uri_base %]/strehler/js/strehler.js"></script>
+[% IF entity_conf.entity_js %]
+<script src="[% request.uri_base %][% entity_conf.entity_js %]"></script>
+[% END %]
+
 </head>
 <body>
 <div class="navbar">

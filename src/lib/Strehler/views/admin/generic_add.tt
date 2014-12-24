@@ -1,20 +1,29 @@
 <div class="span12">
     <h1>[% label %]</h1>
 </div>
+[% IF entity_conf.custom_snippet_add_position == 'left' %]
 [% IF custom_snippet %]
-<div class="span6">
+<div class="span[% 12 - entity_conf.add_main_column_span %]">
     [% custom_snippet %]
 </div>
-[% maincolumnspan = 6 %]
-[% ELSE %]
-[% maincolumnspan = 9 %]
+[% END %]
 [% END %]
 
-<div class="content wine span[% maincolumnspan %]">
+<div class="content wine span[% entity_conf.add_main_column_span %]">
     <div>
     [% form %]
     </div>
 </div>
+[% IF entity_conf.custom_snippet_add_position == 'right' %]
+[% IF custom_snippet %]
+<div class="span[% 12 - entity_conf.add_main_column_span %]">
+    [% custom_snippet %]
+</div>
+[% END %]
+[% END %]
+
+
+
 <script>
     $(document).ready(function() {
         item_type = '[% entity %]';

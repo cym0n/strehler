@@ -159,6 +159,21 @@ sub custom_list_template
     my $self = shift;
     return $self->_property('custom_list_template', undef);
 }
+sub add_main_column_span
+{
+    my $self = shift;
+    return $self->_property('add_main_column_span', 8);
+}
+sub custom_snippet_add_position
+{
+    my $self = shift;
+    return $self->_property('custom_snippet_position', 'left');
+}
+sub entity_js
+{
+    my $self = shift;
+    return $self->_property('entity_js', undef);
+}
 
 sub entity_data
 {
@@ -180,7 +195,10 @@ sub entity_data
                       'multilang_form',
                       'allowed_role',
                       'custom_list_template',
-                      'visible');
+                      'visible',
+                      'add_main_column_span',
+                      'custom_snippet_add_position',
+                      'entity_js');
     my %entity_data;
     foreach my $attr (@attributes)
     {
@@ -338,6 +356,18 @@ allowed_role
 =item * 
 
 custom_list_template
+
+=item * 
+
+add_main_column_span
+
+=item * 
+
+custom_snippet_add_position
+
+=item * 
+
+entity_js
 
 =back
 
