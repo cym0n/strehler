@@ -11,11 +11,5 @@ elements:
           message: 'Filename is too long'
     - type: "+Strehler::FormFu::Element::Category"
     - type: "+Strehler::FormFu::Element::Tags"
-    - name: save
-      type: Block
-      tag: button
-      content: Submit
-      attributes:
-        type: submit
-        class: btn btn-primary
+    - type: "+Strehler::FormFu::Element::SubmitBlock"
   

@@ -164,6 +164,26 @@ default: undef
 
 This method can be overriden to return path to a custom template that represent the line of an element in the list view. Writing it, consider that the element will be passed to it as the object el.
 
+=item add_main_column_span
+
+default: 8
+
+Indicate the width of the editing area in add forms. 
+
+As for bootstrap grid, value can go from 1 to 12.
+
+=item custom_snippet_add_position
+
+default: left
+
+Indicate where the blank column go. In the blank column the custom snippet will appear, if defined.
+
+=item entity_js
+
+default: undef
+
+A path (local to the site) for a custom js that will be loaded in the add page for the entity.
+
 =item allowed_role
 
 default: ""
@@ -178,13 +198,37 @@ These methods can only be overriden inside a subclass of Element to obtain a cus
 
 =over 4
 
+=item save_form
+
+return id
+
+This method is called as class method from add/edit functions to save form data in the database. 
+
+It takes as input:
+
+B<id>: id of the submitted element, if edited (undef when creating a new one)
+
+B<form>: the form object as arrived from posting data
+
+B<uploads>: content of request->uploads() as defined by Dancer2
+
+You can override this method to control how data are saved on the database.
+
+The method return element id if saving data was a success, undef otherwise.  
+
+=item form_modifications
+
+return a form object
+
+This method takes in the form object allowing you to write here customization you can't realize on yaml file.
+
 =item data_fields
 
 return undef
 
 This method can be overriden to give back different fields from the database columns in get_basic_data function.
 
-In a custom element make it return an array of strings.
+In a custom element make it returns an array of strings.
 
 WARNING: behaviour unpredictable if any string is not a database column or a custom function.
 

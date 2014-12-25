@@ -56,15 +56,31 @@ test_psgi $app, sub {
                             'description_it' => 'Automatic test - body - IT',
                             'title_en' => 'Automatic test - title - EN',
                             'description_en' => 'Automatic test - body - EN',
-			                'photo' => ['t/res/strehler.jpg', 'strehler.jpg', 'Content-Type' => 'image/jpg']
+			                'photo' => ['t/res/strehler.jpg', 'strehler.jpg', 'Content-Type' => 'image/jpg'],
+                            'strehl-action' => 'submit-go' 
                             ]
                  );
+    is($r->code, 302, "Image submitted, navigation redirected to list (submit-go)");
     my $images = Strehler::Element::Image->get_list();
     my $image = $images->{'to_view'}->[0];
     my $image_id = $image->{'id'};
     my $image_object = Strehler::Element::Image->new($image_id);
     ok($image_object->exists(), "Image correctly inserted");
-
+    $r = $cb->(POST "/admin/image/edit/$image_id",
+                    'Content_Type' => 'form-data',
+                    'Content' =>  [
+                            'category' => $cat_id,
+                            'subcategory' => undef,
+                            'tags' => 'tag1',
+                            'title_it' => 'Automatic test - title - IT',
+                            'description_it' => 'Automatic test - body changed - IT',
+                            'title_en' => 'Automatic test - title - EN',
+                            'description_en' => 'Automatic test - body changed- EN',
+			                'photo' => undef,
+                            'strehl-action' => 'submit-continue' 
+                            ]
+                 );
+    is($r->code, 200, "Content changed, navigation still on edit page (submit-continue)");                 
     #AJAX CALL FOR ARTICLE EDIT
     my $req = HTTP::Request->new(GET => $site . "/admin/image/src/$image_id");
     $req->header('X-Requested-With' => 'XMLHttpRequest');

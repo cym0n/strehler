@@ -1,3 +1,9 @@
+[% IF message == 'saved' %]
+<div class="alert alert-success">
+<button class="close" data-dismiss="alert" type="button">x</button>
+<strong>Content saved!</strong>
+</div>
+[% END %]
 <div class="span12">
     <h1>[% label %]</h1>
 </div>

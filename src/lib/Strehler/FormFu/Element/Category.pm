@@ -61,7 +61,7 @@ Sub-category display attributed is managed by javascript.
 
 =head1 YAML CONFIGURATION
 
-For the complete configuration see in the package: _forms/admin/elements/category.yml_
+For the complete configuration see in the package: forms/admin/elements/category.yml
 
 =cut
 

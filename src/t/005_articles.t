@@ -56,15 +56,30 @@ test_psgi $app, sub {
                   'title_it' => 'Automatic test - title - IT',
                   'text_it' => 'Automatic test - body - IT',
                   'title_en' => 'Automatic test - title - EN',
-                  'text_en' => 'Automatic test - body - EN'
+                  'text_en' => 'Automatic test - body - EN',
+                  'strehl-action' => 'submit-go' 
                 ]);
+   is($r->code, 302, "Article submitted, navigation redirected to list (submit-go)");
    my $articles = Strehler::Element::Article->get_list();
    my $article = $articles->{'to_view'}->[0];
    my $article_id = $article->{'id'};
    my $article_object = Strehler::Element::Article->new($article_id);
    ok($article_object->exists(), "Article correctly inserted");
    is($article_object->get_attr_multilang('slug', 'it'), $article_id . '-automatic-test-title-it', "Slug correctly created"); 
-
+   $r = $cb->(POST "/admin/article/edit/$article_id",
+                [ 'image' => undef,
+                  'category' => $cat_id,
+                  'subcategory' => undef,
+                  'tags' => 'tag1',
+                  'display_order' => 14,
+                  'publish_date' => '12/03/2014',
+                  'title_it' => 'Automatic test - title - IT',
+                  'text_it' => 'Automatic test - body changed - IT',
+                  'title_en' => 'Automatic test - title - EN',
+                  'text_en' => 'Automatic test - body changed - EN',
+                  'strehl-action' => 'submit-continue' 
+                ]);
+   is($r->code, 200, "Content changed, navigation still on edit page (submit-continue)");
    #TURN ON
    $r = $cb->(GET "/admin/article/turnon/$article_id");
    $article_object = Strehler::Element::Article->new($article_id);

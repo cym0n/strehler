@@ -3,7 +3,8 @@ attributes:
 elements:
     - name: image
       label: Image
-      type: Select
+      type: "+Strehler::FormFu::Element::EntitySelect"
+      element: Strehler::Element::Image
       attributes: 
         id: image_selector
         class: span8
@@ -11,12 +12,7 @@ elements:
     - type: "+Strehler::FormFu::Element::Tags"
     - type: "+Strehler::FormFu::Element::DisplayOrder"
     - type: "+Strehler::FormFu::Element::PublishDate"
-    - type: Block
-      name: save
-      tag: button
-      content: Submit
-      attributes:
-        type: submit
-        class: btn btn-primary
+    - type: "+Strehler::FormFu::Element::SubmitBlock"
+
 
    

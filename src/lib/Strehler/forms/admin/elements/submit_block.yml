@@ -1,0 +1,19 @@
+elements:
+    - type: Block
+      name: savebutton1
+      tag: button
+      content: Submit
+      attributes:
+        name: strehl-action
+        value: submit-go
+        type: submit
+        class: btn btn-primary span3 
+    - type: Block
+      name: savebutton2
+      tag: button
+      content: Submit and Continue
+      attributes:
+        name: strehl-action
+        value: submit-continue
+        type: submit
+        class: btn btn-info span3

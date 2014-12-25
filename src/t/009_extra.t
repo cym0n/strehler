@@ -29,7 +29,7 @@ test_psgi $admin_app, sub {
     my $site = "http://localhost";
 
     my $r = $cb->(GET '/admin/dummy/add');
-    like($r->content, qr/No category in the system/, "Article add blocked because no category");
+    like($r->content, qr/No category in the system/, "Dummy add blocked because no category");
 
     $r = $cb->(GET '/admin/puppet/add');
     like($r->content, qr/Submit/, "Puppet (not categorized entity) add allowed also with no category");
@@ -43,6 +43,7 @@ test_psgi $admin_app, sub {
                       'default-article' => '',
                       'tags-image' => '',
                       'default-image' => '' ] );
+    is($r->code, 302, "Post redirected to list because no action given with submit button");
     my $cat = Strehler::Meta::Category->new({ category => 'prova' });
     my $cat_id = $cat->get_attr('id');
 

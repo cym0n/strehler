@@ -94,60 +94,6 @@ ajax '/image/src/:id' => sub
     return $img->get_attr('image');
 };
 
-##### Articles #####
-
-#any '/article/add' => sub
-#{
-#    my $form = form_article(); 
-#    my $params_hashref = params;
-
-#    my $check_cat = Strehler::Meta::Category->no_categories();
-#    if($check_cat)
-#    {
-#        my $message = "No category in the system. Create a category before creating categorized content.";    
-#        my $return = dancer_app->prefix . "/";
-#        my $create = dancer_app->prefix . "/category/add";
-#        return template "admin/no_category", { message => $message, backlink => $return, createlink => $create };
-#    }
-
-#    $form = tags_for_form($form, $params_hashref);
-#    $form->process($params_hashref);
-#    if($form->submitted_and_valid)
-#    {
-#        my $id = Strehler::Element::Article->save_form(undef, $form);
-#        Strehler::Element::Log->write(session->read('user'), 'add', 'article', $id);
-#        redirect dancer_app->prefix . '/article/list';
-#    }
-#    my $fake_tags = $form->get_element({ name => 'tags'});
-#    $form->remove_element($fake_tags) if($fake_tags);
-#    template "admin/article", { form => $form->render() }
-#};
-
-#get '/article/edit/:id' => sub {
-#    my $id = params->{id};
-#    my $article = Strehler::Element::Article->new($id);
-#    my $form_data = $article->get_form_data();
-#    my $form = form_article($form_data->{'category'});
-#    $form->default_values($form_data);
-#    template "admin/article", { id => $id, form => $form->render() }
-#};
-
-#post '/article/edit/:id' => sub
-#{
-#    my $form = form_article();
-#    my $id = params->{id};
-#    my $params_hashref = params;
-#    $form = tags_for_form($form, $params_hashref);
-#    $form->process($params_hashref);
-#    if($form->submitted_and_valid)
-#    {
-#        Strehler::Element::Article->save_form($id, $form);
-#        Strehler::Element::Log->write(session->read('user'), 'edit', 'article', $id);
-#        redirect dancer_app->prefix . '/article/list';
-#    }
-#    template "admin/article", { form => $form->render() }
-#};
-
 #Users
 
 any '/user/add' => sub
@@ -634,11 +580,24 @@ any '/:entity/add' => sub
         return pass;
     }
     $form->process($params_hashref);
+    my $message = 'quiet';
     if($form->submitted_and_valid)
     {
         my $id = $class->save_form(undef, $form, request->uploads());
         Strehler::Element::Log->write(session->read('user'), 'add', $entity, $id);
-        redirect dancer_app->prefix . '/' . $entity . '/list';
+        my $action = params->{'strehl-action'};
+        if(! $action)
+        {
+            redirect dancer_app->prefix . '/' . $entity . '/list';
+        }
+        elsif($action eq 'submit-go')
+        {
+            redirect dancer_app->prefix . '/' . $entity . '/list';
+        }
+        elsif($action eq 'submit-continue')
+        {
+            redirect dancer_app->prefix . '/' . $entity . '/edit/' . $id . '?from_add=1';
+        }
     }
     my $fake_tags = $form->get_element({ name => 'tags'});
     $form->remove_element($fake_tags) if($fake_tags);
@@ -648,6 +607,7 @@ any '/:entity/add' => sub
 get '/:entity/edit/:id' => sub {
     my $id = params->{id};
     my $entity = params->{entity};
+    my $from_add = params->{from_add} || 0;
     my $class = Strehler::Helpers::class_from_entity($entity);
     if((! $class->auto()) || (! $class->updatable()))
     {
@@ -663,7 +623,8 @@ get '/:entity/edit/:id' => sub {
     }
     $form->default_values($form_data);
     my %conf_data = $class->entity_data();
-    template "admin/generic_add", {  entity => $entity, label => $class->label(), id => $id, form => $form->render(), custom_snippet => $el->custom_add_snippet(), entity_conf => \%conf_data }
+    my $message = $from_add ? 'saved' : 'quiet';
+    template "admin/generic_add", {  entity => $entity, label => $class->label(), id => $id, form => $form->render(), message => $message, custom_snippet => $el->custom_add_snippet(), entity_conf => \%conf_data }
 };
 post '/:entity/edit/:id' => sub
 {
@@ -683,15 +644,28 @@ post '/:entity/edit/:id' => sub
     my $params_hashref = params;
     $form = Strehler::Admin::tags_for_form($form, $params_hashref);
     $form->process($params_hashref);
+    my $message = 'quiet';
     if($form->submitted_and_valid)
     {
         $class->save_form($id, $form, request->uploads());
         Strehler::Element::Log->write(session->read('user'), 'edit', $entity, $id);
-        redirect dancer_app->prefix . '/' . $entity . '/list';
+        my $action = params->{'strehl-action'};
+        if(! $action)
+        {
+            redirect dancer_app->prefix . '/' . $entity . '/list';
+        }
+        elsif($action eq 'submit-go')
+        {
+            redirect dancer_app->prefix . '/' . $entity . '/list';
+        }
+        elsif($action eq 'submit-continue')
+        {
+            $message = 'saved';
+        }
     }
     my $el = $class->new($id);
     my %conf_data = $class->entity_data();
-    template "admin/generic_add", { entity => $entity, label => $class->label(), id => $id, form => $form->render(),  custom_snippet => $el->custom_add_snippet(), entity_conf => \%conf_data }
+    template "admin/generic_add", { entity => $entity, label => $class->label(), id => $id, form => $form->render(), message => $message, custom_snippet => $el->custom_add_snippet(), entity_conf => \%conf_data }
 };
 
 ##### Helpers #####
@@ -704,25 +678,6 @@ sub form_login
     $form->load_config_file( $form_path . '/admin/login.yml' );
     return $form;    
 }
-
-#sub form_article
-#{
-#    my $has_sub = shift;
-#    my $form = HTML::FormFu->new;
-#    $form->auto_error_class('error-msg');
-#    $form->load_config_file( $form_path . '/admin/article.yml' );
-#    $form = add_multilang_fields($form, \@languages, $form_path . '/admin/article_multilang.yml'); 
-#    my $default_language = config->{Strehler}->{default_language};
-#    $form->constraint({ name => 'title_' . $default_language, type => 'Required' }); 
-    #my $image = $form->get_element({ name => 'image'});
-    #$image->options(Strehler::Element::Image->make_select());
-#    my $category_block = $form->get_element({ name => 'categoryblock'});
-#    my $category = $category_block->get_element({ name => 'category'});
-#    $category->options(Strehler::Meta::Category->make_select());
-#    my $subcategory = $category_block->get_element({ name => 'subcategory'});
-#    $subcategory->options(Strehler::Meta::Category->make_select($has_sub));
-#    return $form;
-#}
 
 sub form_category
 {
