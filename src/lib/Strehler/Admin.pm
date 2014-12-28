@@ -16,6 +16,7 @@ use Strehler::Element::Article;
 use Strehler::Element::User;
 use Strehler::Element::Log;
 use Strehler::Meta::Category;
+use Data::Dumper;
 
 my @languages;
 
@@ -41,7 +42,6 @@ set views => $root_path . 'views';
 get '/' => sub {
     my %navbar;
     $navbar{'home'} = "active";
-    my $check_cat = Strehler::Meta::Category->no_categories();
     template "admin/index", { navbar => \%navbar};
 };
 
@@ -385,9 +385,14 @@ any '/:entity/list' => sub
     my $search = exists params->{'search'} ? params->{'search'} : session $entity . '-search';
     my $ancestor = exists params->{'ancestor'} ? params->{'ancestor'} : session $entity . '-ancestor';
     my $wanted_cat = undef;
-    if(exists params->{'catname'})
+    if(exists params->{'strehl-catname'})
     {
-        $wanted_cat = Strehler::Meta::Category->explode_name(params->{'catname'});
+        $wanted_cat = Strehler::Meta::Category->explode_name(params->{'strehl-catname'});
+        if(! $wanted_cat->exists())
+        {
+           my $backlink = params->{'strehl-from'} || "/admin/$entity/list";
+           return template "admin/message", { message => "No elements in category: " . params->{'strehl-catname'}, backlink => $backlink }; 
+        }
         $cat_param = $wanted_cat->get_attr('id');
     }
     else
@@ -446,6 +451,7 @@ any '/:entity/list' => sub
 get '/:entity/turnon/:id' => sub
 {
     my $entity = params->{entity};
+    my $redirect = params->{'strehl-from'} || dancer_app->prefix . '/'. $entity . '/list';
     my $class = Strehler::Helpers::class_from_entity($entity);
     if((! $class->auto()) || (! $class->publishable()))
     {
@@ -456,11 +462,12 @@ get '/:entity/turnon/:id' => sub
     my $obj = $class->new($id);
     $obj->publish();
     Strehler::Element::Log->write(session->read('user'), 'publish', $entity, $id);
-    redirect dancer_app->prefix . '/'. $entity . '/list';
+    redirect $redirect;
 };
 get '/:entity/turnoff/:id' => sub
 {
     my $entity = params->{entity};
+    my $redirect = params->{'strehl-from'} || dancer_app->prefix . '/'. $entity . '/list';
     my $class = Strehler::Helpers::class_from_entity($entity);
     if((! $class->auto()) || (! $class->publishable()))
     {
@@ -471,7 +478,7 @@ get '/:entity/turnoff/:id' => sub
     my $obj = $class->new($id);
     $obj->unpublish();
     Strehler::Element::Log->write(session->read('user'), 'unpublish', $entity, $id);
-    redirect dancer_app->prefix . '/'. $entity . '/list';
+    redirect $redirect;
 };
 get '/:entity/delete/:id' => sub
 {
@@ -601,6 +608,25 @@ any '/:entity/add' => sub
     }
     my $fake_tags = $form->get_element({ name => 'tags'});
     $form->remove_element($fake_tags) if($fake_tags);
+    if(request->method eq 'GET')
+    {
+        if(exists params->{'strehl-catname'})
+        {
+            my $wanted_cat = Strehler::Meta::Category->explode_name(params->{'strehl-catname'});
+            if($wanted_cat->exists())
+            {
+                my $parent = $wanted_cat->get_attr('parent');
+                if($parent)
+                {
+                    $form->default_values({ category => $parent, subcategory => $wanted_cat->get_attr('id')});
+                }
+                else
+                {
+                    $form->default_values({ category => $wanted_cat->get_attr('id')});
+                }
+            }    
+        }
+    }
     my %conf_data = $class->entity_data();
     template "admin/generic_add", { entity => $entity, label => $class->label(), form => $form->render(), custom_snippet => $class->custom_add_snippet(), entity_conf => \%conf_data }
 };
