@@ -40,9 +40,16 @@ set views => $root_path . 'views';
 ##### Homepage #####
 
 get '/' => sub {
-    my %navbar;
-    $navbar{'home'} = "active";
-    template "admin/index", { navbar => \%navbar};
+    if(config->{'Strehler'}->{'dashboard_active'} && config->{'Strehler'}->{'dashboard_active'} == 1)
+    {
+        redirect dancer_app->prefix . '/dashboard/' . config->{'Strehler'}->{'default_language'};
+    }
+    else
+    {
+        my %navbar;
+        $navbar{'home'} = "active";
+        template "admin/index", { navbar => \%navbar};
+    }
 };
 
 ##### Login/Logout #####
@@ -766,6 +773,105 @@ post '/:entity/edit/:id' => sub
     my $backlink = session->read('backlink');
     template "admin/generic_add", { entity => $entity, label => $class->label(), id => $id, form => $form->render(), message => $message, custom_snippet => $el->custom_add_snippet(), entity_conf => \%conf_data, backlink => $backlink }
 };
+
+##### DASHBOARD #####
+
+get '/dashboard/:lang' => sub {
+    if(! config->{'Strehler'}->{'dashboard_active'} || config->{'Strehler'}->{'dashboard_active'} == 0)
+    {
+        return pass;
+    }
+    my %navbar;
+    $navbar{'home'} = "active";
+    my $language = params->{'lang'};
+    my $dashboard_data = config->{'Strehler'}->{'dashboard'};
+    my $elid = 0;
+    foreach my $el (@{$dashboard_data})
+    {
+        $el->{id} = $elid++;
+        if($el->{'type'} eq 'list')
+        {
+            my $class = Strehler::Helpers::class_from_entity($el->{'entity'});
+            my $elements = $class->get_list({ entries_per_page => -1, 
+                                              category => $el->{'category'}, 
+                                              language => $language,
+                                              published => 1
+                                            });
+            my @list = @{$elements->{'to_view'}};
+            $el->{'counter'} = $#list+1;
+            my $unpub_elements = $class->get_list({ entries_per_page => -1, 
+                                              category => $el->{'category'}, 
+                                              language => $language,
+                                              published => 0
+                                            });
+            my @unpub_list = @{$unpub_elements->{'to_view'}};
+            $el->{'unpublished_counter'} = $#unpub_list+1;
+            my $by = $el->{'by'} || 'date';
+            $el->{'by'} = $by;
+        }
+        elsif($el->{'type'} eq 'page')
+        {
+            my $total_elements = 0;
+            my $published_elements = 0;
+            foreach my $piece (@{$el->{'elements'}})
+            {
+                $total_elements++;
+                my $class = Strehler::Helpers::class_from_entity($piece->{'entity'});
+                my $by = $piece->{'by'} || 'date';
+                $piece->{'by'} = $by;
+                my $latest_published;
+                my $latest_unpublished;
+                my $by_comparator;
+                if($by eq 'date')
+                {
+                    $by_comparator = 'publish_date';
+                    $latest_published = $class->get_last_by_date($piece->{'category'}, $language, 1);
+                    $latest_unpublished = $class->get_last_by_date($piece->{'category'}, $language, 0);
+                }
+                elsif($by eq 'order')
+                {
+                    $by_comparator = 'display_order';
+                    $latest_published = $class->get_last_by_order($piece->{'category'}, $language, 1);
+                    $latest_unpublished = $class->get_last_by_order($piece->{'category'}, $language, 0);
+                }
+                if($latest_published)
+                {
+                    $published_elements++;
+                    my %latest_data = $latest_published->get_ext_data($language);
+                    $piece->{'latest_published'} =  \%latest_data;
+                }
+                else
+                {
+                    $piece->{'latest_published'} = undef;
+                }
+                if(! $latest_unpublished)
+                {
+                    $piece->{'latest_unpublished'} = undef;
+                }
+                elsif(! $latest_published)
+                {
+                    my %latest_unpub_data = $latest_unpublished->get_ext_data($language);
+                    $piece->{'latest_unpublished'} = \%latest_unpub_data;
+                }
+                elsif($latest_published->get_attr($by_comparator) >= $latest_unpublished->get_attr($by_comparator))
+                {
+                    $piece->{'latest_unpublished'} = undef;
+                }
+                else
+                {
+                    my %latest_unpub_data = $latest_unpublished->get_ext_data($language);
+                    $piece->{'latest_unpublished'} = \%latest_unpub_data;
+                }
+            }
+            $el->{'published_elements'} = $published_elements;
+            $el->{'total_elements'} = $total_elements;
+        }
+    }
+    template "admin/dashboard", { language => $language, languages => \@languages, navbar => \%navbar, dashboard => config->{'Strehler'}->{'dashboard'}};
+};
+
+
+
 
 ##### Helpers #####
 # They only manipulate form rendering and ACL
