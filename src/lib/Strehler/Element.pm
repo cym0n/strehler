@@ -692,7 +692,14 @@ sub get_list
     {
         if(exists $args{'published'})
         {
-            $search_criteria->{'published'} = $args{'published'};
+            if($args{'published'} == 1)
+            {
+                $search_criteria->{'published'} = $args{'published'};
+            }
+            elsif($args{'published'} == 0)
+            {
+                $search_criteria->{'published'} = [ undef, 0 ];
+            }
         }
     }
     if(exists $args{'tag'} && $args{'tag'})

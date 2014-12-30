@@ -24,7 +24,12 @@
 [% BLOCK pager %]
     <div class="row">
         [% INCLUDE pages %]
-        <a href="add" class="span1 offset8 btn btn-primary">New</a>
+    </div>
+    <div class="row">
+        [% IF backlink %]
+        <a href="[% backlink %]" class="span1 btn btn-inverse">Back</a>
+        [% END %]
+        <a href="add" class="span1 offset9 btn btn-primary">New</a>
     </div>
 [% END %]
 [% BLOCK pager_no_new %]
@@ -64,7 +69,7 @@
     </div>
 [% END %]
 [% BLOCK tools %]
-        <div id="list-tools"><a href="#" class="btn btn-warning btn-tools"><span id="tools-label">Tools</span></a> 
+        <div id="list-tools"><a href="#" class="btn btn-warning btn-tools"><span id="tools-label">Tools</span></a>
         <div id="tools" class="well" style="margin-left:0">        
         [% IF categorized %]
             [% INCLUDE categoryfilter %]

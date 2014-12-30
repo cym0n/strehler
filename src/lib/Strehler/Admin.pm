@@ -9,6 +9,7 @@ use Strehler::Dancer2::Plugin::Admin;
 use HTML::FormFu 1.00;
 use HTML::FormFu::Element::Block;
 use Authen::Passphrase::BlowfishCrypt;
+use Time::localtime;
 use Strehler::Helpers; 
 use Strehler::Meta::Tag;
 use Strehler::Element::Image;
@@ -16,7 +17,6 @@ use Strehler::Element::Article;
 use Strehler::Element::User;
 use Strehler::Element::Log;
 use Strehler::Meta::Category;
-use Data::Dumper;
 
 my @languages;
 
@@ -402,6 +402,7 @@ any '/:entity/list' => sub
             $wanted_cat = Strehler::Meta::Category->new($cat_param);
         }
     }
+    my $backlink = params->{'strehl-from'};
     my $cat = undef;
     my $subcat = undef;
     if($wanted_cat)
@@ -446,7 +447,7 @@ any '/:entity/list' => sub
     session $entity . '-order-by' => $order_by;
     session $entity . '-search' => $search;
     session $entity . '-ancestor' => $ancestor;
-    template $list_view, { (entity => $entity, elements => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, search => $search, order => $order, order_by => $order_by, fields => $class->fields_list(), last_page => $elements->{'last_page'}), $class->entity_data(), custom_list_template => $custom_list_template };
+    template $list_view, { (entity => $entity, elements => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, search => $search, order => $order, order_by => $order_by, fields => $class->fields_list(), last_page => $elements->{'last_page'}), $class->entity_data(), custom_list_template => $custom_list_template, backlink => $backlink };
 };
 get '/:entity/turnon/:id' => sub
 {
@@ -595,11 +596,25 @@ any '/:entity/add' => sub
         my $action = params->{'strehl-action'};
         if(! $action)
         {
-            redirect dancer_app->prefix . '/' . $entity . '/list';
+            if(session->read('backlink'))
+            {
+                redirect session->read('backlink');
+            }
+            else
+            {
+                redirect dancer_app->prefix . '/' . $entity . '/list';
+            }
         }
         elsif($action eq 'submit-go')
         {
-            redirect dancer_app->prefix . '/' . $entity . '/list';
+            if(session->read('backlink'))
+            {
+                redirect session->read('backlink');
+            }
+            else
+            {
+                redirect dancer_app->prefix . '/' . $entity . '/list';
+            }
         }
         elsif($action eq 'submit-continue')
         {
@@ -608,11 +623,13 @@ any '/:entity/add' => sub
     }
     my $fake_tags = $form->get_element({ name => 'tags'});
     $form->remove_element($fake_tags) if($fake_tags);
+    my $backlink = undef;
     if(request->method eq 'GET')
     {
+        my $wanted_cat;
         if(exists params->{'strehl-catname'})
         {
-            my $wanted_cat = Strehler::Meta::Category->explode_name(params->{'strehl-catname'});
+            $wanted_cat = Strehler::Meta::Category->explode_name(params->{'strehl-catname'});
             if($wanted_cat->exists())
             {
                 my $parent = $wanted_cat->get_attr('parent');
@@ -626,18 +643,58 @@ any '/:entity/add' => sub
                 }
             }    
         }
+        if(exists params->{'strehl-today'})
+        {
+            my $tm = localtime;
+            my $tm_day = $tm->mday;
+            my $tm_month = $tm->mon + 1;
+            my $tm_year = $tm->year + 1900;
+            my $date_string = "$tm_day/$tm_month/$tm_year";
+            $form->default_values({ publish_date => $date_string });
+        }
+        if(exists params->{'strehl-max-order'})
+        {
+            if($wanted_cat && $wanted_cat->exists())
+            {
+                my $max = $class->max_category_order($wanted_cat->get_attr('id')) + 1;
+                $form->default_values({ display_order => $max });
+            }
+        }
+        if(exists params->{'strehl-from'})
+        {
+            $backlink = params->{'strehl-from'};
+            session 'backlink' => params->{'strehl-from'};
+        }
+        else
+        {
+            session 'backlink' => undef;
+        }
     }
+    $backlink = $backlink || session->read('backlink');
     my %conf_data = $class->entity_data();
-    template "admin/generic_add", { entity => $entity, label => $class->label(), form => $form->render(), custom_snippet => $class->custom_add_snippet(), entity_conf => \%conf_data }
+    template "admin/generic_add", { entity => $entity, label => $class->label(), form => $form->render(), custom_snippet => $class->custom_add_snippet(), entity_conf => \%conf_data, backlink => $backlink }
 };
 get '/:entity/edit/:id' => sub {
     my $id = params->{id};
     my $entity = params->{entity};
     my $from_add = params->{from_add} || 0;
     my $class = Strehler::Helpers::class_from_entity($entity);
+    my $backlink = undef;
     if((! $class->auto()) || (! $class->updatable()))
     {
         return pass;
+    }
+    if(exists params->{'strehl-from'})
+    {
+        $backlink = params->{'strehl-from'};
+        session 'backlink' => params->{'strehl-from'};
+    }
+    else
+    {
+        if(! $from_add)
+        {
+            session 'backlink' => undef;
+        }
     }
     send_error("Access denied", 403) && return if ( ! $class->check_role(session->read('role')));
     my $el = $class->new($id);
@@ -650,7 +707,8 @@ get '/:entity/edit/:id' => sub {
     $form->default_values($form_data);
     my %conf_data = $class->entity_data();
     my $message = $from_add ? 'saved' : 'quiet';
-    template "admin/generic_add", {  entity => $entity, label => $class->label(), id => $id, form => $form->render(), message => $message, custom_snippet => $el->custom_add_snippet(), entity_conf => \%conf_data }
+    $backlink = $backlink || session->read('backlink');
+    template "admin/generic_add", {  entity => $entity, label => $class->label(), id => $id, form => $form->render(), message => $message, custom_snippet => $el->custom_add_snippet(), entity_conf => \%conf_data, backlink => $backlink }
 };
 post '/:entity/edit/:id' => sub
 {
@@ -678,11 +736,25 @@ post '/:entity/edit/:id' => sub
         my $action = params->{'strehl-action'};
         if(! $action)
         {
-            redirect dancer_app->prefix . '/' . $entity . '/list';
+            if(session->read('backlink'))
+            {
+                redirect session->read('backlink');
+            }
+            else
+            {
+                redirect dancer_app->prefix . '/' . $entity . '/list';
+            }
         }
         elsif($action eq 'submit-go')
         {
-            redirect dancer_app->prefix . '/' . $entity . '/list';
+            if(session->read('backlink'))
+            {
+                redirect session->read('backlink');
+            }
+            else
+            {
+                redirect dancer_app->prefix . '/' . $entity . '/list';
+            }
         }
         elsif($action eq 'submit-continue')
         {
@@ -691,7 +763,8 @@ post '/:entity/edit/:id' => sub
     }
     my $el = $class->new($id);
     my %conf_data = $class->entity_data();
-    template "admin/generic_add", { entity => $entity, label => $class->label(), id => $id, form => $form->render(), message => $message, custom_snippet => $el->custom_add_snippet(), entity_conf => \%conf_data }
+    my $backlink = session->read('backlink');
+    template "admin/generic_add", { entity => $entity, label => $class->label(), id => $id, form => $form->render(), message => $message, custom_snippet => $el->custom_add_snippet(), entity_conf => \%conf_data, backlink => $backlink }
 };
 
 ##### Helpers #####

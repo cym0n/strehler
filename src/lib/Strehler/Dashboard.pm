@@ -32,6 +32,15 @@ get '/' => sub {
                                             });
             my @list = @{$elements->{'to_view'}};
             $el->{'counter'} = $#list+1;
+            my $unpub_elements = $class->get_list({ entries_per_page => -1, 
+                                              category => $el->{'category'}, 
+                                              language => config->{'Strehler'}->{'default_language'}, 
+                                              published => 0
+                                            });
+            my @unpub_list = @{$unpub_elements->{'to_view'}};
+            $el->{'unpublished_counter'} = $#unpub_list+1;
+            my $by = $el->{'by'} || 'date';
+            $el->{'by'} = $by;
         }
         elsif($el->{'type'} eq 'page')
         {
@@ -42,15 +51,19 @@ get '/' => sub {
                 $total_elements++;
                 my $class = Strehler::Helpers::class_from_entity($piece->{'entity'});
                 my $by = $piece->{'by'} || 'date';
+                $piece->{'by'} = $by;
                 my $latest_published;
                 my $latest_unpublished;
+                my $by_comparator;
                 if($by eq 'date')
                 {
+                    $by_comparator = 'publish_date';
                     $latest_published = $class->get_last_by_date($piece->{'category'}, config->{'Strehler'}->{'default_language'}, 1);
                     $latest_unpublished = $class->get_last_by_date($piece->{'category'}, config->{'Strehler'}->{'default_language'}, 0);
                 }
                 elsif($by eq 'order')
                 {
+                    $by_comparator = 'display_order';
                     $latest_published = $class->get_last_by_order($piece->{'category'}, config->{'Strehler'}->{'default_language'}, 1);
                     $latest_unpublished = $class->get_last_by_order($piece->{'category'}, config->{'Strehler'}->{'default_language'}, 0);
                 }
@@ -73,7 +86,7 @@ get '/' => sub {
                     my %latest_unpub_data = $latest_unpublished->get_ext_data(config->{'Strehler'}->{'default_language'});
                     $piece->{'latest_unpublished'} = \%latest_unpub_data;
                 }
-                elsif($latest_published->get_attr('publish_date') >= $latest_unpublished->get_attr('publish_date'))
+                elsif($latest_published->get_attr($by_comparator) >= $latest_unpublished->get_attr($by_comparator))
                 {
                     $piece->{'latest_unpublished'} = undef;
                 }
