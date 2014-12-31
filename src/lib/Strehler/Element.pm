@@ -666,13 +666,29 @@ sub get_list
     $args{'order_by'} ||= 'id';
     $args{'entries_per_page'} ||= 20;
     $args{'page'} ||= 1;
-    $args{'language'} ||= config->{Strehler}->{default_language};
     $args{'join'} ||= [];
     $args{'join'} = [ $args{'join'} ] if(! ref($args{'join'}));
+
+    my $forced_language = 0;
+    if($args{'language'})
+    {
+        $forced_language = 1;
+        if($self->multilang_children() && $self->multilang_children() ne '')
+        {
+            push @{$args{'join'}}, $self->multilang_children();
+        }
+    }
+    else
+    {
+        $args{'language'} = config->{Strehler}->{default_language};
+    }
     my $no_paging = 0;
     my $default_page = 1;
     my $search_criteria = $args{'search'} || undef;
-
+    if($forced_language)
+    {
+        $search_criteria->{$self->multilang_children() . '.language'} = $args{'language'}; 
+    }
     if($args{'order_by'} =~ /^(.*?)\.(.*?)$/)
     {
         my $order_join = $1;

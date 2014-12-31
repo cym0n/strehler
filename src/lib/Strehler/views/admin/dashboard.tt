@@ -3,12 +3,15 @@
 </div>
 <div class="content homepage">
     <div class="row span12 dash-languages">
-        <div class="span2">Other languages: </div>
+        <div class="btn-group">
         [% FOREACH lan in languages %]
         [% IF lan != language %]
             <a class="span1 btn" href="/admin/dashboard/[% lan %]">[% lan %]</a>
+        [% ELSE %]
+            <span class="span1 btn btn-info disabled">[% lan %]</span>
         [% END %]
         [% END %]
+        </div>
     </div>
     [% FOREACH element in dashboard %]
     [% IF element.type == 'list' %]
@@ -55,31 +58,36 @@
   <div class="modal-body">
   [% FOREACH piece in element.elements %]
     <div>
-        <p><strong>[% piece.section %]</strong><br />
-        Category: [% piece.category %]</p>
-    </div>
-    <div class="dashboard-first-buttons">
-    [% IF piece.latest_published %]
-        <a class="btn" href="/admin/[% piece.entity %]/edit/[% piece.latest_published.id %]?strehl-from=/admin/dashboard/[% language %]"><span class="icon-eye-open"></span>Edit online</a>
-    [% ELSE %]
-        <span class="text-error">No content published!</span>
-    [% END %]
-    </div>
-    <div>
-    [% IF piece.latest_unpublished %]
-    <div class="btn-group">
-        <a class="btn" href="/admin/[% piece.entity %]/edit/[% piece.latest_unpublished.id %]?strehl-from=/admin/dashboard/[% language %]"><span class="icon-edit"></span>Edit draft</a>
-        <a class="btn" href="/admin/[% piece.entity %]/turnon/[% piece.latest_unpublished.id %]?strehl-from=/admin/dashboard/[% language %]"><span class="icon-circle-arrow-right"></span> Publish draft</a>
-    </div>
-    [% ELSE %]
-        [% IF piece.by == 'date' %]
-            <a class="btn" href="/admin/[% piece.entity %]/add?strehl-catname=[% piece.category %]&strehl-today=1&strehl-from=/admin/dashboard/[% language %]"><span class="icon-plus"></span> New draft</a>
-        [% ELSIF piece.by == 'order' %]
-            <a class="btn" href="/admin/[% piece.entity %]/add?strehl-catname=[% piece.category %]&strehl-max-order=1&strehl-from=/admin/dashboard/[% language %]"><span class="icon-plus"></span> New draft</a>
+        <p>
+        <strong>[% piece.section %]</strong><br />
+        Category: [% piece.category %]<br />
+        [% IF piece.latest_published %]
+            <span class="text-success">Content online</span>
+        [% ELSE %]
+            <span class="text-error">No content published!</span>
         [% END %]
-    [% END %]
+        </p>
     </div>
-    <hr />
+    <div class="btn-group dashboard-section-buttons">
+        [% IF piece.latest_published %]
+            <a class="btn" href="/admin/[% piece.entity %]/edit/[% piece.latest_published.id %]?strehl-from=/admin/dashboard/[% language %]"><span class="icon-eye-open"></span> Edit online</a>
+        [% END %]
+        [% IF piece.latest_unpublished %]
+            <a class="btn" href="/admin/[% piece.entity %]/edit/[% piece.latest_unpublished.id %]?strehl-from=/admin/dashboard/[% language %]"><span class="icon-edit"></span> Edit draft</a>
+            <a class="btn" href="/admin/[% piece.entity %]/turnon/[% piece.latest_unpublished.id %]?strehl-from=/admin/dashboard/[% language %]"><span class="icon-circle-arrow-right"></span> Publish draft</a>
+        [% ELSE %]
+            [% IF piece.by == 'date' %]
+                <a class="btn" href="/admin/[% piece.entity %]/add?strehl-catname=[% piece.category %]&strehl-today=1&strehl-from=/admin/dashboard/[% language %]"><span class="icon-plus"></span> New draft</a>
+            [% ELSIF piece.by == 'order' %]
+                <a class="btn" href="/admin/[% piece.entity %]/add?strehl-catname=[% piece.category %]&strehl-max-order=1&strehl-from=/admin/dashboard/[% language %]"><span class="icon-plus"></span> New draft</a>
+            [% END %]
+        [% END %]
+        [% IF piece.by == 'date' %]
+            <a class="btn" href="/admin/[% piece.entity %]/list?strehl-catname=[% piece.category %]&strehl-from=/admin/dashboard/[% language %]&order-by=publish_date&order=desc"><span class="icon-list"></span> All contents in category</a>
+        [% ELSIF piece.by == 'order' %]
+            <a class="btn" href="/admin/[% piece.entity %]/list?strehl-catname=[% piece.category %]&strehl-from=/admin/dashboard/[% language %]&order-by=display_order&order=desc"><span class="icon-list"></span> All contents in category</a>
+        [% END %]
+    </div>
   [% END %]
   </div>
   <div class="modal-footer">
