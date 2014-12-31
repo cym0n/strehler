@@ -520,11 +520,7 @@ sub get_last_by_order
     my $self = shift;
     my $cat = shift;
     my $language = shift;
-    my $published = shift;
-    if($published != 0)
-    {
-        $published = 1;
-    }
+    my $published = shift || 1;
     my $category = Strehler::Meta::Category->explode_name($cat);
     return undef if(! $category->exists());
     my $category_access = $self->category_accessor($category->row);
@@ -559,11 +555,7 @@ sub get_last_by_date
     my $self = shift;
     my $cat = shift;
     my $language = shift;
-    my $published = shift;
-    if($published != 0)
-    {
-        $published = 1;
-    }
+    my $published = shift || 1;
     my $category = Strehler::Meta::Category->explode_name($cat);
     return undef if(! $category->exists());
     my $category_access = $self->category_accessor($category->row);
@@ -663,7 +655,7 @@ sub get_list
     }
 
     $args{'order'} ||= 'desc';
-    $args{'order_by'} ||= 'id';
+    $args{'order_by'} ||= 'me.id';
     $args{'entries_per_page'} ||= 20;
     $args{'page'} ||= 1;
     $args{'join'} ||= [];
@@ -673,7 +665,7 @@ sub get_list
     if($args{'language'})
     {
         $forced_language = 1;
-        if($self->multilang_children() && $self->multilang_children() ne '')
+        if($self->multilang_children())
         {
             push @{$args{'join'}}, $self->multilang_children();
         }
@@ -687,12 +679,15 @@ sub get_list
     my $search_criteria = $args{'search'} || undef;
     if($forced_language)
     {
-        $search_criteria->{$self->multilang_children() . '.language'} = $args{'language'}; 
+        if($self->multilang_children())
+        {
+            $search_criteria->{$self->multilang_children() . '.language'} = $args{'language'}; 
+        }
     }
     if($args{'order_by'} =~ /^(.*?)\.(.*?)$/)
     {
         my $order_join = $1;
-        push @{$args{'join'}}, $order_join;
+        push @{$args{'join'}}, $order_join if $order_join ne 'me';
     }
     my %seen = ();
     my @joins = grep { ! $seen{ $_ }++ } @{$args{'join'}};

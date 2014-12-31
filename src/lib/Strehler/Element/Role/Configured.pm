@@ -37,7 +37,9 @@ sub ORMObj
 sub multilang_children
 {
     my $self = shift;
-    return $self->metaclass_data('multilang_children') || '';
+    #Empty string returned instead of undef to avoid error calling can
+    my $children = $self->metaclass_data('multilang_children') || '';
+    return $children;
 }
 sub get_schema
 {
