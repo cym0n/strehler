@@ -1,6 +1,7 @@
 package Strehler::Element;
 
 use strict;
+use Carp 'carp';
 use Moo;
 use Dancer2 0.154000;
 use Dancer2::Plugin::DBIC;
@@ -520,21 +521,13 @@ sub get_last_by_order
     my $self = shift;
     my $cat = shift;
     my $language = shift;
-    my $published = shift || 1;
     my $category = Strehler::Meta::Category->explode_name($cat);
     return undef if(! $category->exists());
     my $category_access = $self->category_accessor($category->row);
     my $criteria = {};
     if($self->publishable())
     {
-        if($published == 1)
-        {
-            $criteria = { published => $published };
-        }
-        else
-        {
-            $criteria = { -or => [{published => 0}, {published => undef}] };
-        }
+        $criteria->{'published'} = 1;
     }
     my @chapters = $category->row->$category_access->search($criteria , { order_by => { -desc => 'display_order' } });
     if($chapters[0])
@@ -555,21 +548,13 @@ sub get_last_by_date
     my $self = shift;
     my $cat = shift;
     my $language = shift;
-    my $published = shift || 1;
     my $category = Strehler::Meta::Category->explode_name($cat);
     return undef if(! $category->exists());
     my $category_access = $self->category_accessor($category->row);
     my $criteria = {};
     if($self->publishable())
     {
-        if($published == 1)
-        {
-            $criteria = { published => $published };
-        }
-        else
-        {
-            $criteria = { -or => [{published => 0}, {published => undef}] };
-        }
+        $criteria->{'published'} = 1;
     }
     my @chapters = $category->row->$category_access->search( $criteria, { order_by => { -desc => 'publish_date' } });
     if($chapters[0])
@@ -585,6 +570,66 @@ sub get_last_by_date
     }
     return undef;
 }
+sub get_last_pubunpub
+{
+    my $self = shift;
+    my $cat = shift;
+    my $language = shift;
+    my $order = shift;
+    my $category = Strehler::Meta::Category->explode_name($cat); 
+    return (undef, undef) if(! $category->exists());
+    my $category_access = $self->category_accessor($category->row);
+    my $ordering_field;
+    if($order eq 'date' && $self->dated())
+    {
+        $ordering_field = 'publish_date';
+    }
+    elsif($order eq 'order' && $self->ordered())
+    {
+        $ordering_field = 'display_order';
+    }
+    else
+    {
+        carp "Bad order configuration on dashboard for $cat.";
+        $ordering_field = 'me.id';
+    }
+    my @chapters = $category->row->$category_access->search(undef, { order_by => { -desc => $ordering_field } });
+    my $pub = undef;
+    my $unpub = undef;
+    foreach my $c (@chapters)
+    {
+        my $el = $self->new($c->id);
+        if($el->has_language($language))
+        {
+            if(! $self->publishable())
+            {
+                return ($el, undef);  
+            }
+            if($el->get_attr('published') && $el->get_attr('published') == 1)
+            {
+                if(! $pub)
+                {
+                    $pub = $el;
+                    return ($pub, $unpub);
+                }
+            }
+            else
+            {
+               if(! $unpub)
+               {
+                    $unpub = $el;
+                    if($pub && $unpub)
+                    {
+                        return ($pub, $unpub);
+                    }
+               }
+            }
+        }
+    }
+    return ($pub, $unpub);
+}
+
+
 sub get_first_by_order
 {
     my $self = shift;

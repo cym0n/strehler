@@ -819,48 +819,17 @@ get '/dashboard/:lang' => sub {
                 my $class = Strehler::Helpers::class_from_entity($piece->{'entity'});
                 my $by = $piece->{'by'} || 'date';
                 $piece->{'by'} = $by;
-                my $latest_published;
-                my $latest_unpublished;
-                my $by_comparator;
-                if($by eq 'date')
+                my ($latest_published, $latest_unpublished) = $class->get_last_pubunpub($piece->{'category'}, $language, $by);
+                if($latest_unpublished)
                 {
-                    $by_comparator = 'publish_date';
-                    $latest_published = $class->get_last_by_date($piece->{'category'}, $language, 1);
-                    $latest_unpublished = $class->get_last_by_date($piece->{'category'}, $language, 0);
-                }
-                elsif($by eq 'order')
-                {
-                    $by_comparator = 'display_order';
-                    $latest_published = $class->get_last_by_order($piece->{'category'}, $language, 1);
-                    $latest_unpublished = $class->get_last_by_order($piece->{'category'}, $language, 0);
+                    my %latest_unpub_data = $latest_unpublished->get_ext_data($language);
+                    $piece->{'latest_unpublished'} = \%latest_unpub_data;
                 }
                 if($latest_published)
                 {
                     $published_elements++;
-                    my %latest_data = $latest_published->get_ext_data($language);
-                    $piece->{'latest_published'} =  \%latest_data;
-                }
-                else
-                {
-                    $piece->{'latest_published'} = undef;
-                }
-                if(! $latest_unpublished)
-                {
-                    $piece->{'latest_unpublished'} = undef;
-                }
-                elsif(! $latest_published)
-                {
-                    my %latest_unpub_data = $latest_unpublished->get_ext_data($language);
-                    $piece->{'latest_unpublished'} = \%latest_unpub_data;
-                }
-                elsif($latest_published->get_attr($by_comparator) >= $latest_unpublished->get_attr($by_comparator))
-                {
-                    $piece->{'latest_unpublished'} = undef;
-                }
-                else
-                {
-                    my %latest_unpub_data = $latest_unpublished->get_ext_data($language);
-                    $piece->{'latest_unpublished'} = \%latest_unpub_data;
+                    my %latest_pub_data = $latest_published->get_ext_data($language);
+                    $piece->{'latest_published'} = \%latest_pub_data;
                 }
             }
             $el->{'published_elements'} = $published_elements;

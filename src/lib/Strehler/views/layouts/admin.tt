@@ -29,7 +29,11 @@
         </ul>
       </li>
       [% END %]
+      [% IF dashboard_active == 1 %]
+      <li class="[% navbar.home %]"><a href="/admin">Dashboard</a></li>
+      [% ELSE %]
       <li class="[% navbar.home %]"><a href="/admin">Home</a></li>
+      [% END %]
       [% FOREACH j in editor_menu %]
           [% menuname = j.label %]
           [% menulink = j.name %]
