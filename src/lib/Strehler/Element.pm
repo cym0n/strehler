@@ -707,6 +707,7 @@ sub get_list
     $args{'join'} = [ $args{'join'} ] if(! ref($args{'join'}));
 
     my $forced_language = 0;
+    my @languages_list = undef;
     if($args{'language'})
     {
         $forced_language = 1;
@@ -714,6 +715,7 @@ sub get_list
         {
             push @{$args{'join'}}, $self->multilang_children();
         }
+        @languages_list = split(',',  $args{'language'});
     }
     else
     {
@@ -726,7 +728,8 @@ sub get_list
     {
         if($self->multilang_children())
         {
-            $search_criteria->{$self->multilang_children() . '.language'} = $args{'language'}; 
+            my $languages_query;
+            $search_criteria->{$self->multilang_children() . '.language'} = \@languages_list;
         }
     }
     if($args{'order_by'} =~ /^(.*?)\.(.*?)$/)

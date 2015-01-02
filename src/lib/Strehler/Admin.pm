@@ -391,6 +391,7 @@ any '/:entity/list' => sub
     my $order_by = exists params->{'order-by'} ? params->{'order-by'} : session $entity . '-order-by';
     my $search = exists params->{'search'} ? params->{'search'} : session $entity . '-search';
     my $ancestor = exists params->{'ancestor'} ? params->{'ancestor'} : session $entity . '-ancestor';
+    my $language = exists params->{'language'} ? params->{'language'} : session $entity . '-language';
     my $wanted_cat = undef;
     if(exists params->{'strehl-catname'})
     {
@@ -438,7 +439,7 @@ any '/:entity/list' => sub
     $order ||= 'desc';
     $order_by ||= 'id';
     my $entries_per_page = 20;
-    my $search_parameters = { page => $page, entries_per_page => $entries_per_page, category_id => $cat_param, ancestor => $ancestor, order => $order, order_by => $order_by};
+    my $search_parameters = { page => $page, entries_per_page => $entries_per_page, category_id => $cat_param, ancestor => $ancestor, order => $order, order_by => $order_by, language => $language};
     my $elements;
     if($search)
     {
@@ -454,6 +455,7 @@ any '/:entity/list' => sub
     session $entity . '-order-by' => $order_by;
     session $entity . '-search' => $search;
     session $entity . '-ancestor' => $ancestor;
+    session $entity . '-language' => $language;
     template $list_view, { (entity => $entity, elements => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, search => $search, order => $order, order_by => $order_by, fields => $class->fields_list(), last_page => $elements->{'last_page'}), $class->entity_data(), custom_list_template => $custom_list_template, backlink => $backlink };
 };
 get '/:entity/turnon/:id' => sub

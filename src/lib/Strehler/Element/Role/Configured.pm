@@ -52,6 +52,11 @@ sub get_schema
         return schema;
     }
 }
+sub multilang
+{
+    my $self = shift;
+    return 1 if $self->multilang_children() ne '';
+}
 sub _property
 {
     my $self = shift;
@@ -180,7 +185,8 @@ sub entity_js
 sub entity_data
 {
     my $self = shift;
-    my @attributes = ('auto', 
+    my @attributes = ('multilang',
+                      'auto', 
                       'exposed',
                       'slugged',
                       'label', 
@@ -290,6 +296,12 @@ Wrapper for Dancer2 schema keyword, used internally to allow developer to use a 
 return $prop
 
 Generic function to manage flag properties.
+
+=item multilang
+
+return $bool
+
+Considered in entity_data properties, this function says if the element has or has not multilanguage management. Value is deduced by multilang_children attribute.
 
 =item "flag functions"
 
