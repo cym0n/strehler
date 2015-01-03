@@ -13,12 +13,12 @@ function subcategories(cat, subcat)
     request.done(function(msg) {
         if(msg == 0)
         {
-            $("#subcat").parent("div").hide();
+            $("#subcat").hide();
             $('#subcat').val(null);
         }
         else
         {
-            $("#subcat").parent("div").show();
+            $("#subcat").show();
             $("#subcat").html(msg);
             if(subcat)
             {
@@ -53,7 +53,7 @@ function category_init(cat, subcat)
     }
     else
     {
-        $("#subcat").parent("div").hide();
+        $("#subcat").hide();
     }
     category_commander(cat, subcat);
 };
@@ -69,7 +69,7 @@ function category_commander(cat, subcat)
     }
     if(! cat)
     {
-        $("#subcat").parent("div").hide();
+        $("#subcat").hide();
         $('#subcat').val(null);
     }
     else
@@ -90,7 +90,7 @@ function subcat_manager()
     }
     else
     {
-        $("#subcat").parent("div").hide();
+        $("#subcat").hide();
         $('#subcat').val(null);
     }   
 };

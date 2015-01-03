@@ -47,9 +47,13 @@ table th .asc
 {
     height: 80px;
 }
-.articlelist .row
+.articlelist .table .row
 {
     padding-top: 10px;
+    padding-bottom: 10px;
+}
+.articlelist #tools .row
+{
     padding-bottom: 10px;
 }
 .articlelist .elementID
@@ -144,4 +148,7 @@ table th .asc
 {
     margin-bottom: 10px;
 }
-
+.tools-buttons
+{
+    margin-top: 10px;
+}
