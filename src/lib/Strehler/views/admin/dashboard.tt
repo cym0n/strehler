@@ -23,10 +23,10 @@
         Elements: [% element.counter %]/[% element.counter + element.unpublished_counter %]
     </p>
     [% IF element.by == 'date' %]
-    <a class="span2 btn" href="/admin/[% element.entity %]/list?strehl-catname=[% element.category %]&strehl-from=/admin/dashboard/[% language %]&order-by=publish_date&order=desc"><span class="icon-list"></span> List of contents</a>
+    <a class="span2 btn" href="/admin/[% element.entity %]/list?strehl-catname=[% element.category %]&strehl-from=/admin/dashboard/[% language %]&order-by=publish_date&order=desc&language=[% language %]"><span class="icon-list"></span> List of contents</a>
     <a class="span2 btn" href="/admin/[% element.entity %]/add?strehl-catname=[% element.category %]&strehl-from=/admin/dashboard/[% language %]&strehl-today=1"><span class="icon-plus"></span> Add a content </a>
     [% ELSIF element.by == 'order' %]
-    <a class="span2 btn" href="/admin/[% element.entity %]/list?strehl-catname=[% element.category %]&strehl-from=/admin/dashboard/[% language %]&order-by=display_order&order=desc"><span class="icon-list"></span> List of contents</a>
+    <a class="span2 btn" href="/admin/[% element.entity %]/list?strehl-catname=[% element.category %]&strehl-from=/admin/dashboard/[% language %]&order-by=display_order&order=desc&language=[% language %]"><span class="icon-list"></span> List of contents</a>
     <a class="span2 btn" href="/admin/[% element.entity %]/add?strehl-catname=[% element.category %]&strehl-from=/admin/dashboard/[% language %]&strehl-max-order=1"><span class="icon-plus"></span> Add a content </a>
     [% END %]
     </div>
@@ -83,9 +83,9 @@
             [% END %]
         [% END %]
         [% IF piece.by == 'date' %]
-            <a class="btn" href="/admin/[% piece.entity %]/list?strehl-catname=[% piece.category %]&strehl-from=/admin/dashboard/[% language %]&order-by=publish_date&order=desc"><span class="icon-list"></span> All contents in category</a>
+            <a class="btn" href="/admin/[% piece.entity %]/list?strehl-catname=[% piece.category %]&strehl-from=/admin/dashboard/[% language %]&order-by=publish_date&order=desc&language=[% language %]"><span class="icon-list"></span> All contents in category</a>
         [% ELSIF piece.by == 'order' %]
-            <a class="btn" href="/admin/[% piece.entity %]/list?strehl-catname=[% piece.category %]&strehl-from=/admin/dashboard/[% language %]&order-by=display_order&order=desc"><span class="icon-list"></span> All contents in category</a>
+            <a class="btn" href="/admin/[% piece.entity %]/list?strehl-catname=[% piece.category %]&strehl-from=/admin/dashboard/[% language %]&order-by=display_order&order=desc&language=[% language %]"><span class="icon-list"></span> All contents in category</a>
         [% END %]
     </div>
   [% END %]

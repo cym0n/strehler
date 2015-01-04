@@ -456,7 +456,7 @@ any '/:entity/list' => sub
     session $entity . '-search' => $search;
     session $entity . '-ancestor' => $ancestor;
     session $entity . '-language' => $language;
-    template $list_view, { entity => $entity, elements => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, search => $search, order => $order, order_by => $order_by, fields => $class->fields_list(), last_page => $elements->{'last_page'}, $class->entity_data(), custom_list_template => $custom_list_template, backlink => $backlink, languages => \@languages };
+    template $list_view, { entity => $entity, elements => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, search => $search, order => $order, order_by => $order_by, fields => $class->fields_list(), last_page => $elements->{'last_page'}, $class->entity_data(), custom_list_template => $custom_list_template, backlink => $backlink, language => $language, languages => \@languages };
 };
 get '/:entity/turnon/:id' => sub
 {
