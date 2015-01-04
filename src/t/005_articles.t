@@ -33,18 +33,7 @@ test_psgi $app, sub {
     $r = $cb->(GET '/admin/article/list?order-by=contents.title&order=asc');
     is($r->code, 200, "Articles page correctly accessed (order parameters added)");
 
-    #ADD
-    $r = $cb->( POST '/admin/category/add', 
-                    [ 'category' => 'prova',
-                      'parent' => '',
-                      'tags-all' => 'tag1,tag2,tag3',
-                      'default-all' => 'tag2',
-                      'tags-article' => '',
-                      'default-article' => '',
-                      'tags-image' => '',
-                      'default-image' => '' ] );
-    my $cat = Strehler::Meta::Category->new({ category => 'prova' });
-    my $cat_id = $cat->get_attr('id');
+    my $cat_id = TestSupport::create_category($cb, 'prova');
 
     $r = $cb->(POST "/admin/article/add",
                 [ 'image' => undef,

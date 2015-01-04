@@ -34,18 +34,7 @@ test_psgi $admin_app, sub {
     $r = $cb->(GET '/admin/puppet/add');
     like($r->content, qr/Submit/, "Puppet (not categorized entity) add allowed also with no category");
 
-    $r = $cb->( POST '/admin/category/add', 
-                    [ 'category' => 'prova',
-                      'parent' => '',
-                      'tags-all' => 'tag1,tag2,tag3',
-                      'default-all' => 'tag2',
-                      'tags-article' => '',
-                      'default-article' => '',
-                      'tags-image' => '',
-                      'default-image' => '' ] );
-    is($r->code, 302, "Post redirected to list because no action given with submit button");
-    my $cat = Strehler::Meta::Category->new({ category => 'prova' });
-    my $cat_id = $cat->get_attr('id');
+    my $cat_id = TestSupport::create_category($cb, 'prova');
 
     #LIST
     $r = $cb->(GET "/admin/dummy/list");

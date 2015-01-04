@@ -7,7 +7,8 @@ use JSON;
 use Dancer2;
 use Dancer2::Plugin::DBIC;
 use HTTP::Request;
-use Data::Dumper;
+use HTTP::Request::Common;
+use Strehler::Meta::Category;
 
 sub reset_database
 {
@@ -33,6 +34,48 @@ sub keep_logged
     my $r = $cb->($req); 
     $jar->extract_cookies($r);
     return ($r, $jar);
+}
+
+sub create_category
+{
+    my $cb = shift;
+    my $name = shift;
+    my $parent = shift || '';
+    my $r = $cb->( POST '/admin/category/add', 
+                    [ 'category' => $name,
+                      'parent' => $parent,
+                      'tags-all' => 'tag1,tag2,tag3',
+                      'default-all' => 'tag2',
+                      'tags-article' => '',
+                      'default-article' => '',
+                      'tags-image' => '',
+                      'default-image' => '' ] );
+    if($parent)
+    {
+        my $ancestor = Strehler::Meta::Category->new($parent);
+        $name = $ancestor->get_attr('category') . '/' . $name;
+    }
+    my $cat = Strehler::Meta::Category->explode_name($name);
+    return $cat->get_attr('id');
+}
+sub create_article
+{
+    my $cb = shift;
+    my $counter = shift || '';
+    my $category = shift || '';
+    my $subcategory = shift || '';
+    my $custom_params = shift || {};
+    my $r = $cb->( POST '/admin/article/add', 
+                    [ 'image' => undef,
+                      'category' => $category,
+                      'subcategory' => $subcategory,
+                      'tags' => $custom_params->{'tags'} || 'tag1',
+                      'display_order' => $custom_params->{'display_order'} || 14,
+                      'publish_date' => $custom_params->{'publish_date'} || '12/03/2014',
+                      'title_it' => 'Automatic test ' . $counter . ' - title - IT',
+                      'text_it' => 'Automatic test ' . $counter . ' - body - IT',
+                      'title_en' => 'Automatic test ' . $counter . ' - title - EN',
+                      'text_en' => 'Automatic test ' . $counter . ' - body - EN' ]);
 }
 
 1;

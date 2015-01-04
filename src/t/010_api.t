@@ -29,69 +29,12 @@ test_psgi $admin_app, sub {
     my $site = "http://localhost";
 
     #Dummy categories created for test purpose
-    my $r = $cb->(POST "/admin/category/add",
-                         { 'category' => 'prova',
-                           'parent' => undef,
-                           'tags-all' => '',
-                           'default-all' => '',
-                           'tags-article' => '',
-                           'default-article' => '',
-                           'tags-image' => '',
-                           'default-image' => '' });
-    my $ancestor_cat = Strehler::Meta::Category->explode_name('prova');
-    my $ancestor_cat_id = $ancestor_cat->get_attr('id');
-
-    $r = $cb->(POST "/admin/category/add",
-                         { 'category' => 'foo',
-                           'parent' => $ancestor_cat_id,
-                           'tags-all' => '',
-                           'default-all' => '',
-                           'tags-article' => '',
-                           'default-article' => '',
-                           'tags-image' => '',
-                           'default-image' => '' });
-
-    my $child_cat = Strehler::Meta::Category->explode_name('prova/foo');;
-    my $child_cat_id = $child_cat->get_attr('id');
-
-    #Dummy articles created for test purpose
-    $r = $cb->(POST "/admin/article/add",
-                         { 'image' => undef,
-                           'category' => $ancestor_cat_id,
-                           'subcategory' => undef,
-                           'tags' => '',
-                           'display_order' => 1,
-                           'publish_date' => '',
-                           'title_it' => 'Automatic test 1 - title - IT',
-                           'text_it' => 'Automatic test 1 - body - IT',
-                           'title_en' => 'Automatic test 1 - title - EN',
-                           'text_en' => 'Automatic test 1 - body - EN'
-                          });
-    $r = $cb->(POST "/admin/article/add",
-                         { 'image' => undef,
-                           'category' => $ancestor_cat_id,
-                           'subcategory' => $child_cat_id,
-                           'tags' => '',
-                           'display_order' => 2,
-                           'publish_date' => '13/11/2009',
-                           'title_it' => 'Automatic test 2 - title - IT',
-                           'text_it' => 'Automatic test 2 - body - IT',
-                           'title_en' => 'Automatic test 2 - title - EN',
-                           'text_en' => 'Automatic test 2 - body - EN'
-                          });
-    $r = $cb->(POST "/admin/article/add",
-                         { 'image' => undef,
-                           'category' => $ancestor_cat_id,
-                           'subcategory' => $child_cat_id,
-                           'tags' => '',
-                           'display_order' => 3,
-                           'publish_date' => '',
-                           'title_it' => 'Automatic test 3 - title - IT',
-                           'text_it' => 'Automatic test 3 - body - IT',
-                           'title_en' => 'Automatic test 3 - title - EN',
-                           'text_en' => 'Automatic test 3 - body - EN'
-                          });              
-    $r = $cb->(POST $site . "/admin/dummy/add",
+    my $ancestor_cat_id = TestSupport::create_category($cb, 'prova');
+    my $child_cat_id = TestSupport::create_category($cb, 'foo', $ancestor_cat_id);
+    TestSupport::create_article($cb, '1', $ancestor_cat_id, undef, { 'display_order' => 1, 'publish_date' => '' });
+    TestSupport::create_article($cb, '2', $ancestor_cat_id, $child_cat_id, { 'display_order' => 2, 'publish_date' => '13/11/2009' });
+    TestSupport::create_article($cb, '3', $ancestor_cat_id, $child_cat_id, { 'display_order' => 3, 'publish_date' => '' });
+    my $r = $cb->(POST $site . "/admin/dummy/add",
                          { 'category' => $ancestor_cat_id,
                            'subcategory' => undef,
                            'tags' => 'tag1',
@@ -168,7 +111,7 @@ test_psgi $site_app, sub {
 
     $r = $cb->(GET "/api/v1/article/" . $element_id . '?callback=foo');
     is($r->code, 200, "Single article API correctly called as JSONP");
-    like($r->content, qr/^foo\(.*?\)/, "JSONP padding prent");
+    like($r->content, qr/^foo\(.*?\)/, "JSONP padding present");
 
     $r = $cb->(GET "/api/v1/article/" . $bad_id);
     is($r->code, 404, "Element not found");
