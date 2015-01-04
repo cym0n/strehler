@@ -8,10 +8,12 @@ Here is an example configuration for Strehler, code to add to your B<config.yml>
 
     Strehler:
         admin_secured: 0
+        dashboard_active: 1
         languages: ['it', 'en']
         default_language: 'it'
         timezone: 'Europe/Rome'
         extra_menu: [...]
+        dashboard: [...]
 
 Let's see wwhat all this means.
 
@@ -20,6 +22,10 @@ Let's see wwhat all this means.
 =item admin_secured
 
 With 0 can turn off the login in the backend. You should use this configuration only for development purpose, never in production.
+
+=item dashboard_active
+
+With dashboard_active = 1 dashboard is active. For more informations about dashboard see L<Strehler::Manual::Dashboard>.
 
 =item languages
 
@@ -40,6 +46,10 @@ Used by EX plugin. Default element will be the entity used by EX plugin when no 
 =item extra_menu
 
 Extra_menu part is described in the L<Strehler::Manual::ExtraEntityConfiguration>
+
+=item dashboard
+
+Extra_menu part is described in the L<Strehler::Manual::Dashboard>
 
 =back
 
