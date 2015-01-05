@@ -1,4 +1,4 @@
-#Dummy file to turn of login and make testing easier
+#Dummy file to turn off login and make testing easier
 
 Strehler:
     admin_secured: 0
