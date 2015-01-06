@@ -44,7 +44,7 @@ test_psgi $app, sub {
     TestSupport::create_article($cb, 'page1', $upper_cat_id, undef, { publish_date => '10/10/2014', title_en => undef, text_en => undef });
     TestSupport::create_article($cb, 'page2', $upper_cat_id, undef, { publish_date => '12/11/2015' });
     TestSupport::create_article($cb, 'page3', $lower_cat_id, undef, { display_order => 100, title_en => undef, text_en => undef });
-    TestSupport::create_article($cb, 'page4', $lower_cat_id, undef, { display_order => 1 });
+    TestSupport::create_article($cb, 'page4', $lower_cat_id, undef, { display_order => 1 , title_en => undef, text_en => undef });
 
     #Online: listed1, listed2, page1, page3
 
@@ -72,8 +72,8 @@ test_psgi $app, sub {
     $content = $r->decoded_content;
     like($content, list_box('0/1'), "List box correctly displayed - EN");
     like($content, page_box('0/2', 'KO'), "Page box correctly displayed - EN");
-    like($content, page_section_box('en', 'lower', 0, 0, 'order'), "Section for lower category matched - IT");
-    like($content, page_section_box('en', 'upper', 0, 1, 'date'), "Section for upper category matched - IT");
+    like($content, page_section_box('en', 'lower', 0, 0, 'order'), "Section for lower category matched - EN");
+    like($content, page_section_box('en', 'upper', 0, 1, 'date'), "Section for upper category matched - EN");
 };
 
 done_testing;
@@ -139,7 +139,7 @@ sub page_section_box
                  }
                  else
                  {
-                    $match .= '<span class="text-error">Content offline</span>.*?';
+                    $match .= '<span class="text-error">No content published!</span>.*?';
                  }
                  $match .= '</p>.*?' .
                  '</div>.*?' .

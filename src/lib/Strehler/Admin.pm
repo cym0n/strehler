@@ -827,11 +827,19 @@ get '/dashboard/:lang' => sub {
                     my %latest_unpub_data = $latest_unpublished->get_ext_data($language);
                     $piece->{'latest_unpublished'} = \%latest_unpub_data;
                 }
+                else
+                {
+                    $piece->{'latest_unpublished'} = undef;
+                }
                 if($latest_published)
                 {
                     $published_elements++;
                     my %latest_pub_data = $latest_published->get_ext_data($language);
                     $piece->{'latest_published'} = \%latest_pub_data;
+                }
+                else
+                {
+                    $piece->{'latest_published'} = undef;
                 }
             }
             $el->{'published_elements'} = $published_elements;
