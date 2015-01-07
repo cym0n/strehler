@@ -1,8 +1,10 @@
-???
+1.5.0
 ===
 
-__...__
+__Wen Jan 7 2015__
 
+* Dashboard
+* Language filter on list page
 * Test migrated to Plack::Test
 
 
