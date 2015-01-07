@@ -701,10 +701,12 @@ sub get_list
 
     $args{'order'} ||= 'desc';
     $args{'order_by'} ||= 'me.id';
+    $args{'order_by'} = 'me.id' if $args{'order_by'} eq 'id';
     $args{'entries_per_page'} ||= 20;
     $args{'page'} ||= 1;
     $args{'join'} ||= [];
     $args{'join'} = [ $args{'join'} ] if(! ref($args{'join'}));
+    
 
     my $forced_language = 0;
     my @languages_list = undef;

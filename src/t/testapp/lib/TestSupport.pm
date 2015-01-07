@@ -78,6 +78,32 @@ sub create_article
                       'text_en' => exists $custom_params->{'text_en'} ? $custom_params->{'text_en'} : 'Automatic test ' . $counter . ' - body - EN' 
                      ]);
 }
+sub list_reader
+{
+    my $content = shift;
+    my @ids;
+    my $table_line_flag = 0;
+    for (split /^/, $content) 
+    {
+        my $line = $_;
+        if($line =~ /<tr>/)
+        {
+            $table_line_flag = 1;
+        }
+        else
+        {
+            if($table_line_flag == 1)
+            {
+                if($line =~ /<td>([0-9]+)<\/td>/)
+                {
+                    push @ids, $1;
+                }
+            }
+            $table_line_flag = 0;
+        }
+    }
+    return @ids; 
+}
 
 1;
 

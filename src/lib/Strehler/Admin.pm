@@ -437,7 +437,6 @@ any '/:entity/list' => sub
     }
     $page ||= 1;
     $order ||= 'desc';
-    $order_by ||= 'id';
     my $entries_per_page = 20;
     my $search_parameters = { page => $page, entries_per_page => $entries_per_page, category_id => $cat_param, ancestor => $ancestor, order => $order, order_by => $order_by, language => $language};
     my $elements;
