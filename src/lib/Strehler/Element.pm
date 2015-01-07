@@ -1,6 +1,7 @@
 package Strehler::Element;
 
 use strict;
+use Carp 'carp';
 use Moo;
 use Dancer2 0.154000;
 use Dancer2::Plugin::DBIC;
@@ -526,7 +527,7 @@ sub get_last_by_order
     my $criteria = {};
     if($self->publishable())
     {
-        $criteria = { published => 1 };
+        $criteria->{'published'} = 1;
     }
     my @chapters = $category->row->$category_access->search($criteria , { order_by => { -desc => 'display_order' } });
     if($chapters[0])
@@ -553,7 +554,7 @@ sub get_last_by_date
     my $criteria = {};
     if($self->publishable())
     {
-        $criteria = { published => 1 };
+        $criteria->{'published'} = 1;
     }
     my @chapters = $category->row->$category_access->search( $criteria, { order_by => { -desc => 'publish_date' } });
     if($chapters[0])
@@ -569,6 +570,66 @@ sub get_last_by_date
     }
     return undef;
 }
+sub get_last_pubunpub
+{
+    my $self = shift;
+    my $cat = shift;
+    my $language = shift;
+    my $order = shift;
+    my $category = Strehler::Meta::Category->explode_name($cat); 
+    return (undef, undef) if(! $category->exists());
+    my $category_access = $self->category_accessor($category->row);
+    my $ordering_field;
+    if($order eq 'date' && $self->dated())
+    {
+        $ordering_field = 'publish_date';
+    }
+    elsif($order eq 'order' && $self->ordered())
+    {
+        $ordering_field = 'display_order';
+    }
+    else
+    {
+        carp "Bad order configuration on dashboard for $cat.";
+        $ordering_field = 'me.id';
+    }
+    my @chapters = $category->row->$category_access->search(undef, { order_by => { -desc => $ordering_field } });
+    my $pub = undef;
+    my $unpub = undef;
+    foreach my $c (@chapters)
+    {
+        my $el = $self->new($c->id);
+        if($el->has_language($language))
+        {
+            if(! $self->publishable())
+            {
+                return ($el, undef);  
+            }
+            if($el->get_attr('published') && $el->get_attr('published') == 1)
+            {
+                if(! $pub)
+                {
+                    $pub = $el;
+                    return ($pub, $unpub);
+                }
+            }
+            else
+            {
+               if(! $unpub)
+               {
+                    $unpub = $el;
+                    if($pub && $unpub)
+                    {
+                        return ($pub, $unpub);
+                    }
+               }
+            }
+        }
+    }
+    return ($pub, $unpub);
+}
+
+
 sub get_first_by_order
 {
     my $self = shift;
@@ -639,20 +700,44 @@ sub get_list
     }
 
     $args{'order'} ||= 'desc';
-    $args{'order_by'} ||= 'id';
+    $args{'order_by'} ||= 'me.id';
+    $args{'order_by'} = 'me.id' if $args{'order_by'} eq 'id';
     $args{'entries_per_page'} ||= 20;
     $args{'page'} ||= 1;
-    $args{'language'} ||= config->{Strehler}->{default_language};
     $args{'join'} ||= [];
     $args{'join'} = [ $args{'join'} ] if(! ref($args{'join'}));
+    
+
+    my $forced_language = 0;
+    my @languages_list = undef;
+    if($args{'language'})
+    {
+        $forced_language = 1;
+        if($self->multilang_children())
+        {
+            push @{$args{'join'}}, $self->multilang_children();
+        }
+        @languages_list = split(',',  $args{'language'});
+    }
+    else
+    {
+        $args{'language'} = config->{Strehler}->{default_language};
+    }
     my $no_paging = 0;
     my $default_page = 1;
     my $search_criteria = $args{'search'} || undef;
-
+    if($forced_language)
+    {
+        if($self->multilang_children())
+        {
+            my $languages_query;
+            $search_criteria->{$self->multilang_children() . '.language'} = \@languages_list;
+        }
+    }
     if($args{'order_by'} =~ /^(.*?)\.(.*?)$/)
     {
         my $order_join = $1;
-        push @{$args{'join'}}, $order_join;
+        push @{$args{'join'}}, $order_join if $order_join ne 'me';
     }
     my %seen = ();
     my @joins = grep { ! $seen{ $_ }++ } @{$args{'join'}};
@@ -668,7 +753,14 @@ sub get_list
     {
         if(exists $args{'published'})
         {
-            $search_criteria->{'published'} = $args{'published'};
+            if($args{'published'} == 1)
+            {
+                $search_criteria->{'published'} = $args{'published'};
+            }
+            elsif($args{'published'} == 0)
+            {
+                $search_criteria->{'published'} = [ undef, 0 ];
+            }
         }
     }
     if(exists $args{'tag'} && $args{'tag'})

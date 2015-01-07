@@ -27,24 +27,8 @@ test_psgi $app, sub {
 
     ok(Strehler::Element::Article->slugged(), "[configuration] Article has slug");
 
-    #LIST
-    $r = $cb->(GET '/admin/article/list');
-    is($r->code, 200, "Articles page correctly accessed");
-    $r = $cb->(GET '/admin/article/list?order-by=contents.title&order=asc');
-    is($r->code, 200, "Articles page correctly accessed (order parameters added)");
 
-    #ADD
-    $r = $cb->( POST '/admin/category/add', 
-                    [ 'category' => 'prova',
-                      'parent' => '',
-                      'tags-all' => 'tag1,tag2,tag3',
-                      'default-all' => 'tag2',
-                      'tags-article' => '',
-                      'default-article' => '',
-                      'tags-image' => '',
-                      'default-image' => '' ] );
-    my $cat = Strehler::Meta::Category->new({ category => 'prova' });
-    my $cat_id = $cat->get_attr('id');
+    my $cat_id = TestSupport::create_category($cb, 'prova');
 
     $r = $cb->(POST "/admin/article/add",
                 [ 'image' => undef,
@@ -60,9 +44,16 @@ test_psgi $app, sub {
                   'strehl-action' => 'submit-go' 
                 ]);
    is($r->code, 302, "Article submitted, navigation redirected to list (submit-go)");
-   my $articles = Strehler::Element::Article->get_list();
-   my $article = $articles->{'to_view'}->[0];
-   my $article_id = $article->{'id'};
+
+   #LIST
+   $r = $cb->(GET '/admin/article/list');
+   is($r->code, 200, "Articles page correctly accessed");
+   $r = $cb->(GET '/admin/article/list?order-by=contents.title&order=asc');
+   is($r->code, 200, "Articles page correctly accessed (order parameters added)");
+   my @ids = TestSupport::list_reader($r->content);
+   my $article_id = $ids[0];
+
+   #EDIT
    my $article_object = Strehler::Element::Article->new($article_id);
    ok($article_object->exists(), "Article correctly inserted");
    is($article_object->get_attr_multilang('slug', 'it'), $article_id . '-automatic-test-title-it', "Slug correctly created"); 
@@ -80,6 +71,7 @@ test_psgi $app, sub {
                   'strehl-action' => 'submit-continue' 
                 ]);
    is($r->code, 200, "Content changed, navigation still on edit page (submit-continue)");
+
    #TURN ON
    $r = $cb->(GET "/admin/article/turnon/$article_id");
    $article_object = Strehler::Element::Article->new($article_id);
@@ -92,8 +84,27 @@ test_psgi $app, sub {
    is($r->content, 15, "Last chapter function works");
 
    #DELETE
-   $r = $cb->(POST$site . "/admin/article/delete/$article_id");
+   $r = $cb->(POST $site . "/admin/article/delete/$article_id");
    $article_object = Strehler::Element::Article->new($article_id);
    ok(! $article_object->exists(), "Article correctly deleted");
+
+   #LIST FILTERED BY LANGUAGE
+   #Three contents for it, just one for en
+   TestSupport::create_article($cb, '1', $cat_id, undef, { publish_date => '10/10/2014', title_en => undef, text_en => undef });
+   TestSupport::create_article($cb, '2', $cat_id, undef, { publish_date => '10/10/2014', title_en => undef, text_en => undef });
+   TestSupport::create_article($cb, '3', $cat_id);
+
+   $r = $cb->(GET '/admin/article/list?language=it');
+   @ids = TestSupport::list_reader($r->content);
+   is($#ids, 2, "Three italian contents listed"); 
+   #Just a SQLite issue: id could be considered an ambiguous field. (No problems on MySQL)
+   $r = $cb->(GET '/admin/article/list?language=it&order-by=id');
+   @ids = TestSupport::list_reader($r->content);
+   is($#ids, 2, "Three italian contents listed, ordered by id"); 
+   $r = $cb->(GET '/admin/article/list?language=en');
+   @ids = TestSupport::list_reader($r->content);
+   is($#ids, 0, "One english content listed");
+    
+
 };
 done_testing;

@@ -51,6 +51,14 @@ on_plugin_import {
             my ($editor_menu, $admin_menu) = Strehler::Helpers::top_bars();
             $tokens->{'editor_menu'} = $editor_menu;
             $tokens->{'admin_menu'} = $admin_menu;
+            if($dsl->config->{'Strehler'}->{'dashboard_active'} && $dsl->config->{'Strehler'}->{'dashboard_active'} == 1)
+            {
+                $tokens->{'dashboard_active'} = 1;
+            }
+            else
+            {
+                $tokens->{'dashboard_active'} = 0;
+            }
         }));
     };
     

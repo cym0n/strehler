@@ -1,0 +1,52 @@
+=encoding utf8
+
+=head1 NAME
+
+Strehler::Manual::Dashboard - Dashboard configuration
+
+=head1 DESCRIPTION
+
+Dashboard is a support page that can be used as homepage for Strehler backend to do faster editing. Most of its element are designed to control routes written using L<Strehler::Dancer2::Plugin::EX>.
+
+=head1 CONFIGURATION
+
+Under B<Strehler> keyword in config.yml you can activate dashboard adding:
+
+    dashboard_active: 1
+
+Then all the configurations must be done under B<dashboard> keyword. Here a complete example:
+
+    dashboard:
+        - type: list
+          title: A list page
+          entity: article
+          category: listofarticles
+          by: order
+        - type: page
+          title: A custom page
+          elements: 
+            - section: section1
+              entity: article
+              category: lower
+            - section: section2
+              entity: image
+              category: upper
+              by: order
+            - section: section3
+              entity: article
+              category: dummy
+
+Every element represent a box in the Dashboard page. Boxes can be of two types, list or page.
+The title is the name of the box in the Dashboard pae, the entity the entity for the contents, category the category from which contents will be retrieved. By keyword can be order or date, indicate the field that will be used for ordering contents (ordering is always desc).
+
+Here a brief description of the two types of contents.
+
+=head2 LIST
+
+A list element represent a bunch of contents that, in the site, will be displayed as a list, as chapters of an online book, or articles from a blog. This type of block reflects L<Strehler::Dancer2::Plugin::EX> list keyword.
+
+=head2 PAGE
+
+A page is a custom content composed using more than a content managed by Strehler. Every content comes from a different category and can be from a different entity. All the contents are listed under the elements keyword. Section keyword is just a name displayed on the summary for the page, to make navigation easier. This type of block reflects L<Strehler::Dancer2::Plugin::EX> latest keyword.
+
+=cut

@@ -1,0 +1,21 @@
+#Dummy file for an environment with dashboard active
+
+Strehler:
+    admin_secured: 0
+    dashboard_active: 1
+    dashboard:
+        - type: list
+          title: listed contents
+          entity: article
+          category: listed
+          by: order
+        - type: page
+          title: a page
+          elements: 
+            - section: section1
+              entity: article
+              category: lower
+              by: order
+            - section: section2
+              entity: article
+              category: upper

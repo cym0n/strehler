@@ -47,9 +47,13 @@ table th .asc
 {
     height: 80px;
 }
-.articlelist .row
+.articlelist .table .row
 {
     padding-top: 10px;
+    padding-bottom: 10px;
+}
+.articlelist #tools .row
+{
     padding-bottom: 10px;
 }
 .articlelist .elementID
@@ -110,4 +114,41 @@ table th .asc
 {
     color: #8d8d8d;
 }
-
+.dashboard-first-buttons
+{
+    margin-bottom: 10px;
+}
+.dashboard-section-buttons
+{
+    padding-bottom: 35px;
+}
+.homepage .dashboard-box-p
+{
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.dashboard-title
+{
+    text-align: center;
+    margin-bottom: 5px;
+}
+.dashboard-subtitle
+{
+    text-align: center;
+    line-height: 10px;
+    margin-top: 0px;
+    color: #bdbdbd;
+    margin-bottom: 25px;
+}
+.backlink
+{
+    margin-bottom: 10px;
+}
+.dash-languages
+{
+    margin-bottom: 10px;
+}
+.tools-buttons
+{
+    margin-top: 10px;
+}

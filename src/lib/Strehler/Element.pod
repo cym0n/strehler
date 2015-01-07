@@ -232,6 +232,15 @@ Return Value: $element
 Same as get_first_by_order/get_last_by_order, using publish_date to order elements.
 You can use this only on elements with a publish_date field (like articles). Configure the entity as dated.
 
+=item get_last_pubunpub
+
+Arguments: $category, $language, $order
+
+Return Value: ($element, $element)
+
+This method is used by dashboard. It retrieves a couple of elements, the most recent unpublished one and the most recent published one. 
+Refer to L<Strehler::Dancer2::EX::Plugin> latest keyword to understand the logic.
+
 =back
 
 =head1 SEE ALSO

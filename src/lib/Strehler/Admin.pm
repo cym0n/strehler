@@ -9,6 +9,7 @@ use Strehler::Dancer2::Plugin::Admin;
 use HTML::FormFu 1.00;
 use HTML::FormFu::Element::Block;
 use Authen::Passphrase::BlowfishCrypt;
+use Time::localtime;
 use Strehler::Helpers; 
 use Strehler::Meta::Tag;
 use Strehler::Element::Image;
@@ -39,10 +40,16 @@ set views => $root_path . 'views';
 ##### Homepage #####
 
 get '/' => sub {
-    my %navbar;
-    $navbar{'home'} = "active";
-    my $check_cat = Strehler::Meta::Category->no_categories();
-    template "admin/index", { navbar => \%navbar};
+    if(config->{'Strehler'}->{'dashboard_active'} && config->{'Strehler'}->{'dashboard_active'} == 1)
+    {
+        redirect dancer_app->prefix . '/dashboard/' . config->{'Strehler'}->{'default_language'};
+    }
+    else
+    {
+        my %navbar;
+        $navbar{'home'} = "active";
+        template "admin/index", { navbar => \%navbar};
+    }
 };
 
 ##### Login/Logout #####
@@ -384,10 +391,16 @@ any '/:entity/list' => sub
     my $order_by = exists params->{'order-by'} ? params->{'order-by'} : session $entity . '-order-by';
     my $search = exists params->{'search'} ? params->{'search'} : session $entity . '-search';
     my $ancestor = exists params->{'ancestor'} ? params->{'ancestor'} : session $entity . '-ancestor';
+    my $language = exists params->{'language'} ? params->{'language'} : session $entity . '-language';
     my $wanted_cat = undef;
-    if(exists params->{'catname'})
+    if(exists params->{'strehl-catname'})
     {
-        $wanted_cat = Strehler::Meta::Category->explode_name(params->{'catname'});
+        $wanted_cat = Strehler::Meta::Category->explode_name(params->{'strehl-catname'});
+        if(! $wanted_cat->exists())
+        {
+           my $backlink = params->{'strehl-from'} || "/admin/$entity/list";
+           return template "admin/message", { message => "No elements in category: " . params->{'strehl-catname'}, backlink => $backlink }; 
+        }
         $cat_param = $wanted_cat->get_attr('id');
     }
     else
@@ -397,6 +410,7 @@ any '/:entity/list' => sub
             $wanted_cat = Strehler::Meta::Category->new($cat_param);
         }
     }
+    my $backlink = params->{'strehl-from'};
     my $cat = undef;
     my $subcat = undef;
     if($wanted_cat)
@@ -423,9 +437,8 @@ any '/:entity/list' => sub
     }
     $page ||= 1;
     $order ||= 'desc';
-    $order_by ||= 'id';
     my $entries_per_page = 20;
-    my $search_parameters = { page => $page, entries_per_page => $entries_per_page, category_id => $cat_param, ancestor => $ancestor, order => $order, order_by => $order_by};
+    my $search_parameters = { page => $page, entries_per_page => $entries_per_page, category_id => $cat_param, ancestor => $ancestor, order => $order, order_by => $order_by, language => $language};
     my $elements;
     if($search)
     {
@@ -441,11 +454,13 @@ any '/:entity/list' => sub
     session $entity . '-order-by' => $order_by;
     session $entity . '-search' => $search;
     session $entity . '-ancestor' => $ancestor;
-    template $list_view, { (entity => $entity, elements => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, search => $search, order => $order, order_by => $order_by, fields => $class->fields_list(), last_page => $elements->{'last_page'}), $class->entity_data(), custom_list_template => $custom_list_template };
+    session $entity . '-language' => $language;
+    template $list_view, { entity => $entity, elements => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, search => $search, order => $order, order_by => $order_by, fields => $class->fields_list(), last_page => $elements->{'last_page'}, $class->entity_data(), custom_list_template => $custom_list_template, backlink => $backlink, language => $language, languages => \@languages };
 };
 get '/:entity/turnon/:id' => sub
 {
     my $entity = params->{entity};
+    my $redirect = params->{'strehl-from'} || dancer_app->prefix . '/'. $entity . '/list';
     my $class = Strehler::Helpers::class_from_entity($entity);
     if((! $class->auto()) || (! $class->publishable()))
     {
@@ -456,11 +471,12 @@ get '/:entity/turnon/:id' => sub
     my $obj = $class->new($id);
     $obj->publish();
     Strehler::Element::Log->write(session->read('user'), 'publish', $entity, $id);
-    redirect dancer_app->prefix . '/'. $entity . '/list';
+    redirect $redirect;
 };
 get '/:entity/turnoff/:id' => sub
 {
     my $entity = params->{entity};
+    my $redirect = params->{'strehl-from'} || dancer_app->prefix . '/'. $entity . '/list';
     my $class = Strehler::Helpers::class_from_entity($entity);
     if((! $class->auto()) || (! $class->publishable()))
     {
@@ -471,7 +487,7 @@ get '/:entity/turnoff/:id' => sub
     my $obj = $class->new($id);
     $obj->unpublish();
     Strehler::Element::Log->write(session->read('user'), 'unpublish', $entity, $id);
-    redirect dancer_app->prefix . '/'. $entity . '/list';
+    redirect $redirect;
 };
 get '/:entity/delete/:id' => sub
 {
@@ -588,11 +604,25 @@ any '/:entity/add' => sub
         my $action = params->{'strehl-action'};
         if(! $action)
         {
-            redirect dancer_app->prefix . '/' . $entity . '/list';
+            if(session->read('backlink'))
+            {
+                redirect session->read('backlink');
+            }
+            else
+            {
+                redirect dancer_app->prefix . '/' . $entity . '/list';
+            }
         }
         elsif($action eq 'submit-go')
         {
-            redirect dancer_app->prefix . '/' . $entity . '/list';
+            if(session->read('backlink'))
+            {
+                redirect session->read('backlink');
+            }
+            else
+            {
+                redirect dancer_app->prefix . '/' . $entity . '/list';
+            }
         }
         elsif($action eq 'submit-continue')
         {
@@ -601,17 +631,78 @@ any '/:entity/add' => sub
     }
     my $fake_tags = $form->get_element({ name => 'tags'});
     $form->remove_element($fake_tags) if($fake_tags);
+    my $backlink = undef;
+    if(request->method eq 'GET')
+    {
+        my $wanted_cat;
+        if(exists params->{'strehl-catname'})
+        {
+            $wanted_cat = Strehler::Meta::Category->explode_name(params->{'strehl-catname'});
+            if($wanted_cat->exists())
+            {
+                my $parent = $wanted_cat->get_attr('parent');
+                if($parent)
+                {
+                    $form->default_values({ category => $parent, subcategory => $wanted_cat->get_attr('id')});
+                }
+                else
+                {
+                    $form->default_values({ category => $wanted_cat->get_attr('id')});
+                }
+            }    
+        }
+        if(exists params->{'strehl-today'})
+        {
+            my $tm = localtime;
+            my $tm_day = $tm->mday;
+            my $tm_month = $tm->mon + 1;
+            my $tm_year = $tm->year + 1900;
+            my $date_string = "$tm_day/$tm_month/$tm_year";
+            $form->default_values({ publish_date => $date_string });
+        }
+        if(exists params->{'strehl-max-order'})
+        {
+            if($wanted_cat && $wanted_cat->exists())
+            {
+                my $max = $class->max_category_order($wanted_cat->get_attr('id')) + 1;
+                $form->default_values({ display_order => $max });
+            }
+        }
+        if(exists params->{'strehl-from'})
+        {
+            $backlink = params->{'strehl-from'};
+            session 'backlink' => params->{'strehl-from'};
+        }
+        else
+        {
+            session 'backlink' => undef;
+        }
+    }
+    $backlink = $backlink || session->read('backlink');
     my %conf_data = $class->entity_data();
-    template "admin/generic_add", { entity => $entity, label => $class->label(), form => $form->render(), custom_snippet => $class->custom_add_snippet(), entity_conf => \%conf_data }
+    template "admin/generic_add", { entity => $entity, label => $class->label(), form => $form->render(), custom_snippet => $class->custom_add_snippet(), entity_conf => \%conf_data, backlink => $backlink }
 };
 get '/:entity/edit/:id' => sub {
     my $id = params->{id};
     my $entity = params->{entity};
     my $from_add = params->{from_add} || 0;
     my $class = Strehler::Helpers::class_from_entity($entity);
+    my $backlink = undef;
     if((! $class->auto()) || (! $class->updatable()))
     {
         return pass;
+    }
+    if(exists params->{'strehl-from'})
+    {
+        $backlink = params->{'strehl-from'};
+        session 'backlink' => params->{'strehl-from'};
+    }
+    else
+    {
+        if(! $from_add)
+        {
+            session 'backlink' => undef;
+        }
     }
     send_error("Access denied", 403) && return if ( ! $class->check_role(session->read('role')));
     my $el = $class->new($id);
@@ -624,7 +715,8 @@ get '/:entity/edit/:id' => sub {
     $form->default_values($form_data);
     my %conf_data = $class->entity_data();
     my $message = $from_add ? 'saved' : 'quiet';
-    template "admin/generic_add", {  entity => $entity, label => $class->label(), id => $id, form => $form->render(), message => $message, custom_snippet => $el->custom_add_snippet(), entity_conf => \%conf_data }
+    $backlink = $backlink || session->read('backlink');
+    template "admin/generic_add", {  entity => $entity, label => $class->label(), id => $id, form => $form->render(), message => $message, custom_snippet => $el->custom_add_snippet(), entity_conf => \%conf_data, backlink => $backlink }
 };
 post '/:entity/edit/:id' => sub
 {
@@ -652,11 +744,25 @@ post '/:entity/edit/:id' => sub
         my $action = params->{'strehl-action'};
         if(! $action)
         {
-            redirect dancer_app->prefix . '/' . $entity . '/list';
+            if(session->read('backlink'))
+            {
+                redirect session->read('backlink');
+            }
+            else
+            {
+                redirect dancer_app->prefix . '/' . $entity . '/list';
+            }
         }
         elsif($action eq 'submit-go')
         {
-            redirect dancer_app->prefix . '/' . $entity . '/list';
+            if(session->read('backlink'))
+            {
+                redirect session->read('backlink');
+            }
+            else
+            {
+                redirect dancer_app->prefix . '/' . $entity . '/list';
+            }
         }
         elsif($action eq 'submit-continue')
         {
@@ -665,8 +771,85 @@ post '/:entity/edit/:id' => sub
     }
     my $el = $class->new($id);
     my %conf_data = $class->entity_data();
-    template "admin/generic_add", { entity => $entity, label => $class->label(), id => $id, form => $form->render(), message => $message, custom_snippet => $el->custom_add_snippet(), entity_conf => \%conf_data }
+    my $backlink = session->read('backlink');
+    template "admin/generic_add", { entity => $entity, label => $class->label(), id => $id, form => $form->render(), message => $message, custom_snippet => $el->custom_add_snippet(), entity_conf => \%conf_data, backlink => $backlink }
 };
+
+##### DASHBOARD #####
+
+get '/dashboard/:lang' => sub {
+    if(! config->{'Strehler'}->{'dashboard_active'} || config->{'Strehler'}->{'dashboard_active'} == 0)
+    {
+        return pass;
+    }
+    my %navbar;
+    $navbar{'home'} = "active";
+    my $language = params->{'lang'};
+    my $dashboard_data = config->{'Strehler'}->{'dashboard'};
+    my $elid = 0;
+    foreach my $el (@{$dashboard_data})
+    {
+        $el->{id} = $elid++;
+        if($el->{'type'} eq 'list')
+        {
+            my $class = Strehler::Helpers::class_from_entity($el->{'entity'});
+            my $elements = $class->get_list({ entries_per_page => -1, 
+                                              category => $el->{'category'}, 
+                                              language => $language,
+                                              published => 1
+                                            });
+            my @list = @{$elements->{'to_view'}};
+            $el->{'counter'} = $#list+1;
+            my $unpub_elements = $class->get_list({ entries_per_page => -1, 
+                                              category => $el->{'category'}, 
+                                              language => $language,
+                                              published => 0
+                                            });
+            my @unpub_list = @{$unpub_elements->{'to_view'}};
+            $el->{'unpublished_counter'} = $#unpub_list+1;
+            my $by = $el->{'by'} || 'date';
+            $el->{'by'} = $by;
+        }
+        elsif($el->{'type'} eq 'page')
+        {
+            my $total_elements = 0;
+            my $published_elements = 0;
+            foreach my $piece (@{$el->{'elements'}})
+            {
+                $total_elements++;
+                my $class = Strehler::Helpers::class_from_entity($piece->{'entity'});
+                my $by = $piece->{'by'} || 'date';
+                $piece->{'by'} = $by;
+                my ($latest_published, $latest_unpublished) = $class->get_last_pubunpub($piece->{'category'}, $language, $by);
+                if($latest_unpublished)
+                {
+                    my %latest_unpub_data = $latest_unpublished->get_ext_data($language);
+                    $piece->{'latest_unpublished'} = \%latest_unpub_data;
+                }
+                else
+                {
+                    $piece->{'latest_unpublished'} = undef;
+                }
+                if($latest_published)
+                {
+                    $published_elements++;
+                    my %latest_pub_data = $latest_published->get_ext_data($language);
+                    $piece->{'latest_published'} = \%latest_pub_data;
+                }
+                else
+                {
+                    $piece->{'latest_published'} = undef;
+                }
+            }
+            $el->{'published_elements'} = $published_elements;
+            $el->{'total_elements'} = $total_elements;
+        }
+    }
+    template "admin/dashboard", { language => $language, languages => \@languages, navbar => \%navbar, dashboard => config->{'Strehler'}->{'dashboard'}};
+};
+
+
+
 
 ##### Helpers #####
 # They only manipulate form rendering and ACL

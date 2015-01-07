@@ -45,78 +45,13 @@ my $slug = undef;
 test_psgi $admin_app, sub {
     my $cb = shift;
     my $site = "http://localhost";
-
-    my $res = $cb->(POST "/admin/category/add",
-                         { 'category' => 'dummy',
-                           'parent' => '',
-                           'tags-all' => '',
-                           'default-all' => '',
-                           'tags-article' => '',
-                           'default-article' => '',
-                           'tags-image' => '',
-                           'default-image' => '' });
-    $res = $cb->(POST "/admin/category/add",
-                         { 'category' => 'upper',
-                           'parent' => '',
-                           'tags-all' => '',
-                           'default-all' => '',
-                           'tags-article' => '',
-                           'default-article' => '',
-                           'tags-image' => '',
-                           'default-image' => '' });
-    $res = $cb->(POST "/admin/category/add",
-                         { 'category' => 'lower',
-                           'parent' => '',
-                           'tags-all' => '',
-                           'default-all' => '',
-                           'tags-article' => '',
-                           'default-article' => '',
-                           'tags-image' => '',
-                           'default-image' => '' });
-    my $cat1 = Strehler::Meta::Category->explode_name('dummy');
-    my $cat1_id = $cat1->get_attr('id');
-    my $cat2 = Strehler::Meta::Category->explode_name('upper');
-    my $cat2_id = $cat2->get_attr('id');
-    my $cat3 = Strehler::Meta::Category->explode_name('lower');
-    my $cat3_id = $cat3->get_attr('id');
-    $res = $cb->(POST "/admin/article/add",
-                         { 'image' => undef,
-                           'category' => $cat1_id,
-                           'subcategory' => undef,
-                           'tags' => 'tag1',
-                           'display_order' => 14,
-                           'publish_date' => '12/03/2014',
-                           'title_it' => 'Automatic test - title - IT',
-                           'text_it' => 'Automatic test - body - IT',
-                           'title_en' => 'Automatic test - title - EN',
-                           'text_en' => 'Automatic test - body - EN'
-                          });
-    $res = $cb->(POST "/admin/article/add",
-                         { 'image' => undef,
-                           'category' => $cat2_id,
-                           'subcategory' => undef,
-                           'tags' => 'tag1',
-                           'display_order' => 14,
-                           'publish_date' => '12/03/2014',
-                           'title_it' => 'Upper test - title - IT',
-                           'text_it' => 'Upper test - body - IT',
-                           'title_en' => 'Upper test - title - EN',
-                           'text_en' => 'Upper test - body - EN'
-                          });
-    $res = $cb->(POST "/admin/article/add",
-                         { 'image' => undef,
-                           'category' => $cat3_id,
-                           'subcategory' => undef,
-                           'tags' => 'tag1',
-                           'display_order' => 14,
-                           'publish_date' => '12/03/2014',
-                           'title_it' => 'Lower test - title - IT',
-                           'text_it' => 'Lower test - body - IT',
-                           'title_en' => 'Lower test - title - EN',
-                           'text_en' => 'Lower test - body - EN'
-                          });
+    my $cat1_id = TestSupport::create_category($cb, 'dummy');
+    my $cat2_id = TestSupport::create_category($cb, 'upper');
+    my $cat3_id = TestSupport::create_category($cb, 'lower');
+    TestSupport::create_article($cb, '1', $cat1_id, undef);
+    TestSupport::create_article($cb, '2', $cat2_id, undef);
+    TestSupport::create_article($cb, '3', $cat3_id, undef);
     my $articles = Strehler::Element::Article->get_list({ext => 1, category => 'dummy'});
-
     $slug = $articles->{'to_view'}->[0]->{'slug'};
 };
 test_psgi $site_app, sub {

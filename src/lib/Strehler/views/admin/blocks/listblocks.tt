@@ -24,7 +24,12 @@
 [% BLOCK pager %]
     <div class="row">
         [% INCLUDE pages %]
-        <a href="add" class="span1 offset8 btn btn-primary">New</a>
+    </div>
+    <div class="row">
+        <a href="add" class="span1 offset9 btn btn-primary">New</a>
+        [% IF backlink %]
+        <a href="[% backlink %]" class="span1 btn btn-inverse">Back</a>
+        [% END %]
     </div>
 [% END %]
 [% BLOCK pager_no_new %]
@@ -33,42 +38,64 @@
     </div>
 [% END %]
 [% BLOCK categoryfilter %]
-        <div class="row">
-         <div class="span2">
-            Filter on category:
-         </div>
-         <div class="span3">
-            <select id="category_selector" rel="ancestor">
-            </select>
+<div class="span5">
+<div><strong>Filter</strong></div>
+<div class="form-inline">
+    [% IF categorized %]
+    <div class="row">
+        <label>Category:</label>
+        <select id="category_selector" rel="ancestor"></select>
+    </div>
+    <div class="row">
+        <label>Subcategory:</label>
+        <select id="subcat"></select>
+    </div>
+    [% END %]
+    [% IF multilang == 1 && languages.size > 1 %]
+    <div class="row">
+        <label>Language:</label>
+        [% FOR l in languages %]
+        <label class="checkbox">
+            <input id="language_selector_[% l %]" type="checkbox"> [% l %]
+        </label>
+        [% END %]
+    </div>
+    [% END %]
+    [% IF (multilang == 1 && languages.size > 1) || categorized %]
+    <div class="row">
+        <div class="btn-group tools-buttons">
+            <a href="#" id="filter-button" class="btn">Filter</a>
+            <a href="[% request.path_info %]?cat=&page=&language=" class="btn">Reset filter</a>
         </div>
-        <div class="span3 select">
-            <select id="subcat">
-            </select>
-        </div>
-        <div class="btn-group span3">
-        <a href="#" id="filter-button" class="btn">Filter</a>
-        <a href="[% request.path_info %]?cat=&page=" class="btn">Reset filter</a>
-        </div>
-        </div>
+    </div>
+    [% ELSE %]
+    <div>
+        <p>No filter available</p>
+    </div>
+    [% END %]
+</div>
+</div>
 [% END %]
 [% BLOCK searchbox %]
+<div class="span5">
+<div><strong>Search</strong></div>
+<div class="form-inline">
     <div class="row">
-    <div class="span1">
-         Search:
+        <input id="search-field" type="text" name="search" value="[% search %]" />
     </div>
-    <div class="span3"><input id="search-field" type="text" name="search" value="[% search %]" /></div>
-    <div class="btn-group span3">
-    <a href="#" id="search-button" class="btn">Search</a>
-    <a href="[% request.path_info %]?search=" class="btn">Reset search</a>
+    <div class="row">
+        <div class="btn-group tools-buttons">
+            <a href="#" id="search-button" class="btn">Search</a>
+            <a href="[% request.path_info %]?search=" class="btn">Reset search</a>
+        </div>
     </div>
-    </div>
+</div>
+</div>
 [% END %]
 [% BLOCK tools %]
-        <div id="list-tools"><a href="#" class="btn btn-warning btn-tools"><span id="tools-label">Tools</span></a> 
+        <div id="list-tools"><a href="#" class="btn btn-warning btn-tools"><span id="tools-label">Tools</span></a>
         <div id="tools" class="well" style="margin-left:0">        
-        [% IF categorized %]
-            [% INCLUDE categoryfilter %]
-        [% END %]
+        [% INCLUDE categoryfilter %]
         [% INCLUDE searchbox %]
         </div>
         </div>
@@ -89,26 +116,43 @@
 <script>
   function go_to_filtered()
   {
+    var raw = "[% request.request_uri %]";
+    raw = raw.replace(/\?.*/, '');
+    destination = raw+"?page=1"
     cat = get_final_category();
-    if(! cat)
+    if( cat )
+    {   
+        is_ancestor = cat.match(/^anc:(\d+)/);
+        if(is_ancestor)
+        {
+            var param = "ancestor="+is_ancestor[1];
+        }
+        else
+        {
+            var param = "cat="+cat;
+        }
+        destination += "&"+param;
+    }
+    var language_param = ''
+    [% FOR l in languages %]
+        if($("#language_selector_[% l %]").prop( "checked"))
+        {
+              if(language_param != '')
+              {
+                language_param += ',';
+              }
+              language_param +="[% l %]";          
+        }
+    [% END %]
+    if(! cat && language_param == '')
     {
         alert("nothing to do");
         return false;
     }
-    is_ancestor = cat.match(/^anc:(\d+)/);
-    if(is_ancestor)
+    if(language_param != '')
     {
-        var param = "ancestor="+is_ancestor[1];
+        destination+="&language="+language_param;
     }
-    else
-    {
-        var param = "cat="+cat;
-    }
-    var raw = "[% request.request_uri %]";
-
-    raw = raw.replace(/\?.*/, '');
-    destination = raw+"?page=1&"+param;
-
     window.location.href = destination;
     return false;
   }
@@ -144,6 +188,10 @@
         {
             $( "#list-tools" ).accordion("option", "active", 0);
         }
+        [% FOREACH l IN language.split(',') %]
+            $("#language_selector_[% l %]").prop( "checked", true );
+            $( "#list-tools" ).accordion("option", "active", 0);
+        [% END %]
   });
 </script>
 

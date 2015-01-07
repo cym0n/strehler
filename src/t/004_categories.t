@@ -77,17 +77,7 @@ test_psgi $app, sub {
     ok($cat3->exists(), "Child category inserted and retrieved");
     my $cat3_id = $cat3->get_attr('id');
 
-    $r = $cb->( POST '/admin/article/add', 
-                    [ 'image' => undef,
-                      'category' => $cat3_id,
-                      'subcategory' => undef,
-                      'tags' => 'tag1',
-                      'display_order' => 14,
-                      'publish_date' => '12/03/2014',
-                      'title_it' => 'Automatic test - title - IT',
-                      'text_it' => 'Automatic test - body - IT',
-                      'title_en' => 'Automatic test - title - EN',
-                      'text_en' => 'Automatic test - body - EN' ]);
+    TestSupport::create_article($cb, undef, $cat3_id, undef);
 
     #SELECT
     my $select_string = '<option value="' . $cat->get_attr('id') . '">prova</option>';
