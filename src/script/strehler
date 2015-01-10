@@ -26,6 +26,7 @@ my %available_commands = ('commands' => 'show available commands',
                           'demo' => 'create a complete Dancer2 App with Strehler already configured, for trial purpose',
                           'initdb' => 'generate strehler tables on the wanted database',
                           'layout' => 'import Strehler Admin layout, mandatory for admin interface extension',
+                          'pwdchange' => 'reset password for admin user',
                       );
 
 my $command = shift;
@@ -61,6 +62,25 @@ elsif($command eq 'demo')
     layout();
     say "Demo SUCCESSFULLY DEPLOYED!";
     say "Run Dancer2 devserver under $app, go to ADDRESS:PORT/admin, insert admin as user and as password and ENJOY!\n\n";
+}
+elsif($command eq 'pwdchange')
+{
+    print "-pwdchange- command: $available_commands{'pwdchange'}\n\n";
+    my $schema = shift;
+    say "Getting database info...";
+    my ($schema_name, $dsn, $user, $password) = get_database($schema);
+    exit() if(! $schema_name);
+    say "Checking connection info...";
+    exit() if(! check_database_connection($dsn, $user, $password));
+    say "Connected to database...";
+    my $conn = Strehler::Schema->connect($dsn, $user, $password);
+    my $user_password = choose_admin_password();
+    my ($hash, $salt) = encrypt_password($user_password);
+   
+    my $admin_user = $conn->resultset('User')->find({ user => 'admin' });
+    $admin_user->password_hash($hash);
+    $admin_user->password_salt($salt);
+    $admin_user->update();
 }
 else
 {
@@ -156,40 +176,14 @@ sub initdb
 
     print "-initdb- command: $available_commands{'initdb'}\n\n";
 
+    my $schema_name;
     my $dsn;
     my $user;
     my $password;
 
     if(! $demo)
     {
-        #    my $runner = Dancer2::Core::Runner->new( caller => getcwd() . "/bin" );
-        #my $app = Dancer2::Core::App->new(
-        #    name            => "dummy",
-        #    environment     => $runner->environment,
-        #    location        => $runner->location,
-        #    runner_config   => $runner->config,
-        #    postponed_hooks => $runner->postponed_hooks,
-        #);
-  
-        if(! config->{'plugins'}->{'DBIC'})
-        {
-            say "Can't read config.yml or no DBIC plugin configured in it\n";
-            exit();
-        }
-        my $schema_name = $wanted_schema || 'default';
-        if(! config->{'plugins'}->{'DBIC'}->{$schema_name} && $wanted_schema)
-        {
-            say "Schema $wanted_schema doesn't exists in the config.yml file we're using!\n";
-            exit();
-        }
-        if(! $wanted_schema && ! config->{'plugins'}->{'DBIC'}->{'default'})
-        {
-            my @availables = keys %{config->{'plugins'}->{'DBIC'}};
-            $schema_name = $availables[0];
-        }
-        $dsn = config->{'plugins'}->{'DBIC'}->{$schema_name}->{'dsn'};
-        $user = config->{'plugins'}->{'DBIC'}->{$schema_name}->{'user'};
-        $password = config->{'plugins'}->{'DBIC'}->{$schema_name}->{'pass'};
+        ($schema_name, $dsn, $user, $password) = get_database($wanted_schema);
         print "Schema: $schema_name\n\n";
         say "DSN: $dsn";
         say "User: $user";
@@ -212,57 +206,29 @@ sub initdb
     }
     else
     {
+        $schema_name = 'default';
         $dsn = "dbi:SQLite:dbname=demo.sqlite";
         $user = undef;
         $password = undef;
     }
-
-    #DBI used just to check database connection
-    my $connection_status = DBI->connect($dsn, $user, $password);    
-    if(! $connection_status)
+    if(! $schema_name)
     {
-       print "\nConnection to database $dsn (user: $user, password: $password) failed!\nInit db operation aborted\n\n"; 
-       exit();
+        exit();
     }
-    else
-    {
-        $connection_status->disconnect();
-    }
+    exit() if(! check_database_connection($dsn, $user, $password));
 
     my $schema = Strehler::Schema->connect($dsn, $user, $password);
     $schema->deploy( { add_drop_table => 1 } );
     my $user_password;
     if(! $demo)
     {
-        my $password_chosen;
-        while(! $password_chosen)
-        {
-            ReadMode(2, *STDIN);
-            say "Enter password for admin:";
-            $user_password = <STDIN>;
-            say "Re-type password:";
-            my $user_password_confirm = <STDIN>;
-            ReadMode(0);
-            if($user_password eq $user_password_confirm)
-            {
-                $password_chosen = 1;
-            }
-            else
-            {
-                say "Password inputs don't match!";
-            }
-        }
-        chomp $user_password;
+        $user_password = choose_admin_password();
     }
     else
     {
         $user_password = 'admin';
     }
-    my $ppr = Authen::Passphrase::BlowfishCrypt->new(
-                    cost => 8, salt_random => 1,
-                    passphrase => $user_password);
-    my $hash = $ppr->hash_base64;
-    my $salt = $ppr->salt_base64;
+    my ($hash, $salt) = encrypt_password($user_password);
     $schema->populate('User', [[qw/user password_hash password_salt role/],
                               ['admin', $hash, $salt, 'admin']]);
 
@@ -331,3 +297,88 @@ sub demo_components
         }
     }
 }
+
+sub get_database
+{
+    my $schema  = shift;
+    if(! config->{'plugins'}->{'DBIC'})
+    {
+        say "Can't read config.yml or no DBIC plugin configured in it\n";
+        return (undef, undef, undef)
+    }
+    my $schema_name = $schema || 'default';
+    if(! config->{'plugins'}->{'DBIC'}->{$schema_name} && $schema)
+    {
+        say "Schema $schema doesn't exists in the config.yml file we're using!\n";
+        return (undef, undef, undef, undef)
+    }
+    if(! $schema && ! config->{'plugins'}->{'DBIC'}->{'default'})
+    {
+        my @availables = keys %{config->{'plugins'}->{'DBIC'}};
+        $schema_name = $availables[0];
+    }
+    if(! $schema_name)
+    {
+        say "DBIC plugin bad configuration!\n";
+        return (undef, undef, undef, undef)
+    }
+    my $dsn = config->{'plugins'}->{'DBIC'}->{$schema_name}->{'dsn'};
+    my $user = config->{'plugins'}->{'DBIC'}->{$schema_name}->{'user'};
+    my $password = config->{'plugins'}->{'DBIC'}->{$schema_name}->{'pass'};
+    return ($schema_name, $dsn, $user, $password);
+}
+
+sub check_database_connection
+{
+    my ($dsn, $user, $password) = @_;
+    my $connected = 0;
+    #DBI used just to check database connection
+    my $connection_status = DBI->connect($dsn, $user, $password);    
+    if(! $connection_status)
+    {
+       print "\nConnection to database $dsn (user: $user, password: $password) failed!\nInit db operation aborted\n\n"; 
+    }
+    else
+    {
+       $connected = 1;
+    }   
+    $connection_status->disconnect();
+    return $connected;
+}
+
+sub choose_admin_password
+{
+    my $password_chosen;
+    my $user_password;
+    while(! $password_chosen)
+    {
+        ReadMode(2, *STDIN);
+        say "Enter password for admin:";
+        $user_password = <STDIN>;
+        say "Re-type password:";
+        my $user_password_confirm = <STDIN>;
+        ReadMode(0);
+        if($user_password eq $user_password_confirm)
+        {
+            $password_chosen = 1;
+        }
+        else
+        {
+            say "Password inputs don't match!";
+        }
+    }
+    chomp $user_password;
+    return $user_password;
+}
+
+sub encrypt_password
+{
+    my $password = shift;
+    my $ppr = Authen::Passphrase::BlowfishCrypt->new(
+                    cost => 8, salt_random => 1,
+                    passphrase => $password);
+    my $hash = $ppr->hash_base64;
+    my $salt = $ppr->salt_base64;
+    return ($hash, $salt);
+}
+
