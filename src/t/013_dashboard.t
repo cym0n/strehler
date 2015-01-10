@@ -74,6 +74,8 @@ test_psgi $app, sub {
     like($content, page_box('0/2', 'KO'), "Page box correctly displayed - EN");
     like($content, page_section_box('en', 'lower', 0, 0, 'order'), "Section for lower category matched - EN");
     like($content, page_section_box('en', 'upper', 0, 1, 'date'), "Section for upper category matched - EN");
+    $r = $cb->(GET "/admin/dashboard/es");
+    is($r->code, 404, "Dashboard with a not configured language returns 404");
 };
 
 done_testing;

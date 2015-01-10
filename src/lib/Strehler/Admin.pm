@@ -785,6 +785,11 @@ get '/dashboard/:lang' => sub {
     my %navbar;
     $navbar{'home'} = "active";
     my $language = params->{'lang'};
+    if ( ! grep { $_ eq $language } @languages )
+    {
+        return pass;
+    }
+
     my $dashboard_data = config->{'Strehler'}->{'dashboard'};
     my $elid = 0;
     foreach my $el (@{$dashboard_data})
