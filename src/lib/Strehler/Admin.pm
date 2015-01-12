@@ -11,6 +11,7 @@ use HTML::FormFu::Element::Block;
 use Authen::Passphrase::BlowfishCrypt;
 use Time::localtime;
 use Strehler::Helpers; 
+use Strehler::Forms;
 use Strehler::Meta::Tag;
 use Strehler::Element::Image;
 use Strehler::Element::Article;
@@ -33,8 +34,6 @@ my $module_file_path = __FILE__;
 my $root_path = abs_path($module_file_path);
 $root_path =~ s/Admin\.pm//;
 
-my $form_path = $root_path . 'forms';
-
 set views => $root_path . 'views';
 
 ##### Homepage #####
@@ -55,7 +54,7 @@ get '/' => sub {
 ##### Login/Logout #####
 
 any '/login' => sub {
-    my $form = form_login();
+    my $form = Strehler::Forms::form_login();
     my $params_hashref = params;
     $form->process($params_hashref);
     my $message;
@@ -106,7 +105,7 @@ ajax '/image/src/:id' => sub
 any '/user/add' => sub
 {
     send_error("Access denied", 403) && return if ( ! Strehler::Element::User->check_role(session->read('role')));
-    my $form = form_user('add');
+    my $form = Strehler::Forms::form_user('add');
     my $params_hashref = params;
     $form->process($params_hashref);
     my $message = "";
@@ -131,7 +130,7 @@ get '/user/edit/:id' => sub {
     my $id = params->{id};
     my $user = Strehler::Element::User->new($id);
     my $form_data = $user->get_form_data();
-    my $form = form_user('edit');
+    my $form = Strehler::Forms::form_user('edit');
     $form->default_values($form_data);
     template "admin/user", { form => $form->render() }
 };
@@ -139,7 +138,7 @@ get '/user/edit/:id' => sub {
 post '/user/edit/:id' => sub
 {
     send_error("Access denied", 403) && return if ( ! Strehler::Element::User->check_role(session->read('role')));
-    my $form = form_user('edit');
+    my $form = Strehler::Forms::form_user('edit');
     my $id = params->{id};
     my $params_hashref = params;
     $form->process($params_hashref);
@@ -163,7 +162,7 @@ post '/user/edit/:id' => sub
 get '/user/password' => sub {
     my $user = Strehler::Element::User->get_from_username(session->read('user'));
     my $form_data = $user->get_form_data();
-    my $form = form_user('password');
+    my $form = Strehler::Forms::form_user('password');
     $form->default_values($form_data);
     template "admin/user", { form => $form->render() }
 };
@@ -172,7 +171,7 @@ post '/user/password' => sub
     send_error("Wrong call", 500) && return if params->{user};
     my $user = Strehler::Element::User->get_from_username(session->read('user'));
     my $id = $user->get_attr('id');
-    my $form = form_user('password');
+    my $form = Strehler::Forms::form_user('password');
     my $params_hashref = params;
     $form->process($params_hashref);
     my $message;
@@ -211,7 +210,7 @@ any '/category/list' => sub
     my @entities = Strehler::Helpers::get_categorized_entities();
 
     #THE FORM
-    my $form = form_category_fast();
+    my $form = Strehler::Forms::form_category_fast();
     my $params_hashref = params;
     $form->process($params_hashref);
     if($form->submitted_and_valid)
@@ -226,7 +225,7 @@ any '/category/list' => sub
 any '/category/add' => sub
 {
     send_error("Access denied", 403) && return if ( ! Strehler::Meta::Category->check_role(session->read('role')));
-    my $form = form_category();
+    my $form = Strehler::Forms::form_category();
     my $params_hashref = params;
     my @entities = Strehler::Helpers::get_categorized_entities();
     $form->process($params_hashref);
@@ -246,14 +245,14 @@ get '/category/edit/:id' => sub {
     my $form_data = $category->get_form_data(\@entities);
     $form_data->{'prev-name'} = $form_data->{'category'};
     $form_data->{'prev-parent'} = $form_data->{'parent'};
-    my $form = form_category();
+    my $form = Strehler::Forms::form_category();
     $form->default_values($form_data);
     template "admin/category", { form => $form->render() }
 };
 post '/category/edit/:id' => sub
 {
     send_error("Access denied", 403) && return if ( ! Strehler::Meta::Category->check_role(session->read('role')));
-    my $form = form_category();
+    my $form = Strehler::Forms::form_category();
     my $id = params->{id};
     my $params_hashref = params;
     my @entities = Strehler::Helpers::get_categorized_entities();
@@ -588,9 +587,9 @@ any '/:entity/add' => sub
     }
 
     send_error("Access denied", 403) && return if ( ! $class->check_role(session->read('role')));
-    my $form = form_generic($class->form(), $class->multilang_form(), 'add'); 
+    my $form = Strehler::Forms::form_generic($class->form(), $class->multilang_form(), 'add', undef, \@languages); 
     my $params_hashref = params;
-    $form = Strehler::Admin::tags_for_form($form, $params_hashref);
+    $form = Strehler::Forms::tags_for_form($form, $params_hashref);
     if(! $form)
     {
         return pass;
@@ -707,7 +706,7 @@ get '/:entity/edit/:id' => sub {
     send_error("Access denied", 403) && return if ( ! $class->check_role(session->read('role')));
     my $el = $class->new($id);
     my $form_data = $el->get_form_data();
-    my $form = form_generic($class->form(), $class->multilang_form(), 'edit', $form_data->{'category'}); 
+    my $form = Strehler::Forms::form_generic($class->form(), $class->multilang_form(), 'edit', $form_data->{'category'}, \@languages); 
     if(! $form)
     {
         return pass;
@@ -728,13 +727,13 @@ post '/:entity/edit/:id' => sub
         return pass;
     }
     send_error("Access denied", 403) && return if ( ! $class->check_role(session->read('role')));
-    my $form = form_generic($class->form(), $class->multilang_form(), 'edit'); 
+    my $form = Strehler::Forms::form_generic($class->form(), $class->multilang_form(), 'edit', undef, \@languages); 
     if(! $form)
     {
         return pass;
     }
     my $params_hashref = params;
-    $form = Strehler::Admin::tags_for_form($form, $params_hashref);
+    $form = Strehler::Forms::tags_for_form($form, $params_hashref);
     $form->process($params_hashref);
     my $message = 'quiet';
     if($form->submitted_and_valid)
@@ -852,191 +851,6 @@ get '/dashboard/:lang' => sub {
     }
     template "admin/dashboard", { language => $language, languages => \@languages, navbar => \%navbar, dashboard => config->{'Strehler'}->{'dashboard'}};
 };
-
-
-
-
-##### Helpers #####
-# They only manipulate form rendering and ACL
-
-sub form_login
-{
-    my $form = HTML::FormFu->new;
-    $form->auto_error_class('error-msg');
-    $form->load_config_file( $form_path . '/admin/login.yml' );
-    return $form;    
-}
-
-sub form_category
-{
-    my $form = HTML::FormFu->new;
-    $form->auto_error_class('error-msg');
-    $form->load_config_file( $form_path . '/admin/category.yml' );
-    my $category = $form->get_element({ name => 'parent'});
-    $category->options(Strehler::Meta::Category->make_select());
-    $form = add_dynamic_fields_for_category($form); 
-    my $prev_name = $form->element( { type => 'Hidden', name => 'prev-name'} );
-    my $prev_parent = $form->element( { type => 'Hidden', name => 'prev-parent'} );
-    my $position = $form->get_element({ name => 'save' });
-    $form->insert_before($prev_name, $position);
-    $form->insert_before($prev_parent, $position);
-    return $form;
-}
-
-sub form_category_fast
-{
-    my $form = HTML::FormFu->new;
-    $form->auto_error_class('error-msg');
-    $form->load_config_file( $form_path . '/admin/category_fast.yml' );
-    my $parent = $form->get_element({ name => 'parent'});
-    $parent->options(Strehler::Meta::Category->make_select());
-    return $form;
-}
-
-sub form_user
-{
-    my $action = shift;
-    my $form = HTML::FormFu->new;
-    $form->auto_error_class('error-msg');
-    $form->load_config_file( $form_path . '/admin/user.yml' );
-    if($action eq 'add')
-    {
-        $form->constraint({ name => 'password', type => 'Required' }); 
-        $form->constraint({ name => 'password-confirm', type => 'Required' }); 
-        $form->constraint({ name => 'user', type => 'Required' }); 
-    }
-    elsif($action eq 'edit')
-    {
-        $form->constraint({ name => 'user', type => 'Required' }); 
-    }
-    elsif($action eq 'password')
-    {
-        my $user = $form->get_element({ name => 'user' });
-        $user->attributes->{readonly} = 'readonly';
-        $user->attributes->{disabled} = 'disabled';
-        my $role = $form->get_element({ name => 'role' });
-        $role->attributes->{readonly} = 'readonly';
-        $role->attributes->{disabled} = 'disabled';
-    }
-    return $form;
-}
-
-sub form_generic
-{
-    my $conf = shift;
-    my $multilang_conf = shift;
-    my $action = shift;
-    my $has_sub = shift;
-    if(! $conf)
-    {
-        return undef;
-    }
-
-    my $form = HTML::FormFu->new;
-    $form->auto_error_class('error-msg');
-    $form->load_config_file( $conf );
-    if($multilang_conf)
-    {
-        $form = add_multilang_fields($form, \@languages, $multilang_conf); 
-    }
-    my $category_block = $form->get_element({ name => 'categoryblock'});
-    my $category = $category_block ?
-        $category_block->get_element({ name => 'category'}) :
-        $form->get_element({ name => 'category'});
-    if($category)
-    {
-       $category->options(Strehler::Meta::Category->make_select());
-       my $subcategory = $category_block ?
-            $category_block->get_element({ name => 'subcategory'}) :
-            $form->get_element({ name => 'subcategory'});
-       if($subcategory)
-       {
-           $subcategory->options(Strehler::Meta::Category->make_select($has_sub));
-       }
-    }
-    return $form;
-}
-
-
-sub tags_for_form
-{
-    my $form = shift;
-    my $params_hashref = shift;
-    if($params_hashref->{'configured-tag'})
-    {
-        if(ref($params_hashref->{'configured-tag'}) eq 'ARRAY')
-        {
-            $params_hashref->{'tags'} = join(',', @{$params_hashref->{'configured-tag'}});
-        }
-        else
-        {
-            $params_hashref->{'tags'} = $params_hashref->{'configured-tag'};
-        }
-        my $position = $form->get_element({ name => 'categoryblock'}) || $form->get_element({ name => 'subcategory'});
-        $form->insert_after($form->element({ type => 'Text', name => 'tags'}), $position);
-    }
-    elsif($params_hashref->{'tags'})
-    { 
-        my $position = $form->get_element({ name => 'categoryblock'}) || $form->get_element({ name => 'subcategory'});
-        $form->insert_after($form->element({ type => 'Text', name => 'tags'}), $position);
-    }
-    return $form;
-}
-
-sub add_multilang_fields
-{
-    my $form = shift;
-    my $lan_ref = shift;
-    my $config = shift;
-    my $position = $form->get_element({ name => 'save' });
-    for(@{$lan_ref})
-    {
-        my $lan = $_;
-        my $form_multilan = HTML::FormFu->new;
-        $form_multilan->load_config_file($config);
-        for(@{$form_multilan->get_elements()})
-        {
-            my $el = $_;
-            $el->name($el->name() . '_' . $lan);
-            $el->label($el->label . " (" . $lan . ")");
-            $form->insert_before($_->clone(), $position);
-        }
-    }
-    return $form;
-}
-
-sub add_dynamic_fields_for_category
-{
-    my $form = shift;
-    my $config = $form_path . '/admin/category_dynamic.yml';
-    my $position = $form->get_element({ name => 'save' });
-    for(Strehler::Helpers::get_categorized_entities())
-    {
-        my $ent = $_;
-        my $form_dyna = HTML::FormFu->new;
-        my $fieldset = HTML::FormFu::Element::Fieldset->new;
-        $fieldset->element( { name => 'placeholder', type => 'Blank' } );
-        my $f_position = $fieldset->get_element( { name => 'placeholder' } );
-        $form_dyna->load_config_file($config);
-        for(@{$form_dyna->get_elements()})
-        {
-            my $el = $_;
-            if(ref($el) eq "HTML::FormFu::Element::Block")
-            {
-                $el->content("Per " . $ent);
-                $el->name($el->name() . '-' . $ent);
-                $fieldset->insert_before($el->clone(), $f_position);
-            }
-            else
-            {
-                $el->name($el->name() . '-' . $ent);
-                $fieldset->insert_before($el->clone(), $f_position);
-            }
-        }
-        $form->insert_before($fieldset->clone(), $position);
-    }
-    return $form;
-}
 
 =encoding utf8
 

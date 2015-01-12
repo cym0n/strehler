@@ -71,6 +71,10 @@ This will copy under your public directory a strehler directory containing all t
 
 strehler statics will erase the public/strehler directory every time you'll call it, to replace it with a fresh one from the package. Please, don't use this directory for your custom elements if you want to use this script also to update resources after a Strehler package update.
 
+B<Note>: You can launch initdb and statics toghere with the command
+
+    strehler batch
+
 =head2 CONFIG.YML
 
 Strehler needs something configured in your B<config.yml> file.
