@@ -10,9 +10,14 @@ use Dancer2::Core::Runner;
 use Dancer2::Core::App;
 use Strehler;
 use Strehler::Schema;
+use Strehler::Forms;
+require Strehler::Helpers;
+require Strehler::Meta::Category;
 use Term::ReadKey;
 use Authen::Passphrase::BlowfishCrypt;
 use DBI;
+use Data::Dumper;
+use lib getcwd() . "/lib";
 
 BEGIN
 {
@@ -28,6 +33,7 @@ my %available_commands = ('commands' => 'show available commands',
                           'layout' => 'import Strehler Admin layout, mandatory for admin interface extension',
                           'pwdchange' => 'reset password for admin user',
                           'batch' => 'as initdb+layout, as for standard installation',
+                          'categories' => 'load categories in DB from a file',
                       );
 
 my $command = shift;
@@ -90,6 +96,98 @@ elsif($command eq 'batch')
 {
     initdb(@parameters);
     statics(@parameters);
+}
+elsif($command eq 'categories')
+{
+    my $filename = shift || 'categories.txt';
+    open( my $file, "< $filename" ) or die ("Impossible to open $filename");
+    my @to_create;
+    my %post_data;
+    foreach my $line (<$file>)
+    {
+        #Tags management
+        if($line =~ /^ /)
+        {
+            chomp $line;
+            if(! %post_data )
+            {
+                say "Tags line with no category. File malformed?";
+            }
+            say "Processing tags line for category " . $post_data{'category'};
+            $line =~ s/^ +//;
+            my @tags_data = split ';', $line;
+            $post_data{'tags-' . $tags_data[0]} = $tags_data[1];
+            $post_data{'default-' . $tags_data[0]} = $tags_data[2];
+        }
+        #Category management
+        else
+        {
+            if(%post_data)
+            {
+                my %insert = %post_data;
+                push @to_create, \%insert;
+                %post_data = ();
+            }
+            chomp $line;
+            say "Processing $line...";
+            my @elements = split '/', $line;
+            if($#elements > 1 || $#elements == -1)
+            {
+                say "Bad category name";
+                %post_data = ();
+                continue;
+            }
+            elsif($#elements == 1)
+            {
+                #Category with parent
+                my $parent = Strehler::Meta::Category->explode_name($elements[0]);
+                if($parent->exists())
+                {
+                    $post_data{'parent'} = $parent->get_attr('id');
+                }
+                else
+                {
+                        $post_data{'created_parent'} = 1;
+                        $post_data{'parent'} = undef;
+                        my %parent_data = ( category => $elements[0] );
+                        push @to_create, \%parent_data;
+                }
+                $post_data{'category'} = $elements[1];
+            }
+            else
+            {
+                $post_data{'category'} = $line;
+            }
+            my $cat = Strehler::Meta::Category->explode_name($post_data{'category'});
+            if($cat->exists())
+            {
+                $post_data{'post_id'} = $cat->get_attr('id');
+                $post_data{'prev-name'} = $post_data{'category'};
+                $post_data{'prev-parent'} = $post_data{'parent'};
+                say "Category already exists...";
+            }
+            else
+            {
+                $post_data{'post_id'} = undef;
+                say "New category...";
+            }
+        
+        }
+    }
+    if(%post_data)
+    {
+        my %insert = %post_data;
+        push @to_create, \%insert;
+    }
+    my $parent = undef;
+    foreach my $c (@to_create)
+    {
+        if($c->{'created_parent'} && $c->{'created_parent'} == 1)
+        {
+            $c->{'parent'} = $parent;
+        }
+        $parent = create_category($c->{'post_id'}, $c);
+    }
 }
 else
 {
@@ -382,3 +480,33 @@ sub encrypt_password
     return ($hash, $salt);
 }
 
+sub create_category
+{
+    my $id = shift;
+    my $post = shift;
+    my $form = Strehler::Forms::form_category();
+    my @entities = Strehler::Helpers::get_categorized_entities();
+    my $posted_id;
+    say Dumper($post);
+
+    $form->process($post);
+    if($form->submitted_and_valid)
+    {
+        $posted_id = Strehler::Meta::Category->save_form($id, $form, \@entities);    
+        if($id)
+        {
+            Strehler::Element::Log->write('*** AUTO ***', 'edit', 'category', $posted_id);
+        }
+        else
+        {
+            Strehler::Element::Log->write('*** AUTO ***', 'add', 'category', $posted_id);
+        }
+    }
+    else
+    {
+        say "Problems elaborating data...";
+        print $form->render;
+        return undef;
+    }    
+    return $posted_id;
+}

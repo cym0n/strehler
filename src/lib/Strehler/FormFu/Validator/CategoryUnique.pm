@@ -10,7 +10,7 @@ use base 'HTML::FormFu::Validator';
 sub validate_value {
     my $self = shift;
     my $query = $self->form->query();
-    my $parent = $query->param('parent');
+    my $parent = $query->param('parent') || "";
     my $category = $query->param('category');
     my $prev_parent = $query->param('prev-parent') || "";
     my $prev_name = $query->param('prev-name') || "";
