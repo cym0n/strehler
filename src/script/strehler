@@ -109,12 +109,15 @@ elsif($command eq 'categories')
         if($line =~ /^ /)
         {
             chomp $line;
+            $line =~ s/^ +//;
+            $line =~ s/#.*//g;
+            $line =~ s/ +$//;
+            next if($line =~ /^ *$/);
             if(! %post_data )
             {
                 say "Tags line with no category. File malformed?";
             }
             say "Processing tags line for category " . $post_data{'category'};
-            $line =~ s/^ +//;
             my @tags_data = split ';', $line;
             $post_data{'tags-' . $tags_data[0]} = $tags_data[1];
             $post_data{'default-' . $tags_data[0]} = $tags_data[2];
@@ -122,6 +125,8 @@ elsif($command eq 'categories')
         #Category management
         else
         {
+            $line =~ s/#.*//g;
+            $line =~ s/ +$//;
             if(%post_data)
             {
                 my %insert = %post_data;
@@ -129,13 +134,15 @@ elsif($command eq 'categories')
                 %post_data = ();
             }
             chomp $line;
-            say "Processing $line...";
+            next if($line =~ /^ *$/);
+            say "\n=== Processing $line ===";
+            $post_data{'line'} = $line;
             my @elements = split '/', $line;
             if($#elements > 1 || $#elements == -1)
             {
                 say "Bad category name";
                 %post_data = ();
-                continue;
+                next;
             }
             elsif($#elements == 1)
             {
@@ -147,9 +154,10 @@ elsif($command eq 'categories')
                 }
                 else
                 {
+                        say "Creating parent...";
                         $post_data{'created_parent'} = 1;
                         $post_data{'parent'} = undef;
-                        my %parent_data = ( category => $elements[0] );
+                        my %parent_data = ( line => $elements[0], category => $elements[0] );
                         push @to_create, \%parent_data;
                 }
                 $post_data{'category'} = $elements[1];
@@ -158,7 +166,7 @@ elsif($command eq 'categories')
             {
                 $post_data{'category'} = $line;
             }
-            my $cat = Strehler::Meta::Category->explode_name($post_data{'category'});
+            my $cat = Strehler::Meta::Category->explode_name($line);
             if($cat->exists())
             {
                 $post_data{'post_id'} = $cat->get_attr('id');
@@ -171,7 +179,6 @@ elsif($command eq 'categories')
                 $post_data{'post_id'} = undef;
                 say "New category...";
             }
-        
         }
     }
     if(%post_data)
@@ -180,6 +187,7 @@ elsif($command eq 'categories')
         push @to_create, \%insert;
     }
     my $parent = undef;
+    print "\n";
     foreach my $c (@to_create)
     {
         if($c->{'created_parent'} && $c->{'created_parent'} == 1)
@@ -187,7 +195,16 @@ elsif($command eq 'categories')
             $c->{'parent'} = $parent;
         }
         $parent = create_category($c->{'post_id'}, $c);
+        if($parent)
+        {
+            say $c->{'line'} . " correctly submitted";
+        }
+        else
+        {
+            say "Problems submitting " . $c->{'line'};
+        }
     }
+    say "\nCategory generation completed!\n\n";
 }
 else
 {
@@ -487,7 +504,6 @@ sub create_category
     my $form = Strehler::Forms::form_category();
     my @entities = Strehler::Helpers::get_categorized_entities();
     my $posted_id;
-    say Dumper($post);
 
     $form->process($post);
     if($form->submitted_and_valid)
@@ -504,8 +520,6 @@ sub create_category
     }
     else
     {
-        say "Problems elaborating data...";
-        print $form->render;
         return undef;
     }    
     return $posted_id;
