@@ -34,6 +34,7 @@ my %available_commands = ('commands' => 'show available commands',
                           'pwdchange' => 'reset password for admin user',
                           'batch' => 'as initdb+layout, as for standard installation',
                           'categories' => 'load categories in DB from a file',
+                          'testelement' => 'test if a custom element has been created the right way',
                       );
 
 my $command = shift;
@@ -205,6 +206,192 @@ elsif($command eq 'categories')
         }
     }
     say "\nCategory generation completed!\n\n";
+}
+elsif($command eq 'testelement')
+{
+    my $class = shift;
+    if(! $class)
+    {
+        say "No entity package provided";
+        exit(0);
+    }
+    else
+    {
+        say "Checking $class...\n";
+    }
+    eval("require $class");
+    if($@)
+    {
+        say $@;
+        say "Bad entity package provided";
+        exit();
+    }
+    my $rs;
+    eval
+    {
+        $rs = $class->get_schema()->resultset($class->ORMObj());
+    };
+    if(! $rs)
+    {
+        say "WARNING: Wrong ORM object linked to the entity";
+    }
+
+    if($class->multilang_children ne '' && ! $class->multilang_form())
+    {
+        say " WARNING: element has multilang db management, but not multilang form";
+    }
+    if($class->multilang_children eq '' && $class->multilang_form())
+    {
+        say " WARNING: element has multilang form, but not multilang db management";
+    }
+
+    my $form;
+    say "Form:";
+    eval
+    {
+        $form = Strehler::Forms::form_generic($class->form(), $class->multilang_form(), 'add', undef, ['en', 'it']); 
+    };
+    if($form)
+    {
+        say "    Form generation OK!";
+    }
+    else
+    {
+        say " WARNING: Form generation KO!";
+        print $@;
+        print "\n";
+    }
+
+    if($class->categorized())
+    {
+        my $all_ok = 1;
+        say "Categorized item:";
+        if(! $class->get_schema()->resultset('Category')->result_source()->related_source($class->metaclass_data('category_accessor')))
+        {
+            $all_ok = 0;
+            say " WARNING: Bad category accessor!";
+        }
+        if($form)
+        {
+            if(! $form->get_element({ name => 'categoryblock'}))
+            {
+                $all_ok = 0;
+                say " WARNING: No category block configured in form (or category configured in a non-standard way)!";
+            }
+        }
+        else
+        {
+            say " WARNING: Form not generated! No check for category field";
+        }
+        if(! $class->get_schema()->resultset($class->ORMObj())->result_source()->has_column('category'))
+        {
+        
+            $all_ok = 0;
+            say " WARNING: No category column on DB table!";
+        }
+        if($all_ok)
+        {
+            say "    Category configuration OK!";
+        }
+    }    
+    if($class->slugged())
+    {
+        say "Slugged item:";
+        if($class->multilang_slug)
+        {
+            if($class->get_schema()->resultset($class->ORMObj())->result_source()->related_source($class->multilang_children())->has_column('slug'))
+            {
+                say "    Slug configuration OK!";
+            }
+            else
+            {
+                say " WARNING: No slug column on DB!";
+            }
+        }
+        else
+        {
+            if($class->get_schema()->resultset($class->ORMObj())->result_source()->has_column('slug'))
+            {
+                say "    Slug configuration OK!";
+            }
+            else
+            {
+                say " WARNING: No slug column on DB!";
+            }
+        }
+    }
+    if($class->ordered())
+    {
+        my $all_ok = 1;
+        say "Ordered item:";        
+        if($form)
+        {
+            if(! $form->get_element({ name => 'orderblock'}))
+            {
+                $all_ok = 0;
+                say " WARNING: No order block configured in form (or block configured in a non-standard way)!";
+            }
+        }
+        else
+        {
+            say " WARNING: Form not generated! No check for display_order field";
+        }
+        if(! $class->get_schema()->resultset($class->ORMObj())->result_source()->has_column('display_order'))
+        {
+            $all_ok = 0;
+            say " WARNING: No display_orderd column on DB table!";
+        }
+        if($all_ok)
+        {
+            say "    Order configuration OK!";
+        }
+    }
+    if($class->dated())
+    {
+        my $all_ok = 1;
+        say "Dated item:";        
+        if($form)
+        {
+            if(! $form->get_element({ name => 'publish_date'}))
+            {
+                $all_ok = 0;
+                say " WARNING: No publish_date field configured in form!";
+            }
+        }
+        else
+        {
+            say " WARNING: Form not generated! No check for publish_date field";
+        }
+        if(! $class->get_schema()->resultset($class->ORMObj())->result_source()->has_column('publish_date'))
+        {
+            $all_ok = 0;
+            say " WARNING: No publish_date column on DB table!";
+        }
+        if($all_ok)
+        {
+            say "    Date configuration OK!";
+        }
+    }
+    if($class->publishable())
+    {
+        my $all_ok = 1;
+        say "Publishable item:";        
+        if(! $class->get_schema()->resultset($class->ORMObj())->result_source()->has_column('published'))
+        {
+            $all_ok = 0;
+            say " WARNING: No published column on DB table!";
+        }
+        if($all_ok)
+        {
+            say "    Publishable configuration OK!";
+        }
+    }
+    if($class->add_main_column_span() < 1 || $class->add_main_column_span() > 12)
+    {
+        say " WARNING: form box out of twitter bootstrap boundaries"    
+    }
+
+
 }
 else
 {

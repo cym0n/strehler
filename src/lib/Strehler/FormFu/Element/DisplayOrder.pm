@@ -10,6 +10,7 @@ after BUILD => sub {
     my $root_path = __FILE__;
     $root_path =~ s/FormFu\/Element\/DisplayOrder\.pm//;
     $self->load_config_file($root_path . "forms/admin/elements/display_order.yml");
+    $self->name("orderblock");
     return;
 };
 
