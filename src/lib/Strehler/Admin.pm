@@ -796,23 +796,34 @@ get '/dashboard/:lang' => sub {
         $el->{id} = $elid++;
         if($el->{'type'} eq 'list')
         {
-            my $class = Strehler::Helpers::class_from_entity($el->{'entity'});
-            my $elements = $class->get_list({ entries_per_page => -1, 
-                                              category => $el->{'category'}, 
-                                              language => $language,
-                                              published => 1
-                                            });
-            my @list = @{$elements->{'to_view'}};
-            $el->{'counter'} = $#list+1;
-            my $unpub_elements = $class->get_list({ entries_per_page => -1, 
-                                              category => $el->{'category'}, 
-                                              language => $language,
-                                              published => 0
-                                            });
-            my @unpub_list = @{$unpub_elements->{'to_view'}};
-            $el->{'unpublished_counter'} = $#unpub_list+1;
-            my $by = $el->{'by'} || 'date';
-            $el->{'by'} = $by;
+            my $cat = Strehler::Meta::Category->explode_name($el->{'category'});
+            if($cat->exists())
+            {
+                $el->{'nocategory'} = 0;
+                my $class = Strehler::Helpers::class_from_entity($el->{'entity'});
+                my $elements = $class->get_list({ entries_per_page => -1, 
+                                                category => $el->{'category'}, 
+                                                language => $language,
+                                                published => 1
+                                                });
+                my @list = @{$elements->{'to_view'}};
+                $el->{'counter'} = $#list+1;
+                my $unpub_elements = $class->get_list({ entries_per_page => -1, 
+                                                category => $el->{'category'}, 
+                                                language => $language,
+                                                published => 0
+                                                });
+                my @unpub_list = @{$unpub_elements->{'to_view'}};
+                $el->{'unpublished_counter'} = $#unpub_list+1;
+                my $by = $el->{'by'} || 'date';
+                $el->{'by'} = $by;
+            }
+            else
+            {
+                $el->{'counter'} = 0;
+                $el->{'unpublished_counter'} = 0;
+                $el->{'nocategory'} = 1;
+            }
         }
         elsif($el->{'type'} eq 'page')
         {
@@ -820,29 +831,39 @@ get '/dashboard/:lang' => sub {
             my $published_elements = 0;
             foreach my $piece (@{$el->{'elements'}})
             {
-                $total_elements++;
-                my $class = Strehler::Helpers::class_from_entity($piece->{'entity'});
-                my $by = $piece->{'by'} || 'date';
-                $piece->{'by'} = $by;
-                my ($latest_published, $latest_unpublished) = $class->get_last_pubunpub($piece->{'category'}, $language, $by);
-                if($latest_unpublished)
+                my $cat = Strehler::Meta::Category->explode_name($piece->{'category'});
+                if($cat->exists())
                 {
-                    my %latest_unpub_data = $latest_unpublished->get_ext_data($language);
-                    $piece->{'latest_unpublished'} = \%latest_unpub_data;
+                    $el->{'nocategory'} = 0;
+                    $total_elements++;
+                    my $class = Strehler::Helpers::class_from_entity($piece->{'entity'});
+                    my $by = $piece->{'by'} || 'date';
+                    $piece->{'by'} = $by;
+                    my ($latest_published, $latest_unpublished) = $class->get_last_pubunpub($piece->{'category'}, $language, $by);
+                    if($latest_unpublished)
+                    {
+                        my %latest_unpub_data = $latest_unpublished->get_ext_data($language);
+                        $piece->{'latest_unpublished'} = \%latest_unpub_data;
+                    }
+                    else
+                    {
+                        $piece->{'latest_unpublished'} = undef;
+                    }
+                    if($latest_published)
+                    {
+                        $published_elements++;
+                        my %latest_pub_data = $latest_published->get_ext_data($language);
+                        $piece->{'latest_published'} = \%latest_pub_data;
+                    }
+                    else
+                    {
+                        $piece->{'latest_published'} = undef;
+                    }
                 }
                 else
                 {
-                    $piece->{'latest_unpublished'} = undef;
-                }
-                if($latest_published)
-                {
-                    $published_elements++;
-                    my %latest_pub_data = $latest_published->get_ext_data($language);
-                    $piece->{'latest_published'} = \%latest_pub_data;
-                }
-                else
-                {
-                    $piece->{'latest_published'} = undef;
+                    $total_elements++;
+                    $piece->{'nocategory'} = 1;
                 }
             }
             $el->{'published_elements'} = $published_elements;

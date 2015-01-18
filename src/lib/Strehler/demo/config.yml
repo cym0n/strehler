@@ -19,7 +19,20 @@ plugins:
 
 #This is a Strehler minimal configuration
 Strehler:
+    dashboard_active: 1
     admin_secured: 1
     languages: ['it', 'en']
     default_language: 'it'
     timezone: 'Europe/Rome'
+    dashboard:
+       - title: Dummy list
+         type: list
+         category: dummy
+       - type: page
+         title: A page
+         elements:
+            - section: upper
+              category: upper
+            - section: lower
+              category: lower
+              

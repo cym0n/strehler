@@ -19,8 +19,9 @@
         </div>
         [% ELSE %]
         <div class="row">
+            <div class="span10">
             <p>Add a content to the upper category to see something here</p>
-        </div>
+            </div>
         </div>
         [% END %]
     </div>
@@ -36,7 +37,9 @@
         </div>
         [% ELSE %]
         <div class="row">
-            <p>Add a content to the upper category to see something here</p>
+            <div class="span10">
+            <p>Add a content to the lower category to see something here</p>
+            </div>
         </div>
         [% END %]
     </div>
