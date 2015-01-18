@@ -3,12 +3,14 @@
 
 ___...___
 
-Bugfix
-Strehler script enhancements:
-    pwdchange
-    batch
-    categories
-    testelement
+* Strehler script enhancements:
+    * pwdchange
+    * batch
+    * categories
+    * testelement
+* Dashboard links block
+* Bugfix
+* Refactoring
 
 
 1.5.1
@@ -16,7 +18,7 @@ Strehler script enhancements:
 
 __Thu Jan 8 2015__
 
-* Urgen bugfix about image upload
+* Urgent bugfix about image upload
 
 
 1.5.0
