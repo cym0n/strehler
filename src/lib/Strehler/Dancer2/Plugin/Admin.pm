@@ -59,6 +59,7 @@ on_plugin_import {
             {
                 $tokens->{'dashboard_active'} = 0;
             }
+            $tokens->{'warnings'} = 1 if(! Strehler::Helpers::check_statics());
         }));
     };
     

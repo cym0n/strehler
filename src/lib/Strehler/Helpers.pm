@@ -2,6 +2,7 @@ package Strehler::Helpers;
 
 use strict;
 use Dancer2 0.154000;
+use Strehler;
 use Unicode::Normalize;
 use Text::Unidecode;
 
@@ -121,6 +122,21 @@ sub class_from_plural
         }
     }
     return undef;
+}
+
+sub public_directory
+{
+    my $public_directory = app->config->{public} || path( app->config_location, 'public' );
+    return $public_directory;
+}
+
+sub check_statics
+{
+    my $public_directory = public_directory();
+    open(my $version_file, "< $public_directory/strehler/VERSION") || return 0;
+    my $data = <$version_file>;
+    chomp $data;
+    return $data eq $Strehler::STATICS_VERSION ? 1: 0;
 }
 
 =encoding utf8

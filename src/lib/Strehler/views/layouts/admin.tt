@@ -50,9 +50,13 @@
       [% END %]
     </ul>
   </div>
-  <!-- div class="alert alert-error">
-      <strong>Warning</strong>: there're open issues. Go to <a href="/admin/strehl-sys/messages">system messages</a>
-  </div -->
+  [% IF ! no_war %]
+  [% IF warnings == 1 %]
+  <div class="alert alert-error">
+      <strong>Warning</strong>: there're open issues. Go to <a href="/admin/sys/warnings">system messages</a>
+  </div>
+  [% END %]
+  [% END %]
 </div>
 [% content %]
 <div id="footer" class="span10">

@@ -156,3 +156,10 @@ table th .asc
 {
     margin-top: 10px;
 }
+.navbar .alert
+{
+    max-height: 20px;
+    padding-left: 30px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+}

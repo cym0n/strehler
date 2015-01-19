@@ -1,0 +1,17 @@
+<div class="span12">
+    <h1>Warnings</h1>
+</div>
+<div class="span12">
+    <p>Open issues about Strehler maintenance will be displayed here:</p>
+    [% IF messages.size > 0 %]
+    [% FOR m in messages %]
+    <div class="alert alert-error">
+      [% m %]
+    </div> 
+    [% END %]
+    [% ELSE %]
+    <div class="alert alert-success">
+      No problems in the system
+    </div> 
+    [% END %]    
+</div>

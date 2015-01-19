@@ -873,6 +873,17 @@ get '/dashboard/:lang' => sub {
     template "admin/dashboard", { language => $language, languages => \@languages, navbar => \%navbar, dashboard => config->{'Strehler'}->{'dashboard'}};
 };
 
+### MESSAGES ###
+
+get '/sys/warnings' => sub {
+    my @messages = ();
+    if(! Strehler::Helpers::check_statics())
+    {
+        push @messages, "Strehler statics are not aligned with installed release. Run <strong>strehler statics</strong> to solve."
+    }
+    template "admin/warnings", { messages => \@messages, no_war => 1 };
+};
+
 =encoding utf8
 
 =head1 NAME

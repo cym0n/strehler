@@ -4,6 +4,8 @@ package Strehler;
 
 # ABSTRACT: A light-weight, nerdy, smart CMS in perl based on Perl Dancer2 framework.
 
+our $STATICS_VERSION = 1;
+
 =encoding utf8
 
 =head1 NAME

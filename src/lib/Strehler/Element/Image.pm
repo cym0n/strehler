@@ -103,7 +103,7 @@ sub save_form
     
     if($img)
     {
-        $public = app->config->{public} || path( app->config_location, 'public' );
+        $public = Strehler::Helpers::public_directory();
         $ref = '/upload/' . $img->filename;
         $path = $public . $ref;
         $img->copy_to($path);
