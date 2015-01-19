@@ -24,6 +24,7 @@
       [% IF user %]
       <li class="dropdown user"><a href="#" class="dropdown-toggle user-toggle" data-toggle="dropdown"><b class="icon-user"></b>  [% user %]<b class="caret"></b></a>
         <ul class="dropdown-menu">
+            <li><a href="/">Site homepage</a></li>
             <li><a href="/admin/user/password">Change password</a></li>
             <li><a href="/admin/logout">Logout</a></li>
         </ul>
@@ -48,8 +49,10 @@
       [% END %]
       [% END %]
     </ul>
-
   </div>
+  <!-- div class="alert alert-error">
+      <strong>Warning</strong>: there're open issues. Go to <a href="/admin/strehl-sys/messages">system messages</a>
+  </div -->
 </div>
 [% content %]
 <div id="footer" class="span10">
