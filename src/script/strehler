@@ -16,6 +16,7 @@ require Strehler::Meta::Category;
 use Term::ReadKey;
 use Authen::Passphrase::BlowfishCrypt;
 use DBI;
+use DBIx::Class::Schema::Loader qw/ make_schema_at /;
 use Data::Dumper;
 use lib getcwd() . "/lib";
 
@@ -32,9 +33,10 @@ my %available_commands = ('commands' => 'show available commands',
                           'initdb' => 'generate strehler tables on the wanted database',
                           'layout' => 'import Strehler Admin layout, mandatory for admin interface extension',
                           'pwdchange' => 'reset password for admin user',
-                          'batch' => 'as initdb+layout, as for standard installation',
+                          'batch' => 'as initdb+layout, standard installation. Eventually launch also schemadump',
                           'categories' => 'load categories in DB from a file',
                           'testelement' => 'test if a custom element has been created the right way',
+                          'schemadump' => 'call dbicdump to generate DBIx::Class packages',
                       );
 
 my $command = shift;
@@ -95,8 +97,15 @@ elsif($command eq 'pwdchange')
 }
 elsif($command eq 'batch')
 {
-    initdb(@parameters);
-    statics(@parameters);
+    my $schema = shift;
+    my $public_dir = shift;
+    initdb($schema);
+    statics($public_dir);
+    my ($schema_name, $dsn, $user, $password, $schema_class) = get_database($schema);
+    if($schema_class ne 'Strehler::Schema')
+    {
+        schemadump($schema);
+    }
 }
 elsif($command eq 'categories')
 {
@@ -390,8 +399,10 @@ elsif($command eq 'testelement')
     {
         say " WARNING: form box out of twitter bootstrap boundaries"    
     }
-
-
+}
+elsif($command eq 'schemadump')
+{
+    schemadump(@parameters);
 }
 else
 {
@@ -486,10 +497,11 @@ sub initdb
     my $dsn;
     my $user;
     my $password;
+    my $schema_class;
 
     if(! $demo)
     {
-        ($schema_name, $dsn, $user, $password) = get_database($wanted_schema);
+        ($schema_name, $dsn, $user, $password, $schema_class) = get_database($wanted_schema);
         exit() if(! $schema_name);
         print "Schema: $schema_name\n\n";
         say "DSN: $dsn" if $dsn;
@@ -606,13 +618,13 @@ sub get_database
     if(! config->{'plugins'}->{'DBIC'})
     {
         say "Can't read config.yml or no DBIC plugin configured in it\n";
-        return (undef, undef, undef)
+        return (undef, undef, undef, undef, undef)
     }
     my $schema_name = $schema || 'default';
     if(! config->{'plugins'}->{'DBIC'}->{$schema_name} && $schema)
     {
         say "Schema $schema doesn't exists in the config.yml file we're using!\n";
-        return (undef, undef, undef, undef)
+        return (undef, undef, undef, undef, undef)
     }
     if(! $schema && ! config->{'plugins'}->{'DBIC'}->{'default'})
     {
@@ -622,12 +634,13 @@ sub get_database
     if(! $schema_name)
     {
         say "DBIC plugin bad configuration!\n";
-        return (undef, undef, undef, undef)
+        return (undef, undef, undef, undef, undef)
     }
     my $dsn = config->{'plugins'}->{'DBIC'}->{$schema_name}->{'dsn'};
     my $user = config->{'plugins'}->{'DBIC'}->{$schema_name}->{'user'};
     my $password = config->{'plugins'}->{'DBIC'}->{$schema_name}->{'pass'};
-    return ($schema_name, $dsn, $user, $password);
+    my $schema_class = config->{'plugins'}->{'DBIC'}->{$schema_name}->{'schema_class'};
+    return ($schema_name, $dsn, $user, $password, $schema_class);
 }
 
 sub check_database_connection
@@ -710,4 +723,29 @@ sub create_category
         return undef;
     }    
     return $posted_id;
+}
+
+sub schemadump
+{
+    my $schema = shift;
+    my ($schema_name, $dsn, $user, $password, $schema_class) = get_database($schema);
+    if(! $schema_name)
+    {
+        print "\n\n";
+        exit(0);
+    }
+    if($schema_class eq 'Strehler::Schema')
+    {
+        say "You can't use Strehler::Schema as schema package name!";
+        print "\n\n";
+        exit(0);
+    }
+    say "DBIx::Class packages will be created now under lib directory using DBIx::Class:Schema::Loader...";
+    say "Target schema: $schema_class";
+    make_schema_at(
+        $schema_class,
+        { debug => 1, dump_directory => './lib', 
+          components => ["InflateColumn::DateTime"] },
+        [ $dsn, $user, $password]
+    );
 }
