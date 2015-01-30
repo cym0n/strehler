@@ -172,6 +172,11 @@ sub entity_js
     my $self = shift;
     return $self->_property('entity_js', '/strehler/js/article.js');
 }
+sub install
+{
+    return "Standard entity. No installation is needed.";
+}
+
 
 =encoding utf8
 

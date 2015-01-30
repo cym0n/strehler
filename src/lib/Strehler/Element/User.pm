@@ -156,6 +156,12 @@ sub get_from_username
     }
 }
 
+sub install
+{
+    return "Standard entity. No installation is needed.";
+}
+
+
 =encoding utf8
 
 =head1 NAME

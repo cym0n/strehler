@@ -105,6 +105,12 @@ sub custom_list_template
     return $views_path . "/admin/blocks/log_list_block.tt";
 }
 
+sub install
+{
+    return "Standard entity. No installation is needed.";
+}
+
+
 
 =encoding utf8
 

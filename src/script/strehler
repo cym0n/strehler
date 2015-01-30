@@ -27,6 +27,11 @@ BEGIN
 
 my $strehler_root = $INC{'Strehler.pm'};
 $strehler_root =~ s/\.pm$//;
+
+my $configured_schema_name = config->{'Strehler'}->{'schema'};
+my $configured_public_directory = Strehler::Helpers::public_directory();
+my $configured_views_directory = app->config->{views} || path( app->config_location, 'views' );
+
 my %available_commands = ('commands' => 'show available commands',
                           'statics' => 'copy of static resources needed by Strehler to Dancer2 App',
                           'demo' => 'create a complete Dancer2 App with Strehler already configured, for trial purpose',
@@ -37,9 +42,10 @@ my %available_commands = ('commands' => 'show available commands',
                           'categories' => 'load categories in DB from a file',
                           'testelement' => 'test if a custom element has been created the right way',
                           'schemadump' => 'call dbicdump to generate DBIx::Class packages',
+                          'initentity' => 'configure environment for not-standard entities'
                       );
 
-my $command = shift;
+my $command = shift || "";
 my @parameters = @ARGV;
 
 print "\n### Strehler CMS Manager ###\n\n";
@@ -79,7 +85,7 @@ elsif($command eq 'demo')
 }
 elsif($command eq 'pwdchange')
 {
-    my $schema = shift;
+    my $schema = $configured_schema_name;
     say "Getting database info...";
     my ($schema_name, $dsn, $user, $password) = get_database($schema);
     exit() if(! $schema_name);
@@ -97,8 +103,8 @@ elsif($command eq 'pwdchange')
 }
 elsif($command eq 'batch')
 {
-    my $schema = shift;
-    my $public_dir = shift;
+    my $schema = $configured_schema_name;
+    my $public_dir = $configured_public_directory;
     initdb($schema);
     statics($public_dir);
     my ($schema_name, $dsn, $user, $password, $schema_class) = get_database($schema);
@@ -404,6 +410,45 @@ elsif($command eq 'schemadump')
 {
     schemadump(@parameters);
 }
+elsif($command eq 'initentity')
+{
+    my $class = shift;
+    if(! $class)
+    {
+        say "No entity package provided";
+        exit(0);
+    }
+    else
+    {
+        say "Installing $class...\n";
+    }
+    eval("require $class");
+    if($@)
+    {
+        say $@;
+        say "Bad entity package provided";
+        print "\n\n";
+        exit();
+    }
+    my ($schema_name, $dsn, $user, $password, $schema_class) = get_database($configured_schema_name);
+    
+
+    my $dbh = DBI->connect($dsn, $user, $password, {
+                            PrintError       => 0,
+                            RaiseError       => 1,
+                            AutoCommit       => 1,
+                            FetchHashKeyName => 'NAME_lc'});
+    if(! $class->can('install'))
+    {
+        say "$class hasn't install method. Not an entity or entity created without following guidelines\n";
+        print "\n\n";
+        exit();
+    }
+    my $output_message = $class->install($dbh, $configured_public_directory);
+    say "$class installation reported:\n";
+    say $output_message;
+    print "\n\n";
+}
 else
 {
     if($command eq 'commands')
@@ -422,7 +467,7 @@ else
 
 sub statics
 {
-    my $public_dir = shift || 'public';
+    my $public_dir = $configured_public_directory;
 
     my $origin = $strehler_root . '/public/strehler';
 
@@ -490,7 +535,7 @@ sub statics
 
 sub initdb
 {
-    my $wanted_schema = shift; 
+    my $wanted_schema = $configured_schema_name;
     my $demo = shift || 0;
 
     my $schema_name;
@@ -552,7 +597,7 @@ sub initdb
 
 sub layout
 {
-    my $views_dir  = shift  || 'views';
+    my $views_dir  = $configured_views_directory;
     my $origin = $strehler_root . '/views/layouts/admin.tt';
 
     my $app_directory = getcwd();
@@ -614,7 +659,7 @@ sub demo_components
 
 sub get_database
 {
-    my $schema  = shift;
+    my $schema  = $configured_schema_name;
     if(! config->{'plugins'}->{'DBIC'})
     {
         say "Can't read config.yml or no DBIC plugin configured in it\n";
@@ -727,7 +772,7 @@ sub create_category
 
 sub schemadump
 {
-    my $schema = shift;
+    my $schema = $configured_schema_name;
     my ($schema_name, $dsn, $user, $password, $schema_class) = get_database($schema);
     if(! $schema_name)
     {
