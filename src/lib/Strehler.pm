@@ -54,13 +54,13 @@ Go in the root directory of your Dancer2 app and type
 
     strehler statics
 
-This command will copy static resources used by Strehler in the public directory of the app. If you decided to use a different directory for static files just add its name to the command.
-
-    strehler statics other-directory
+This command will copy static resources used by Strehler in the public directory of the app. 
 
 Using strehler statics on your app is MANDATORY to use Strehler capabilities.
 
-Attention: every time you run strehler statics the public/strehler directory is removed and copy as new from the package. Do not use this directory for your files if you think you could run strehler statics more than once (for example, updating package)
+strehler statics is included in strehler batch.
+
+B<Warning>: every time you run strehler statics the %PUBLIC%/strehler directory is removed and copied as new from the package. Do not use strehler directory for your files if you think you could run strehler statics more than once (for example, updating package)
 
 =item initdb 
 
@@ -68,21 +68,19 @@ Go in the root directory of your Dancer2 app, ensure you have in it a config.yml
 
     strehler initdb
 
-The script will take the default schema configured in your config.yml and it will deploy in it Strehler database tables. 
+The script will take the schema configured as Strehler schema in your config.yml (or default) and it will deploy in it Strehler database tables. 
 
 B<Warning>: This will erase every previous table created with the name of a Strehler table. Create commands have a DROP IF EXISTS on top.
-
-If you configured different schemas in your config.yml and you want Strehler to deploy itself in one different from the default just add its name to the script.
-
-    strehler initdb other-schema
 
 If you want to work with the configurations of an environment different from the default one (development) just launch the command as
 
     DANCER_ENVIRONMENT=other-env strehler initdb
 
-During database initialization you'll have to choose your admin password. Use it to enter Strehler admin interface (username: admin)
+During database initialization you'll have to choose your admin password. Use it to enter Strehler admin interface (username: admin). This password can be changed using pwdchange.
 
 Using strehler initdb on your app is MANDATORY to use Strehler capabilities.
+
+Strehler statics is included in strehler batch.
 
 =item layout 
 
@@ -110,6 +108,74 @@ When installation is finished go under the newly created app and type
 
 With your browser go to http://localhost:3000/admin, use "admin" as username and "admin" as password and try out Strehler!
 
+=item pwdchange
+
+Type 
+    
+    strehler pwdchange
+
+A new password for admin user will be asked. New password will substitute the old one.
+
+Only admin password can be changed.
+
+=item schemadump
+
+    strehler schemadump
+
+Just run dbicdump using Dancer2::Plugin::DBIC configuration to setup database models. Do nothing is Strehler::Schema is the configured schema class.
+
+schemadump is included in strehler batch.
+
+=item batch
+
+    strehler batch
+
+This command executes initdb, statics and, if needed, schemadump. Schemadump is executed only if configured schema class for database is different from Strehler::Schema. 
+
+Typing batch you can setup a Strehler environment with just one command.
+
+=item categories
+    
+    strehler categories FILE
+
+Provide to categories command a file like this:
+
+    robots
+        all;japanese,american;japanese
+    robots/giant robots
+        article;good,evil;good
+        image;pilot,machine
+    robots/androids
+    spaceships
+    planets/bases
+    plantes/cities
+
+This will generate on the database all the categories. 
+
+An indented line (with spaces) under category name configure tags with this pattern:
+
+%ENTITY%;%TAGS%,%SEPARATED%,%BY%,%COMMAS%;%DEFAULT%
+
+Using this script, categories can only be created, never erased. A tags configuration different from the one in the db will overwrite that with no warning.
+
+If you specify a parent that doesn't exists, the new parent will be created.
+
+Default file name is categories.txt, this file will be used if no filename is provided.
+
+=item testelement
+
+    strehler testelement Strehler::Element::Article
+
+Run a check about configuration of an entity. Useful when new entity are written for a specific site.
+
+=item initentity
+
+    strehler initentity Strehler::Element::Extra::Artwork
+
+Considering a non-standard entity installed from a package different from Strehler. 
+
+Initelement run the install method of the class, allowing entity initialization if needed.
+
 =back
 
 =head1 HOW TO ADD STREHLER TO AN APP
@@ -128,6 +194,10 @@ During initdb running password for admin will be requested. Choose one and remem
 
 For database schema you have to ways. You can just configure in the plugin the schema as Strehler::Schema. It will works well if you have no intention to add tables other than the ones provided by Strehler.
 Other possibility is to create a schema using dbicdump script of DBIx::Class::Schema::Loader, dumping Strehler tables along with all the others you created.
+
+From start to here, all the procedure can be done just typing:
+
+    strehler batch
 
 Finally open your bin/app.pl and add the line
 
