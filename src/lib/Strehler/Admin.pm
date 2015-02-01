@@ -794,6 +794,7 @@ get '/dashboard/:lang' => sub {
     foreach my $el (@{$dashboard_data})
     {
         $el->{id} = $elid++;
+        $el->{entity} ||= 'article';
         if($el->{'type'} eq 'list')
         {
             my $cat = Strehler::Meta::Category->explode_name($el->{'category'});
@@ -832,6 +833,7 @@ get '/dashboard/:lang' => sub {
             foreach my $piece (@{$el->{'elements'}})
             {
                 my $cat = Strehler::Meta::Category->explode_name($piece->{'category'});
+                $piece->{'entity'} ||= 'article';
                 if($cat->exists())
                 {
                     $el->{'nocategory'} = 0;
