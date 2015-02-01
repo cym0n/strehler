@@ -140,21 +140,27 @@ Typing batch you can setup a Strehler environment with just one command.
 
 Provide to categories command a file like this:
 
-    robots
-        all;japanese,american;japanese
     robots/giant robots
         article;good,evil;good
         image;pilot,machine
     robots/androids
+    robots
+        all;japanese,american;japanese
+    robots/mech
     spaceships
     planets/bases
-    plantes/cities
+    planets/cities
+    robots/androids
 
 This will generate on the database all the categories. 
 
 An indented line (with spaces) under category name configure tags with this pattern:
 
 %ENTITY%;%TAGS%,%SEPARATED%,%BY%,%COMMAS%;%DEFAULT%
+
+If a category is present in the file more than one time, last configuration wins.
+
+If a category is present in the file more than one time, last configuration will be used.
 
 Using this script, categories can only be created, never erased. A tags configuration different from the one in the db will overwrite that with no warning.
 

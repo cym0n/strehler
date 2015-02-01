@@ -105,7 +105,7 @@ elsif($command eq 'batch')
 {
     my $schema = $configured_schema_name;
     my $public_dir = $configured_public_directory;
-    initdb($schema);
+    initdb();
     statics($public_dir);
     my ($schema_name, $dsn, $user, $password, $schema_class) = get_database($schema);
     if($schema_class ne 'Strehler::Schema')
@@ -173,7 +173,8 @@ elsif($command eq 'categories')
                         say "Creating parent...";
                         $post_data{'created_parent'} = 1;
                         $post_data{'parent'} = undef;
-                        my %parent_data = ( line => $elements[0], category => $elements[0] );
+                        $post_data{'parent_name'} = $elements[0];
+                        my %parent_data = ( 'line' => $elements[0], 'category' => $elements[0], 'prev-name' => $elements[0], 'im_parent' => 1 );
                         push @to_create, \%parent_data;
                 }
                 $post_data{'category'} = $elements[1];
@@ -204,14 +205,31 @@ elsif($command eq 'categories')
     }
     my $parent = undef;
     print "\n";
+    my %created_categories;
     foreach my $c (@to_create)
     {
+        say "Working on " . $c->{'line'};
+        if(exists $created_categories{$c->{'line'}}) 
+        {
+            if($c->{'im_parent'})
+            {
+                say "Just a parent creation, no need to proceed";
+                next;
+            }
+            say "Category already created";
+            $c->{'post_id'} = $created_categories{$c->{'line'}};
+            $c->{'prev-name'} = $c->{'category'};
+        }
         if($c->{'created_parent'} && $c->{'created_parent'} == 1)
         {
-            $c->{'parent'} = $parent;
+            $c->{'parent'} = $created_categories{$c->{'parent_name'}};
         }
-        $parent = create_category($c->{'post_id'}, $c);
-        if($parent)
+        if($c->{'post_id'})
+        {
+            $c->{'prev-parent'} = $c->{'parent'};
+        }
+        $created_categories{$c->{'line'}} = create_category($c->{'post_id'}, $c);
+        if($created_categories{$c->{'line'}})
         {
             say $c->{'line'} . " correctly submitted";
         }
@@ -472,7 +490,7 @@ sub statics
     my $origin = $strehler_root . '/public/strehler';
 
     my $app_directory = getcwd();
-    my $destination = $app_directory . '/' . $public_dir;
+    my $destination = $public_dir;
 
     if(! -d $destination)
     {
@@ -762,12 +780,13 @@ sub create_category
         {
             Strehler::Element::Log->write('*** AUTO ***', 'add', 'category', $posted_id);
         }
+        return $posted_id;
     }
     else
     {
+        say $form->render();
         return undef;
     }    
-    return $posted_id;
 }
 
 sub schemadump
