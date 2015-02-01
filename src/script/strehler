@@ -58,7 +58,7 @@ if(exists $available_commands{$command})
 
 if($command eq 'statics')
 {
-    statics(@parameters);
+    statics();
 }
 elsif($command eq 'initdb')
 {
@@ -77,9 +77,9 @@ elsif($command eq 'demo')
     print "\n\n";
     chdir $app;
     demo_components();
-    statics();
-    initdb(undef, 1);
-    layout();
+    statics(getcwd() . "/public");
+    initdb(1);
+    #layout(getcwd(). "/views"); //No more needed from dashboard
     say "Demo SUCCESSFULLY DEPLOYED!";
     say "Run Dancer2 devserver under $app, go to ADDRESS:PORT/admin, insert admin as user and as password and ENJOY!\n\n";
 }
@@ -103,14 +103,12 @@ elsif($command eq 'pwdchange')
 }
 elsif($command eq 'batch')
 {
-    my $schema = $configured_schema_name;
-    my $public_dir = $configured_public_directory;
     initdb();
-    statics($public_dir);
-    my ($schema_name, $dsn, $user, $password, $schema_class) = get_database($schema);
+    statics();
+    my ($schema_name, $dsn, $user, $password, $schema_class) = get_database($configured_schema_name);
     if($schema_class ne 'Strehler::Schema')
     {
-        schemadump($schema);
+        schemadump($configured_schema_name);
     }
 }
 elsif($command eq 'categories')
@@ -119,6 +117,7 @@ elsif($command eq 'categories')
     open( my $file, "< $filename" ) or die ("Impossible to open $filename");
     my @to_create;
     my %post_data;
+    say "Processing file...\n";
     foreach my $line (<$file>)
     {
         #Tags management
@@ -170,7 +169,7 @@ elsif($command eq 'categories')
                 }
                 else
                 {
-                        say "Creating parent...";
+                        say "Creating parent submission...";
                         $post_data{'created_parent'} = 1;
                         $post_data{'parent'} = undef;
                         $post_data{'parent_name'} = $elements[0];
@@ -189,12 +188,12 @@ elsif($command eq 'categories')
                 $post_data{'post_id'} = $cat->get_attr('id');
                 $post_data{'prev-name'} = $post_data{'category'};
                 $post_data{'prev-parent'} = $post_data{'parent'};
-                say "Category already exists...";
+                say "Category already exists";
             }
             else
             {
                 $post_data{'post_id'} = undef;
-                say "New category...";
+                say "New category";
             }
         }
     }
@@ -485,11 +484,10 @@ else
 
 sub statics
 {
-    my $public_dir = $configured_public_directory;
+    my $public_dir = shift || $configured_public_directory;
 
     my $origin = $strehler_root . '/public/strehler';
 
-    my $app_directory = getcwd();
     my $destination = $public_dir;
 
     if(! -d $destination)
@@ -615,11 +613,11 @@ sub initdb
 
 sub layout
 {
-    my $views_dir  = $configured_views_directory;
+    my $views_dir  = shift || $configured_views_directory;
     my $origin = $strehler_root . '/views/layouts/admin.tt';
 
     my $app_directory = getcwd();
-    my $destination = $app_directory . '/' . $views_dir . '/layouts';
+    my $destination = $views_dir . '/layouts';
 
     if(! -d $destination)
     {

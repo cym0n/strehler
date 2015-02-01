@@ -89,6 +89,8 @@ Defining classes array, order matters! If you have foreign keys ensure that the 
 
 Writing this methos was a great pain and I had to hack a little many things. I tested it on MySQL and SQLite, but I don't know how it can behave in more exotic environments. Try it and tell me...
 
+=cut
+
 1;
 
 
