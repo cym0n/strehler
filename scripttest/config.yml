@@ -1,0 +1,28 @@
+appname: "Strehler"
+
+charset: "UTF-8"
+
+template: "template_toolkit"
+engines:
+    template:
+        template_toolkit:
+            ENCODING: utf8
+            DEFAULT: 'no.tt'
+
+plugins:
+    DBIC:
+      default:
+        dsn: dbi:SQLite:dbname=other.sqlite
+        schema_class: StrehlerTest::OtherDB
+      strehl:
+        dsn: dbi:SQLite:dbname=test.sqlite
+        schema_class: StrehlerTest::TestDB
+
+
+Strehler:
+    admin_secured: 1
+    schema: 'strehl'
+    languages: ['it', 'en']
+    default_language: 'it'
+    timezone: 'Europe/Rome'
+

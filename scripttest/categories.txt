@@ -1,0 +1,11 @@
+robots/giant robots
+    article;good,evil;good
+    image;pilot,machine
+robots/androids
+robots
+    all;japanese,american;japanese
+robots/mech
+spaceships
+planets/bases
+planets/cities
+robots/androids
