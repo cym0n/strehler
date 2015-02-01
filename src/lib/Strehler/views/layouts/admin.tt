@@ -60,8 +60,8 @@
 </div>
 [% content %]
 <div id="footer" class="span10">
-    <p class="span3 offset9">
-    Powered by <a href="http://perldancer.org/">Dancer2</a> [% dancer_version %]
+    <p class="span5 offset8">
+    Strehler [% strehler_version %], powered by <a href="http://perldancer.org/">Dancer2</a> [% dancer_version %]
     </p>
 </div>
 </body>

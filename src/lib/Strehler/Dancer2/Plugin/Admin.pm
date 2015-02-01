@@ -2,6 +2,7 @@ package Strehler::Dancer2::Plugin::Admin;
 
 use strict;
 use Dancer2::Plugin;
+use Strehler;
 use Strehler::Helpers;
 
 on_plugin_import {
@@ -60,6 +61,7 @@ on_plugin_import {
                 $tokens->{'dashboard_active'} = 0;
             }
             $tokens->{'warnings'} = 1 if(! Strehler::Helpers::check_statics());
+            $tokens->{'strehler_version'} = $Strehler::VERSION;
         }));
     };
     
