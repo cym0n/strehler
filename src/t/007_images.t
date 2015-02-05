@@ -81,7 +81,7 @@ test_psgi $app, sub {
 
     #DELETE
     $r = $cb->(POST "/admin/image/delete/$image_id");
-    $image_object = Strehler::Element::Article->new($image_id);
+    $image_object = Strehler::Element::Image->new($image_id);
     ok(! $image_object->exists(), "Image correctly deleted");
 
     unlink 't/testapp/public/upload/strehler.jpg';
