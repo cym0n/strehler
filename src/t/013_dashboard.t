@@ -83,7 +83,7 @@ done_testing;
 sub list_box
 {
     my $counter = shift;
-    my $match =  '<div class="well span5">.*' .
+    my $match =  '<div class="dashboard-box well span5">.*' .
                  '<h4 class="dashboard-title">listed contents<\/h4>.*' .
                  '<h5 class="dashboard-subtitle">List content</h5>.*' .
                  '<p class="dashboard-box-p">.*' .
@@ -96,7 +96,7 @@ sub page_box
 {
     my $counter = shift;
     my $status = shift;
-    my $match = '<div class="well span5">.*' .
+    my $match = '<div class="dashboard-box well span5">.*' .
                 '<h4 class="dashboard-title">a page</h4>.*' .
                 '<h5 class="dashboard-subtitle">Custom page</h5>.*' .
                 '<p class="dashboard-box-p">.*' .
