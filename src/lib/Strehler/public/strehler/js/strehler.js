@@ -212,3 +212,13 @@ $(function() {
         });
   });
 
+function category_select()
+{
+    $("#category-combo").on("change", populate_category_name);
+}
+
+function populate_category_name()
+{
+    category = $("#category-combo").val();
+}
+

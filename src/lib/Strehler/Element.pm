@@ -80,7 +80,14 @@ sub get_attr
     }
     if($attribute eq 'category')
     {
-        return $self->row->category->category;
+        if($self->row->category)
+        {
+            return $self->row->category->category;
+        }
+        else
+        {
+            return undef;
+        }
     }
     if($attribute eq 'main-title')
     {
@@ -206,8 +213,15 @@ sub get_category_name
     my $self = shift;
     if($self->row->can('category'))
     {
-            my $category = Strehler::Meta::Category->new($self->row->category->id);
-            return $category->ext_name();
+            if($self->row->category)
+            {
+                my $category = Strehler::Meta::Category->new($self->row->category->id);
+                return $category->ext_name();
+            }
+            else
+            {
+                return undef;
+            }
     }
     else
     {
@@ -891,14 +905,21 @@ sub get_form_data
     }
     if($self->categorized()) #Is the element categorized?
     {
-        if($el_row->category->parent)
+        if($el_row->category)
         {
-            $data->{'category'} = $el_row->category->parent->id;
-            $data->{'subcategory'} = $el_row->category->id;
+            if($el_row->category->parent)
+            {
+                $data->{'category'} = $el_row->category->parent->id;
+                $data->{'subcategory'} = $el_row->category->id;
+            }
+            else
+            {
+                $data->{'category'} = $el_row->category->id;
+            }
         }
         else
         {
-            $data->{'category'} = $el_row->category->id;
+            $data->{'category'} = undef;
         }
     }
     $data->{'tags'} = $self->get_tags();

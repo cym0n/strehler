@@ -1,12 +1,15 @@
 elements:
-    - type: Select
-      id: category_selector
-      name: category
+    - type: Label
+      id: category-name
+      name: category-name
       label: Category
-      constraints:
-        type: Required
-        message: 'Category needed'
+    - type: Block
+      name: back-button
+      tag: button
+      content: X
+      attributes:
+        class: btn btn-info span1
     - type: Select
-      name: subcategory
-      label: Sub-category
-      id: subcat
+      name: category
+      label: category
+      id: category-combo

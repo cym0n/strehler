@@ -85,19 +85,7 @@ sub get_basic_data
     $data{'name'} = $self->get_attr('category');
     $data{'title'} = $self->get_attr('category');
     $data{'ext_name'} = $self->ext_name;
-    if(! $self->get_attr('parent'))
-    {
-        my @subs = $self->subcategories();
-        if($#subs != -1)
-        {
-            $data{'subcategories'} = [];
-            for(@subs)
-            {
-                my %subdata = $_->get_basic_data();
-                push @{$data{'subcategories'}}, \%subdata;
-            }
-        }
-    }
+    $data{'parent'} = $self->get_attr('parent');
     return %data;
 }
 
@@ -143,6 +131,7 @@ sub get_attr
 {
     my $self = shift;
     my $attr = shift;
+    return undef if(! $self->exists);
     return $self->row->get_column($attr);
 }
 
@@ -209,6 +198,7 @@ sub explode_name
 {
     my $self = shift;
     my $category_path = shift;
+    return Strehler::Meta::Category->new(-1) if(! $category_path);
     my @cats = split '/', $category_path;
     if(exists $cats[1])
     {
