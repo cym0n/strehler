@@ -1,3 +1,4 @@
+[% PROCESS admin/blocks/add_blocks.tt %]
 [% IF message == 'saved' %]
 <div class="alert alert-success">
 <button class="close" data-dismiss="alert" type="button">x</button>
@@ -37,16 +38,5 @@
     <a href="[% backlink %]" class="btn-small btn-inverse">Back</a>
 </div>
 [% END %]
-
-
-
-<script>
-    $(document).ready(function() {
-        item_type = '[% entity %]';
-        category_commander();
-        tags_init([% id %]);
-        $("#last").on("click", get_last_chapter);
-        $("#date_of_pub").datepicker({ format: "dd/mm/yyyy" });
-    });
-</script>
+[% INCLUDE addjs %]
 

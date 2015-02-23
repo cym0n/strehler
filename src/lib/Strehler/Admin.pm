@@ -327,24 +327,35 @@ ajax '/category/select' => sub
         return 0;
     }
 };
-get '/category/info/:query/:input' => sub
+get '/category/info' => sub
 {
     content_type('application/json');
     my $category;
     my $input = params->{input};
-    if(params->{query} eq 'id')
+    if(params->{query} eq 'id' && $input)
     {
         $category = Strehler::Meta::Category->new($input);
     }
-    elsif(params->{query} eq 'name')
+    elsif(params->{query} eq 'name' && $input)
     {
         $category = Strehler::Meta::Category->explode_name($input);
+    }
+    else
+    {
+        $category = Strehler::Meta::Category->new( row => undef );
     }
     my %data = $category->get_basic_data();
     my $subs = Strehler::Meta::Category->make_select($category->get_attr('id'));
     my @subs_array = @{$subs};
     $data{select} = template 'admin/category_select', { categories => $subs }, { layout => undef };
-    $data{subcategories} = $#subs_array => 0 ? 1 : 0;
+    if($#subs_array > 0)
+    {
+        $data{subcategories} = 1;
+    }
+    else
+    {
+        $data{subcategories} = 0;
+    }
     my $serializer = Dancer2::Serializer::JSON->new();
     return $serializer->serialize(\%data);
 };

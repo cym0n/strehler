@@ -1,0 +1,17 @@
+[% BLOCK addjs %]
+<script>
+    $(document).ready(function() {
+        get_data_for_category();
+        $("#category-back").on("click", {origin: "parent"}, get_data_for_category);
+        $("#category-combo").on("change", {origin: "combo"}, get_data_for_category);
+        $("#category-name").on("change", {origin: "input"}, get_data_for_category);
+        item_type = '[% entity %]';
+        [% DEFAULT id = 'null' %]
+        object_id = [% id %];
+        tags_init();
+        saved_category = null;
+        $("#last").on("click", get_last_chapter);
+        $("#date_of_pub").datepicker({ format: "dd/mm/yyyy" });
+    });
+</script>
+[% END %]

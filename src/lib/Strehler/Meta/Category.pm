@@ -166,6 +166,7 @@ sub make_select
     }
 }
 
+#TODO: get_list is not suitable for category list page because of modification in get_basic_data
 sub get_list
 {
     my $self = shift;
@@ -312,7 +313,7 @@ sub save_form
 sub ext_name
 {
     my $self = shift;
-    return undef if(! $self->row);
+    return undef if(! $self->exists());
     my $category = $self->row->category;
     if($self->row->parent)
     {

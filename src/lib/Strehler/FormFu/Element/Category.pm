@@ -3,13 +3,13 @@ package Strehler::FormFu::Element::Category;
 use strict;
 use Moose;
 
-extends 'HTML::FormFu::Element::Block';
+extends 'HTML::FormFu::Element::Fieldset';
 
 after BUILD => sub {
     my $self = shift;
     my $root_path = __FILE__;
     $root_path =~ s/FormFu\/Element\/Category\.pm//;
-    $self->load_config_file($root_path . "forms/admin/elements/category.yml");
+    $self->load_config_file($root_path . "forms/admin/elements/category_multi.yml");
     $self->name("categoryblock");
     return;
 };

@@ -66,6 +66,7 @@ sub get_attr
     my $self = shift;
     my $attribute = shift;
     my $bare = shift || 0;
+    return undef if(! $self->exists);
     my $accessor = $self->can($attribute);
     if($accessor && ! $bare)
     {
@@ -211,7 +212,7 @@ sub get_tags
 sub get_category_name
 {
     my $self = shift;
-    if($self->row->can('category'))
+    if($self->row && $self->row->can('category'))
     {
             if($self->row->category)
             {

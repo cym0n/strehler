@@ -163,3 +163,16 @@ table th .asc
     padding-top: 1px;
     padding-bottom: 1px;
 }
+.category-widget div
+{
+    display: inline-block;
+}
+.category-widget #category-input
+{
+    display: block;
+}
+.category-widget button
+{
+    margin-bottom: 12px;
+}
+

@@ -1,0 +1,32 @@
+elements:
+    - type: Block
+      tag: div
+      id: category-input
+      elements:
+        - name: category-name
+          id: category-name
+          label: Category
+        - type: Block
+          id: category-back
+          tag: button
+          content: "<"
+          attributes:
+            type: button
+            class: btn btn-warning
+        - type: Block
+          tag: img
+          id: category-loader
+          attributes:
+            src: /strehler/images/ajax-loader.gif
+    - type: Select
+      id: category-combo
+      name: category-combo
+    - type: Hidden
+      id: category
+      name: category
+    - type: Hidden
+      id: category-parent
+      name: category-parent
+attributes:
+    class: category-widget
+    

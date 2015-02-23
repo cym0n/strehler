@@ -92,21 +92,6 @@ sub form_generic
     {
         $form = add_multilang_fields($form, $languages, $multilang_conf); 
     }
-    my $category_block = $form->get_element({ name => 'categoryblock'});
-    my $category = $category_block ?
-        $category_block->get_element({ name => 'category'}) :
-        $form->get_element({ name => 'category'});
-    if($category)
-    {
-       $category->options(Strehler::Meta::Category->make_select());
-       my $subcategory = $category_block ?
-            $category_block->get_element({ name => 'subcategory'}) :
-            $form->get_element({ name => 'subcategory'});
-       if($subcategory)
-       {
-           $subcategory->options(Strehler::Meta::Category->make_select($has_sub));
-       }
-    }
     return $form;
 }
 

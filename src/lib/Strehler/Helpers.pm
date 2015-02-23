@@ -54,7 +54,7 @@ sub top_bars
     foreach my $e (@entities)
     {
         my $c = class_from_entity($e);
-        if($c->visible())
+        if($c && $c->visible())
         {
             if($c->allowed_role() && $c->allowed_role() eq "admin")
             {
