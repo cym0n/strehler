@@ -18,9 +18,13 @@
         </thead>
         <tbody>
             [% FOREACH el IN categories %]
-            <tr class="parent_category">
+            [% IF el.depth > 5 %]
+            <tr class="category-line6">
+            [% ELSE %]
+            <tr class="category-line[% el.depth %]">
+            [% END %]
                 <td>[% el.id %]</td>
-                <td>[% el.name %]</td>
+                <td class="category-display">[% el.display_name %]</td>
                 <td>
                     <div class="btn-group span2 offset1">
                         <a href="/admin/category/edit/[% el.id %]" class="btn">Edit</a>
@@ -28,18 +32,6 @@
                     </div>
                 </td>
             </tr>
-            [% FOREACH subel IN el.subcategories %]
-            <tr>
-                <td>[% subel.id %]</td>
-                <td class="sub_category">[% subel.name %]</td>
-                <td>
-                    <div class="btn-group span2 offset1">
-                        <a href="/admin/category/edit/[% subel.id %]" class="btn">Edit</a>
-                        <a href="/admin/category/delete/[% subel.id %]" class="btn">Delete</a>
-                    </div>
-                </td>
-            </tr>
-            [% END %]
             [% END %]
         </tbody>
         </table>

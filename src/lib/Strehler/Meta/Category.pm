@@ -166,7 +166,6 @@ sub make_select
     }
 }
 
-#TODO: get_list is not suitable for category list page because of modification in get_basic_data
 sub get_list
 {
     my $self = shift;
@@ -183,6 +182,7 @@ sub get_list
     $args{'order'} ||= 'desc';
     $args{'order_by'} ||= 'id';
     $args{'parent'} ||= undef;
+    $args{'depth'} ||= 0;
     my $search_criteria = undef;
 
     my @to_view;
@@ -191,9 +191,21 @@ sub get_list
     {
         my $cat = Strehler::Meta::Category->new($_->id);
         my %el = $cat->get_basic_data();
+        $el{'depth'} = $args{'depth'};
+        if($args{'depth'} >= 5)
+        {
+            $el{'display_name'} = $el{'ext_name'};
+            $el{'display_name'} =~ s/^.*\/(.*\/.*)$/\.\.\.$1/;
+        }
+        else
+        {
+            $el{'display_name'} = $el{'name'};
+        }
         push @to_view, \%el;
+        my @subs = $self->get_list({ parent => $_->id, depth => $args{'depth'} + 1});
+        push @to_view, @subs;
     }
-    return  \@to_view;
+    return  @to_view;
 }
 sub explode_name
 {

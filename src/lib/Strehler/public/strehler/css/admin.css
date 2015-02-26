@@ -98,6 +98,50 @@ table th .asc
 {
     padding-left: 40px;
 }
+.table .category-line0
+{
+    background: #F7F7F7;
+}
+.table .category-line1
+{
+    background: #E8E8E8;
+}
+.table .category-line1 .category-display
+{
+    padding-left: 30px;
+}
+.table .category-line2
+{
+    background: #DCDCDC;
+}
+.table .category-line2 .category-display
+{
+    padding-left: 50px;
+}
+.table .category-line3
+{
+    background: #D1D1D1;
+}
+.table .category-line3 .category-display
+{
+    padding-left: 70px;
+}
+.table .category-line4
+{
+    background: #C4C4C4;
+}
+.table .category-line4 .category-display
+{
+    padding-left: 90px;
+}
+.table .category-line5
+{
+    background: #BABABA;
+}
+.table .category-line5 .category-display
+{
+    padding-left: 110px;
+}
 .order-widget div
 {
     display: inline-block;
