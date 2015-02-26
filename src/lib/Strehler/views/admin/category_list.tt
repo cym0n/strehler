@@ -19,7 +19,7 @@
         <tbody>
             [% FOREACH el IN categories %]
             [% IF el.depth > 5 %]
-            <tr class="category-line6">
+            <tr class="category-line5">
             [% ELSE %]
             <tr class="category-line[% el.depth %]">
             [% END %]

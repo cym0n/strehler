@@ -196,6 +196,10 @@ sub get_list
         {
             $el{'display_name'} = $el{'ext_name'};
             $el{'display_name'} =~ s/^.*\/(.*\/.*)$/\.\.\.$1/;
+            if($args{'depth'} > 5)
+            {
+                $el{'display_name'} = ".../" . $el{'display_name'};
+            }
         }
         else
         {
@@ -327,9 +331,11 @@ sub ext_name
     my $self = shift;
     return undef if(! $self->exists());
     my $category = $self->row->category;
-    if($self->row->parent)
+    my $parent = $self->row->parent;
+    while($parent)
     {
-        $category = $self->row->parent->category . '/' . $category;
+        $category = $parent->category . '/' . $category;
+        $parent = $parent->parent;
     }
     return $category;
 }
