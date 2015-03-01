@@ -1,10 +1,15 @@
-[% BLOCK addjs %]
-<script>
+[% BLOCK categoryinit %]
     $(document).ready(function() {
         get_data_for_category();
         $("#category-back").on("click", {origin: "parent"}, get_data_for_category);
         $("#category-combo").on("change", {origin: "combo"}, get_data_for_category);
         $("#category-name").on("change", {origin: "input"}, get_data_for_category);
+    });
+[% END %]
+[% BLOCK addjs %]
+<script>
+    [% INCLUDE categoryinit %]
+    $(document).ready(function() {
         item_type = '[% entity %]';
         [% DEFAULT id = 'null' %]
         object_id = [% id %];

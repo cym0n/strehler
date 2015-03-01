@@ -24,8 +24,6 @@ sub form_category
     my $form = HTML::FormFu->new;
     $form->auto_error_class('error-msg');
     $form->load_config_file( $form_path . '/admin/category.yml' );
-    my $category = $form->get_element({ name => 'parent'});
-    $category->options(Strehler::Meta::Category->make_select());
     $form = add_dynamic_fields_for_category($form); 
     my $prev_name = $form->element( { type => 'Hidden', name => 'prev-name'} );
     my $prev_parent = $form->element( { type => 'Hidden', name => 'prev-parent'} );
@@ -40,8 +38,6 @@ sub form_category_fast
     my $form = HTML::FormFu->new;
     $form->auto_error_class('error-msg');
     $form->load_config_file( $form_path . '/admin/category_fast.yml' );
-    my $parent = $form->get_element({ name => 'parent'});
-    $parent->options(Strehler::Meta::Category->make_select());
     return $form;
 }
 

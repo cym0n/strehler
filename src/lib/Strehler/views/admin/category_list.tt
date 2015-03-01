@@ -1,3 +1,10 @@
+[% PROCESS admin/blocks/add_blocks.tt %]
+[% IF message == 'fast-created' %]
+    <div class="alert alert-success">
+    <button class="close" data-dismiss="alert" type="button">x</button>
+    <strong>Category created!</strong>
+</div>
+[% END %]
 <div class="span12">
     <h1>Categories</h1>
 </div>
@@ -6,7 +13,7 @@
           <a href="add" class="span2 btn btn-primary">New category</a>
         </div>
         <br />
-       <div class="categoryadd">
+       <div class="categoryadd row">
             [% form %]
         </div>
         <table class="table">
@@ -29,13 +36,25 @@
                     <div class="btn-group span2 offset1">
                         <a href="/admin/category/edit/[% el.id %]" class="btn">Edit</a>
                         <a href="/admin/category/delete/[% el.id %]" class="btn">Delete</a>
+                        <a class="asparent btn" rel="[% el.id %]" href="#">Pick as Parent</a>
                     </div>
                 </td>
             </tr>
             [% END %]
         </tbody>
         </table>
-     
 </div>
+<script>
+    [% INCLUDE categoryinit %]
+    $(document).ready(function() {
+        $(".asparent").on("click", function()
+            {
+                var el = $(this).attr('rel');
+                $('#category').val(el);
+                get_data_for_category();
+                return false;
+            });
+    });
+</script>
 
 

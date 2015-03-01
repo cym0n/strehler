@@ -5,6 +5,20 @@ use Moose;
 
 extends 'HTML::FormFu::Element::Fieldset';
 
+has _name => (
+    is => 'rw',
+    default => sub { [] },
+    lazy => 1,
+);
+
+has _label => (
+    is => 'rw',
+    default => sub { [] },
+    lazy => 1,
+);
+
+
+
 after BUILD => sub {
     my $self = shift;
     my $root_path = __FILE__;
@@ -13,6 +27,27 @@ after BUILD => sub {
     $self->name("categoryblock");
     return;
 };
+
+sub label {
+    my ( $self, $arg ) = @_;
+
+    return $self->_label if @_ == 1;
+
+    if ( defined $arg ) {
+        $self->get_all_element({ name => 'category-name' })->label($arg);
+    }
+    return $self;
+}
+sub name {
+    my ( $self, $arg ) = @_;
+
+    return $self->_name if @_ == 1;
+
+    if ( defined $arg ) {
+        $self->get_element({ id => 'category' })->name($arg);
+    }
+    return $self;
+}
 
 =encoding utf8
 

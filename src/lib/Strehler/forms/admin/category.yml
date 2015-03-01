@@ -10,10 +10,9 @@ elements:
       validators:
         - type: '+Strehler::FormFu::Validator::CategoryUnique'
           message: 'Category already exists'
-    - type: Select
-      id: category_selector
-      name: parent
+    - type: "+Strehler::FormFu::Element::Category"
       label: Parent category
+      name: parent
     - type: Block
       tag: h3
       content: 'Tags management'

@@ -203,7 +203,7 @@ get '/category' => sub
 
 any '/category/list' => sub
 {
-    send_error("Access denied", 403) && return && return if ( ! Strehler::Meta::Category->check_role(session->read('role')));
+    send_error("Access denied", 403) && return if ( ! Strehler::Meta::Category->check_role(session->read('role')));
 
     #THE TABLE
     my @to_view = Strehler::Meta::Category->get_list();
@@ -217,9 +217,9 @@ any '/category/list' => sub
     {
         my $id = Strehler::Meta::Category->save_form(undef, $form, \@entities);
         Strehler::Element::Log->write(session->read('user'), 'add', 'category', $id);
-        redirect dancer_app->prefix . '/category/list';
+        redirect dancer_app->prefix . '/category/list?message=fast-created';
     }
-    template "admin/category_list", { categories => \@to_view, form => $form };
+    template "admin/category_list", { categories => \@to_view, form => $form, "message" => params->{'message'}};
 };
 
 any '/category/add' => sub

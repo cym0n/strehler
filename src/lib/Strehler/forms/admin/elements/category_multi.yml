@@ -2,6 +2,7 @@ elements:
     - type: Block
       tag: div
       id: category-input
+      name: category-input
       elements:
         - name: category-name
           id: category-name

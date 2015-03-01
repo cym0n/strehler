@@ -192,14 +192,10 @@ sub get_list
         my $cat = Strehler::Meta::Category->new($_->id);
         my %el = $cat->get_basic_data();
         $el{'depth'} = $args{'depth'};
-        if($args{'depth'} >= 5)
+        if($args{'depth'} > 5)
         {
             $el{'display_name'} = $el{'ext_name'};
-            $el{'display_name'} =~ s/^.*\/(.*\/.*)$/\.\.\.$1/;
-            if($args{'depth'} > 5)
-            {
-                $el{'display_name'} = ".../" . $el{'display_name'};
-            }
+            $el{'display_name'} =~ s/^.*\/(.*\/.*)$/\.\.\.\/$1/;
         }
         else
         {

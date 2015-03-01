@@ -10,16 +10,19 @@ elements:
       validators:
         - type: '+Strehler::FormFu::Validator::CategoryUnique'
           message: 'Category already exists'
-    - type: Select
-      id: category_selector
+      attributes:
+        class: span3
+    - type: "+Strehler::FormFu::Element::Category"
+      label: Parent
       name: parent
-      label: Parent category
+      attributes:
+        class: span4
     - type: Block
       name: save
       tag: button
       content: New category (fast)
       attributes:
         type: submit
-        class: btn btn-primary
+        class: btn btn-primary 
 
    
