@@ -34,7 +34,7 @@ sub BUILDARGS {
         my %hash_args =  @args;
         if($hash_args{'parent'})
         {
-            my $main = $class->get_schema()->resultset('Category')->find({ category => $hash_args{'parent'}, parent => undef });
+            my $main = $class->get_schema()->resultset('Category')->find($hash_args{'parent'});
             if($main)
             {
                 $category = $main->categories->find({ category => $hash_args{'category'}});
@@ -216,15 +216,42 @@ sub explode_name
     my $self = shift;
     my $category_path = shift;
     return Strehler::Meta::Category->new(-1) if(! $category_path);
-    my @cats = split '/', $category_path;
-    if(exists $cats[1])
+    my $cat_id = $self->name_crawler($category_path, undef);
+    if($cat_id)
     {
-        return Strehler::Meta::Category->new(parent => $cats[0], category => $cats[1]);
+        return Strehler::Meta::Category->new($cat_id);
     }
     else
     {
-        return Strehler::Meta::Category->new(category => $cats[0], parent => undef);
+        return Strehler::Meta::Category->new(-1);
     }
+}
+sub name_crawler
+{
+    my $self = shift;
+    my $name = shift;
+    my $parent = shift;
+
+    my @subnames = split '/', $name;
+    my $cat = shift @subnames;
+    my $cat_obj = Strehler::Meta::Category->new(category => $cat, parent => $parent);
+    $parent ||= '';
+    if($cat_obj->exists())
+    {
+        if(@subnames)
+        {
+            return $self->name_crawler(join('/', @subnames), $cat_obj->get_attr('id'));
+        }
+        else
+        {
+            return $cat_obj->get_attr('id');
+        }
+    }
+    else
+    {
+        return undef;
+    }
+
 }
 
 sub exists
