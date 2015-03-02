@@ -95,7 +95,7 @@ $(function() {
   });
 
 
-function category_info(query, input, func)
+function category_info(query, input, category_box, func)
 {
     var url = '/admin/category/info';
     var data = 'query='+query+'&input='+input;
@@ -104,53 +104,58 @@ function category_info(query, input, func)
         data: data,
     });
     request.done(function(msg) {
-        func(msg);
+        func(category_box, msg);
     });
 }
+function init_category_boxes()
+{
+    $(".category-widget").each(function ( index ) {
+        var category_box = $( this );
+        input = category_box.find( ".sel-category-id" ).val();
+        category_info("id", input, category_box, update_category_box);
+    });
+}
+
+
 function get_data_for_category( event )
 {
+    var category_box = $( event.target ).parents('div').find('.category-widget');
     var query;
     var input;
-    $('#category-loader').show();
-    if(event == null)
+    category_box.find(".sel-category-loader").show();
+    if(event.data.origin == 'combo')
     {
         query = 'id';
-        input = $('#category').val();
-        starting_category = $('#category').val();
+        input = $( event.target ).val();
     }
-    else
+    else if(event.data.origin == 'input')
     {
-        if(event.data.origin == 'combo')
-        {
-            query = 'id';
-            input = $('#category-combo').val();
-        }
-        else if(event.data.origin == 'input')
-        {
-            query = 'name';
-            input = $('#category-name').val();
-        }
-        else if(event.data.origin == 'parent')
-        {
-            query = 'id';
-            input = $('#category-parent').val();
-        }
+        query = 'name';
+        input = category_box.find(".sel-category-input").find(".sel-category-name").val();
     }
-    category_info(query, input, update_category_box);
+    else if(event.data.origin == 'parent')
+    {
+        query = 'id';
+        input =  category_box.find(".sel-category-parent").val();
+    }
+    category_info(query, input, category_box, update_category_box);
 }
-function update_category_box(msg)
+function update_category_box(category_box, msg)
 {
-    $('#category-name').val(msg.ext_name);
-    $('#category-combo').html(msg.select);
+    console.dir(msg);
+    category_box.find(".sel-category-name").val(msg.ext_name);
+
+    category_combo = category_box.find(".sel-category-combo");
+    category_combo.html(msg.select);
     if(msg.subcategories == 0)
     {
-        $('#category-combo').prop('disabled', true);
+        category_combo.prop('disabled', true);
     }
     else
     {
-        $('#category-combo').prop('disabled', false);
+        category_combo.prop('disabled', false);
     }   
-    $('#category').val(msg.id).trigger("change");
-    $('#category-parent').val(msg.parent);
-    $('#category-loader').hide();
+    category_box.find(".sel-category-id").val(msg.id).trigger("change");
+    category_box.find(".sel-category-parent").val(msg.parent);
+    category_box.find(".sel-category-loader").hide();
 }

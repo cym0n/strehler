@@ -1,33 +1,39 @@
+name: categoryblock
 elements:
     - type: Block
       tag: div
-      id: category-input
       name: category-input
       elements:
         - name: category-name
-          id: category-name
           label: Category
+          attributes:
+            class: sel-category-name
         - type: Block
-          id: category-back
           tag: button
           content: "<"
           attributes:
             type: button
-            class: btn btn-warning
+            class: btn btn-warning sel-category-back
         - type: Block
           tag: img
-          id: category-loader
           attributes:
             src: /strehler/images/ajax-loader.gif
+            class: sel-category-loader
+      attributes:
+            class: sel-category-input
     - type: Select
-      id: category-combo
       name: category-combo
+      attributes:
+            class: sel-category-combo
     - type: Hidden
-      id: category
       name: category
+      attributes:
+        class: sel-category-id
     - type: Hidden
-      id: category-parent
       name: category-parent
+      attributes:
+        class: sel-category-parent
+
 attributes:
     class: category-widget
     

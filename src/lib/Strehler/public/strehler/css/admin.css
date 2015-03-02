@@ -211,7 +211,7 @@ table th .asc
 {
     display: inline-block;
 }
-.category-widget #category-input
+.category-widget .sel-category-input
 {
     display: block;
 }

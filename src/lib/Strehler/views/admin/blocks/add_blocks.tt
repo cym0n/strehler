@@ -1,9 +1,9 @@
 [% BLOCK categoryinit %]
     $(document).ready(function() {
-        get_data_for_category();
-        $("#category-back").on("click", {origin: "parent"}, get_data_for_category);
-        $("#category-combo").on("change", {origin: "combo"}, get_data_for_category);
-        $("#category-name").on("change", {origin: "input"}, get_data_for_category);
+        init_category_boxes();
+        $(".sel-category-back").on("click", {origin: "parent"}, get_data_for_category);
+        $(".sel-category-combo").on("change", {origin: "combo"}, get_data_for_category);
+        $(".sel-category-name").on("change", {origin: "input"}, get_data_for_category);
     });
 [% END %]
 [% BLOCK addjs %]
