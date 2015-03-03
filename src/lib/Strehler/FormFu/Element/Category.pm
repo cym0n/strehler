@@ -24,7 +24,6 @@ after BUILD => sub {
     my $root_path = __FILE__;
     $root_path =~ s/FormFu\/Element\/Category\.pm//;
     $self->load_config_file($root_path . "forms/admin/elements/category_multi.yml");
-    #$self->name("categoryblock");
     return;
 };
 
@@ -48,6 +47,7 @@ sub name {
         if($name_element)
         {
             $name_element->name($arg);
+            $name_element->id($arg);
         }
     }
     return $self;

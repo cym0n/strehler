@@ -106,12 +106,12 @@ sub tags_for_form
         {
             $params_hashref->{'tags'} = $params_hashref->{'configured-tag'};
         }
-        my $position = $form->get_element({ name => 'categoryblock'}) || $form->get_element({ name => 'subcategory'});
+        my $position = $form->get_elements()->[0]; 
         $form->insert_after($form->element({ type => 'Text', name => 'tags'}), $position);
     }
     elsif($params_hashref->{'tags'})
     { 
-        my $position = $form->get_element({ name => 'categoryblock'}) || $form->get_element({ name => 'subcategory'});
+        my $position = $form->get_elements()->[0]; 
         $form->insert_after($form->element({ type => 'Text', name => 'tags'}), $position);
     }
     return $form;

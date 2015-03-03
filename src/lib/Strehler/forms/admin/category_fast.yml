@@ -16,7 +16,7 @@ elements:
       label: Parent
       name: parent
       attributes:
-        class: span4
+        class: "category-widget span4"
     - type: Block
       name: save
       tag: button

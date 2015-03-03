@@ -50,8 +50,8 @@
         $(".asparent").on("click", function()
             {
                 var el = $(this).attr('rel');
-                $('#category').val(el);
-                get_data_for_category();
+                $('#parent').val(el);
+                init_category_boxes();
                 return false;
             });
     });

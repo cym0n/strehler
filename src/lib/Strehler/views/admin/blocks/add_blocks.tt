@@ -13,6 +13,7 @@
         item_type = '[% entity %]';
         [% DEFAULT id = 'null' %]
         object_id = [% id %];
+        starting_category = $('#category').val();
         tags_init();
         saved_category = null;
         $("#last").on("click", get_last_chapter);

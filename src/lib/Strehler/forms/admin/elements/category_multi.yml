@@ -1,4 +1,3 @@
-name: categoryblock
 elements:
     - type: Block
       tag: div
@@ -27,13 +26,13 @@ elements:
             class: sel-category-combo
     - type: Hidden
       name: category
+      id: category
       attributes:
         class: sel-category-id
     - type: Hidden
       name: category-parent
       attributes:
         class: sel-category-parent
-
 attributes:
     class: category-widget
     
