@@ -42,30 +42,16 @@ function tags_init() {
     }
 };
 function get_last_chapter() {
-    var category;
-    if ($("#category_selector").length > 0)
+    var category = $("#category").val();
+    if ($("#category").val() != '')
     {
-        if($("#subcat").val())
-        {
-            category = $("#subcat").val();
-        }
-        else
-        {
-            category = $("#category_selector").val();   
-        }
-        if(category)
-        {
-            url = "/admin/"+item_type+"/lastchapter/"+category;
-        }
-        else
-        {
-            alert("No category selected")
-            return false;
-        }
+
+        url = "/admin/"+item_type+"/lastchapter/"+category;
     }
     else
     {
-        url = "/admin/"+item_type+"/lastchapter/";
+        alert("No category selected")
+        return false;
     }
     var request = $.ajax({
                                url: url,
