@@ -1,23 +1,16 @@
-[% BLOCK categoryinit %]
-    $(document).ready(function() {
-        init_category_boxes();
-        $(".sel-category-back").on("click", {origin: "parent"}, get_data_for_category);
-        $(".sel-category-combo").on("change", {origin: "combo"}, get_data_for_category);
-        $(".sel-category-name").on("change", {origin: "input"}, get_data_for_category);
-    });
-[% END %]
-[% BLOCK addjs %]
-<script>
+[% PROCESS admin/blocks/js_blocks.tt %]
+[% BLOCK addpagejs %]
     [% INCLUDE categoryinit %]
-    $(document).ready(function() {
-        item_type = '[% entity %]';
-        [% DEFAULT id = 'null' %]
-        object_id = [% id %];
-        starting_category = $('#category').val();
-        tags_init();
-        saved_category = null;
-        $("#last").on("click", get_last_chapter);
-        $("#date_of_pub").datepicker({ format: "dd/mm/yyyy" });
-    });
-</script>
+    <script>
+        $(document).ready(function() {
+            item_type = '[% entity %]';
+            [% DEFAULT id = 'null' %]
+            object_id = [% id %];
+            starting_category = $('#category').val();
+            tags_init();
+            saved_category = null;
+            $("#last").on("click", get_last_chapter);
+            $("#date_of_pub").datepicker({ format: "dd/mm/yyyy" });
+        });
+    </script>
 [% END %]

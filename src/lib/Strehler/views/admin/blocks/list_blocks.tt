@@ -1,0 +1,117 @@
+[% PROCESS admin/blocks/js_blocks.tt %]
+[% BLOCK pages %]
+        [% IF page > 1 %]
+            <a href="[% request.path %]?page=[% page - 1 %]" class="span1 btn">&lt;</a>
+        [% ELSE %]
+            <span class="span1 btn disabled">&lt;</span>
+        [% END %]
+        [% IF last_page > 1 %]
+          [% pages = 1 %]
+          <span class="span1">
+          <select class="span1 pageturn">
+            [% WHILE pages <= last_page %]
+            <option value=[% pages %] [% IF pages == page %]selected[% END %]>[% pages %]</option>
+            [% pages = pages + 1 %]
+            [% END %]
+          </select>
+            </span>
+        [% END %]
+        [% IF page < last_page %]
+            <a href="[% request.path %]?page=[% page + 1 %]" class="span1 btn">&gt;</a>
+        [% ELSE %]
+            <span class="span1 btn disabled">&gt;</span>
+        [% END %]
+[% END %]
+[% BLOCK pager %]
+    <div class="row">
+        [% INCLUDE pages %]
+    </div>
+    <div class="row">
+        <a href="add" class="span1 offset9 btn btn-primary">New</a>
+        [% IF backlink %]
+        <a href="[% backlink %]" class="span1 btn btn-inverse">Back</a>
+        [% END %]
+    </div>
+[% END %]
+[% BLOCK pager_no_new %]
+    <div class="row">
+        [% INCLUDE pages %]
+    </div>
+[% END %]
+[% BLOCK searchbox %]
+<div class="span5">
+    <div><strong>Search</strong></div>
+    <div class="form-inline">
+        <div class="row">
+            <input id="search-field" type="text" name="search" value="[% search %]" />
+        </div>
+        <div class="row">
+            <div class="btn-group tools-buttons">
+                <a href="#" id="search-button" class="btn">Search</a>
+                <a href="[% request.path_info %]?reset-search=1" class="btn">Reset search</a>
+            </div>
+        </div>
+    </div>
+</div>
+[% END %]
+[% BLOCK tools %]
+        <div id="list-tools"><a href="#" class="btn btn-warning btn-tools"><span id="tools-label">Tools</span></a>
+        <div id="tools" class="well" style="margin-left:0">        
+        <div class="span5">
+            [% filter_form %]
+        </div>
+        [% INCLUDE searchbox %]
+        </div>
+        </div>
+[% END %]
+[% BLOCK listhead %]
+[% IF order == 'desc' %][% invert = 'asc' %][% else %][% invert = 'desc' %][% END %]
+<thead>
+<tr>
+[% FOREACH field IN fields %]
+ <th>
+    [% IF order_by == field.id %]
+        [% myorder = invert %]
+    [% ELSE %]
+        [% myorder = 'asc' %]
+    [% END %]
+        
+    [% IF field.ordinable %]
+    <a href="[% request.path %]?order-by=[% field.id %]&order=[% myorder %]">
+    [% END %]
+    [% field.label %][% IF order_by == field.id %]
+                        <span class="caret ordered [% order %]"></span>
+                     [% END %]
+    [% IF field.ordinable %]</a>[% END %]
+</th>
+[% END %]
+</tr>
+</thead>
+[% END %]      
+[% BLOCK listpagejs %]
+    [% INCLUDE listpager %]
+    [% INCLUDE searchboxjs %]
+    [% INCLUDE resetlist %]
+    <script>
+    $(document).ready(function() {
+        $(".category-widget").attr('rel', 'ancestor');
+        $("#category-filter").val('[% cat_filter %]');
+    });
+    </script>
+    [% INCLUDE categoryinit %]
+    [% IF filtered %]
+    <script>
+    $(document).ready(function() {
+        $( "#list-tools" ).accordion("option", "active", 0);
+    });
+    </script>
+    [% END %]
+    <script>
+    $( "#filter-button" ).on("click", function() {
+           $("#filter-form").submit(); 
+        });
+    $( "#filter-reset" ).on("click", reset_filter_list);
+    </script>
+
+[% END %]
+

@@ -6,7 +6,6 @@ use Strehler;
 use Unicode::Normalize;
 use Text::Unidecode;
 
-
 #Barely copied from http://stackoverflow.com/questions/4009281/how-can-i-generate-url-slugs-in-perl
 sub slugify
 {
@@ -137,6 +136,77 @@ sub check_statics
     my $data = <$version_file>;
     chomp $data;
     return $data eq $Strehler::STATICS_VERSION ? 1: 0;
+}
+
+sub list_parameters_init
+{
+    my $entity = shift; 
+    my $session = shift;
+    my $params = shift;
+
+    my %output;
+
+    # Params init
+    $output{'page'} = exists $params->{'page'} ? $params->{'page'} : $session->read($entity . '-page');
+    $output{'category-input'} = exists $params->{'category-filter'} ? $params->{'category-filter'} : $session->read($entity . '-cat-input');
+    $output{'order'} = exists $params->{'order'} ? $params->{'order'} : $session->read($entity . '-order');
+    $output{'order_by'} = exists $params->{'order-by'} ? $params->{'order-by'} : $session->read($entity . '-order-by');
+    $output{'search'} = exists $params->{'search'} ? $params->{'search'} : $session->read($entity . '-search');
+    $output{'language'} = exists $params->{'language'} ? $params->{'language'} : $session->read($entity . '-language');
+    $output{'backlink'} = $params->{'strehl-from'};
+
+    #reset management
+    if(exists $params->{'reset-filter'})
+    {
+        $output{'page'} = undef;
+        $output{'category'} = undef;
+        $output{'language'} = undef;
+        return %output;
+    }
+    if(exists $params->{'reset-search'})
+    {
+        $output{'page'} = undef;
+        $output{'search'} = undef;
+        return %output;
+    }
+
+    #strehl-catname converted to category id (override category-filter)
+    if(exists $params->{'strehl-catname'})
+    {
+        my $wanted_cat = Strehler::Meta::Category->explode_name(params->{'strehl-catname'});
+        if(! $wanted_cat->exists())
+        {
+            $output{'error'} = "1";
+            return %output;
+        }
+        $output{'category-input'} = $wanted_cat->get_attr('id');
+    }
+
+    #Ancestor-mode management
+    if($output{'category-input'} && $output{'category-input'} =~ m/anc:([0-9]+)/)
+    {
+        $output{'category'} = undef;
+        $output{'ancestor'} = $1;
+    }
+    else
+    {
+        $output{'category'} = $output{'category-input'};
+        $output{'ancestor'} = undef;
+    }
+    
+    #Some default values
+    $output{'page'} ||= 1;
+    $output{'order'} ||= 'desc';
+    if($output{'category'} || $output{'ancestor'} || $output{'language'} || $output{'search'})
+    {
+        $output{'filtered'} = 1;
+    }
+    else
+    {
+        $output{'filtered'} = 0;
+    }
+
+    return %output;
 }
 
 =encoding utf8

@@ -211,6 +211,17 @@ table th .asc
 {
     display: inline-block;
 }
+.articlelist .sel-category-input label
+{
+    font-weight: bold;
+}
+.articlelist legend
+{
+    border: 0;
+    margin: 0;
+    font-size: 14px;
+    font-weight: normal;
+}
 .category-widget .sel-category-input
 {
     display: block;
@@ -219,4 +230,14 @@ table th .asc
 {
     margin-bottom: 12px;
 }
+.languages-filter span
+{
+    display: inline-block;
+}
+.languages-filter span label
+{
+    display: inline-block;
+    margin-right: 5px;
+}
+
 

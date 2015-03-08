@@ -147,7 +147,7 @@ sub make_select
     push @base_select, { value => undef, label => "-- select --" }; 
     if($parent && $option  && $option eq 'ancestor')
     {
-        push @category_values_for_select, { value => '*', label => "-- all --" }; 
+        push @category_values_for_select, { value => 'anc:'.$parent, label => "-- all --" }; 
     }
     my $category_count = 0;
     for(@category_values)

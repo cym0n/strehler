@@ -1,0 +1,69 @@
+[% BLOCK categoryinit %]
+<script>
+$(document).ready(function() {
+    init_category_boxes();
+    $(".sel-category-back").on("click", {origin: "parent"}, get_data_for_category);
+    $(".sel-category-combo").on("change", {origin: "combo"}, get_data_for_category);
+    $(".sel-category-name").on("change", {origin: "input"}, get_data_for_category);
+});
+</script>
+[% END %]
+
+[% BLOCK searchboxjs %]
+<script>
+  function go_to_search()
+  {
+    search = $('#search-field').val();
+    if(! search)
+    {
+        alert("nothing to do");
+        return false;
+    }
+    var raw = "[% request.request_uri %]";
+    raw = raw.replace(/\?.*/, '');
+    destination = raw+"?page=1&search="+search;
+
+    window.location.href = destination;
+    return false;
+  }
+  $(document).ready(function() {
+        $("#search-button").on("click", go_to_search);
+        search = $('#search-field').val();
+        if(search)
+        {
+            $( "#list-tools" ).accordion("option", "active", 0);
+        }
+        [% FOREACH l IN language.split(',') %]
+            $("#language_selector_[% l %]").prop( "checked", true );
+            $( "#list-tools" ).accordion("option", "active", 0);
+        [% END %]
+  });
+</script>
+[% END %]
+
+[% BLOCK listpager %]
+<script>
+    $(function(){
+      $('.pageturn').bind('change', function () {
+          var url = '[% request.path %]?page='+$(this).val(); 
+          if (url) { 
+              window.location = url; // redirect
+          }
+          return false;
+      });
+    });
+</script>
+[% END %]
+
+[% BLOCK resetlist %]
+<script>
+function reset_filter_list()
+{
+    var raw = "[% request.request_uri %]";
+    raw = raw.replace(/\?.*/, '');
+    destination = raw+"?reset-filter=1"
+    window.location.href = destination;
+    return false;
+}
+</script>
+[% END %]

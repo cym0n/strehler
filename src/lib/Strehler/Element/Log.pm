@@ -102,7 +102,7 @@ sub fields_list
 }
 sub custom_list_template
 {
-    return $views_path . "/admin/blocks/log_list_block.tt";
+    return $views_path . "/admin/entities/log_list_block.tt";
 }
 
 sub install

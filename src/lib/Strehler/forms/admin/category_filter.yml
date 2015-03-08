@@ -1,0 +1,46 @@
+method: get
+id: filter-form
+elements:
+    - type: Block
+      name: language-block
+      tag: div
+      elements:
+        - type: "+Strehler::FormFu::Element::Category"
+          label: Filter
+          name: category-filter
+      attributes:
+        class: row
+    - type: Block
+      name: language-block
+      tag: div
+      elements:
+        - type: Block
+          name: dummy-language
+          tag: div
+      attributes:
+        class: row
+    - type: Block
+      name: filter-buttons
+      tag: div
+      elements:
+        - type: Block
+          tag: div
+          attributes:
+            class: "btn-group tools-buttons"
+          elements:
+            - type: Block
+              name: filter-button
+              id: filter-button
+              tag: a
+              content: Filter
+              attributes:
+                class: btn
+            - type: Block
+              name: filter-reset
+              id: filter-reset
+              tag: a
+              content: Reset filter
+              attributes:
+                class: btn
+      attributes:
+        class: row

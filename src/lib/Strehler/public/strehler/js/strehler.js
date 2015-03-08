@@ -85,6 +85,11 @@ function category_info(query, input, category_box, func)
 {
     var url = '/admin/category/info';
     var data = 'query='+query+'&input='+input;
+    var option = category_box.attr('rel');
+    if(option)
+    {
+        data = data+'&option='+option;
+    }
     var request = $.ajax({
         url: url,
         data: data,
@@ -128,7 +133,6 @@ function get_data_for_category( event )
 }
 function update_category_box(category_box, msg)
 {
-    console.dir(msg);
     category_box.find(".sel-category-name").val(msg.ext_name);
 
     category_combo = category_box.find(".sel-category-combo");

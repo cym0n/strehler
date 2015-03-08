@@ -172,7 +172,7 @@ sub custom_add_snippet
 
 sub custom_list_template
 {
-    return $views_path . "/admin/blocks/image_list_block.tt";
+    return $views_path . "/admin/entities/image_list_block.tt";
 }
 
 sub install

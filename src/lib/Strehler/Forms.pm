@@ -91,6 +91,29 @@ sub form_generic
     return $form;
 }
 
+sub form_filter
+{
+    my $conf = shift;
+    my $multilang = shift;
+    my $selected_language = shift;
+    my $languages = shift;
+    my @languages_options;
+    for my $l (@{$languages})
+    {
+        push @languages_options, [ $l, $l ];
+    }
+    my @selected_languages = split( ',', $selected_language );
+    my $form = HTML::FormFu->new;
+    $form->load_config_file( $conf );
+    if($multilang)
+    {
+        my $languages_block = $form->get_element({ name => 'language-block'});
+        my $position = $languages_block->get_elements()->[0];
+        $languages_block->insert_after($languages_block->element(
+            { label => "Languages:", type => 'Checkboxgroup', name => 'language', options => \@languages_options, default => $selected_language, attributes => { class => 'languages-filter'}}), $position);
+    }
+    return $form;
+}
 
 sub tags_for_form
 {

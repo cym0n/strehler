@@ -1,4 +1,4 @@
-[% PROCESS admin/blocks/listblocks.tt %]
+[% PROCESS admin/blocks/list_blocks.tt %]
 <div class="span12">
     <h1>[% label %]</h1>
 </div>
@@ -58,5 +58,5 @@
             [% INCLUDE pager_no_new %]
         [% END %]
 </div>
-[% INCLUDE filterscripts %]
-
+[% INCLUDE listpagejs %]
+           

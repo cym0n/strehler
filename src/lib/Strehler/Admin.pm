@@ -34,6 +34,8 @@ my $module_file_path = __FILE__;
 my $root_path = abs_path($module_file_path);
 $root_path =~ s/Admin\.pm//;
 
+my $forms_path = $root_path . 'forms';
+
 set views => $root_path . 'views';
 
 ##### Homepage #####
@@ -332,12 +334,24 @@ get '/category/info' => sub
     content_type('application/json');
     my $category;
     my $input = params->{input};
+    my $option = params->{option} || undef;
+    my $ancestor = 0;
     if(params->{query} eq 'id' && $input)
     {
+        if($input =~ m/^anc:([0-9]+)$/)
+        {
+            $input = $1;
+            $ancestor = 1;
+        }
         $category = Strehler::Meta::Category->new($input);
     }
     elsif(params->{query} eq 'name' && $input)
     {
+        if($input =~ m/^(.*)\*$/)
+        {
+            $input = $1;
+            $ancestor = 1;
+        }
         $category = Strehler::Meta::Category->explode_name($input);
     }
     else
@@ -345,7 +359,7 @@ get '/category/info' => sub
         $category = Strehler::Meta::Category->new( row => undef );
     }
     my %data = $category->get_basic_data();
-    my $subs = Strehler::Meta::Category->make_select($category->get_attr('id'));
+    my $subs = Strehler::Meta::Category->make_select($category->get_attr('id'), $option);
     my @subs_array = @{$subs};
     $data{select} = template 'admin/category_select', { categories => $subs }, { layout => undef };
     if($#subs_array > 0)
@@ -355,6 +369,13 @@ get '/category/info' => sub
     else
     {
         $data{subcategories} = 0;
+    }
+    if($ancestor && $category->exists())
+    {
+        $data{'parent'} = $input;
+        $data{subcategories} = 0;
+        $data{'ext_name'} = $data{'ext_name'} . "/*";
+        $data{'id'} = 'anc:'.$input;
     }
     my $serializer = Dancer2::Serializer::JSON->new();
     return $serializer->serialize(\%data);
@@ -405,6 +426,7 @@ get '/:entity' => sub
 
 any '/:entity/list' => sub
 {
+    #Page init
     my $entity = params->{entity};
     my $class = Strehler::Helpers::class_from_entity($entity);
     if(! $class->auto())
@@ -413,80 +435,67 @@ any '/:entity/list' => sub
     }
     send_error("Access denied", 403) && return if ( ! $class->check_role(session->read('role')));
 
+    #Parameters collection
     my $custom_list_template = $class->custom_list_template();
     my $list_view = $custom_list_template ? 'admin/custom_list' : 'admin/generic_list';
-    
-    my $page = exists params->{'page'} ? params->{'page'} : session $entity . '-page';
-    my $cat_param = exists params->{'cat'} ? params->{'cat'} : session $entity . '-cat-filter';
-    my $order = exists params->{'order'} ? params->{'order'} : session $entity . '-order';
-    my $order_by = exists params->{'order-by'} ? params->{'order-by'} : session $entity . '-order-by';
-    my $search = exists params->{'search'} ? params->{'search'} : session $entity . '-search';
-    my $ancestor = exists params->{'ancestor'} ? params->{'ancestor'} : session $entity . '-ancestor';
-    my $language = exists params->{'language'} ? params->{'language'} : session $entity . '-language';
-    my $wanted_cat = undef;
-    if(exists params->{'strehl-catname'})
+
+    my $input_params;
+    foreach my $p (( 'page', 'category-filter', 'order', 'order-by', 'search', 'language', 'strehl-from'))
     {
-        $wanted_cat = Strehler::Meta::Category->explode_name(params->{'strehl-catname'});
-        if(! $wanted_cat->exists())
-        {
-           my $backlink = params->{'strehl-from'} || "/admin/$entity/list";
-           return template "admin/message", { message => "No elements in category: " . params->{'strehl-catname'}, backlink => $backlink }; 
-        }
-        $cat_param = $wanted_cat->get_attr('id');
+        $input_params->{$p} = params->{$p};
     }
-    else
+    my %parameters = Strehler::Helpers::list_parameters_init($entity, session, $input_params);
+   
+    if(exists $parameters{'error'} && $parameters{'error'} == 1)
     {
-        if($cat_param)
-        {
-            $wanted_cat = Strehler::Meta::Category->new($cat_param);
-        }
+       my $backlink = params->{'strehl-from'} || "/admin/$entity/list";
+       return template "admin/message", { message => "Wrong category name: " . params->{'strehl-catname'}, backlink => $backlink }; 
     }
-    my $backlink = params->{'strehl-from'};
-    my $cat = undef;
-    my $subcat = undef;
-    if($wanted_cat)
-    {
-        if($wanted_cat->row->parent)
-        {
-            $cat = $wanted_cat->row->parent->id;
-            $subcat = $wanted_cat->row->id;
-        }
-        else
-        {
-            $cat = $wanted_cat->row->id;
-        }
-    }
-    if(exists params->{'cat_name'} || exists params->{'cat'})
-    {
-        $ancestor = undef;
-    }
-    elsif(exists params->{'ancestor'})
-    {
-        $cat_param = undef;
-        $cat = $ancestor;
-        $subcat = '*';
-    }
-    $page ||= 1;
-    $order ||= 'desc';
-    my $entries_per_page = 20;
-    my $search_parameters = { page => $page, entries_per_page => $entries_per_page, category_id => $cat_param, ancestor => $ancestor, order => $order, order_by => $order_by, language => $language};
+
+    #Search
+    my $search_parameters = { page => $parameters{'page'}, 
+                              entries_per_page => 20, 
+                              category_id => $parameters{'category'},
+                              ancestor => $parameters{'ancestor'}, 
+                              order => $parameters{'order'}, 
+                              order_by => $parameters{'order_by'}, 
+                              language => $parameters{'language'}};
     my $elements;
-    if($search)
+    if($parameters{'search'})
     {
-        $elements = $class->search_box($search, $search_parameters);
+        $elements = $class->search_box($parameters{'search'}, $search_parameters);
     }
     else
     {
         $elements = $class->get_list($search_parameters);
     }
-    session $entity . '-page' => $page;
-    session $entity . '-cat-filter' => $cat_param;
-    session $entity . '-order' => $order;
-    session $entity . '-order-by' => $order_by;
-    session $entity . '-search' => $search;
-    session $entity . '-ancestor' => $ancestor;
-    session $entity . '-language' => $language;
-    template $list_view, { entity => $entity, elements => $elements->{'to_view'}, page => $page, cat_filter => $cat, subcat_filter => $subcat, search => $search, order => $order, order_by => $order_by, fields => $class->fields_list(), last_page => $elements->{'last_page'}, $class->entity_data(), custom_list_template => $custom_list_template, backlink => $backlink, language => $language, languages => \@languages };
+    my $filter_form = Strehler::Forms::form_filter($forms_path . '/admin/category_filter.yml', $class->multilang(), $parameters{'language'}, \@languages);
+
+    #Session saving management
+    session $entity . '-page' => $parameters{'page'};
+    session $entity . '-category-filter' => $parameters{'category-input'};
+    session $entity . '-order' => $parameters{'order'};
+    session $entity . '-order-by' => $parameters{'order_by'};
+    session $entity . '-search' => $parameters{'search'};
+    session $entity . '-language' => $parameters{'language'};
+
+    template $list_view, { entity => $entity, 
+                           elements => $elements->{'to_view'}, 
+                           last_page => $elements->{'last_page'}, 
+                           page => $parameters{'page'}, 
+                           cat_filter => $parameters{'category-input'}, 
+                           language => $parameters{'language'}, 
+                           search => $parameters{'search'}, 
+                           order => $parameters{'order'}, 
+                           order_by => $parameters{'order_by'}, 
+                           filtered => $parameters{'filtered'},
+                           backlink => $parameters{'backlink'}, 
+                           filter_form => $filter_form, 
+                           fields => $class->fields_list(), 
+                           custom_list_template => $custom_list_template, 
+                           languages => \@languages, 
+                           $class->entity_data()
+                          }; 
 };
 get '/:entity/turnon/:id' => sub
 {
