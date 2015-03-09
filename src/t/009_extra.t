@@ -43,7 +43,6 @@ test_psgi $admin_app, sub {
     #ADD
     $r = $cb->(POST '/admin/dummy/add',
                          { 'category' => $cat_id,
-                           'subcategory' => undef,
                            'tags' => 'tag1',
                            'text' => 'A dumb text',
                           });

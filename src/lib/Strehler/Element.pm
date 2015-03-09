@@ -907,15 +907,7 @@ sub get_form_data
     {
         if($el_row->category)
         {
-            if($el_row->category->parent)
-            {
-                $data->{'category'} = $el_row->category->parent->id;
-                $data->{'subcategory'} = $el_row->category->id;
-            }
-            else
-            {
-                $data->{'category'} = $el_row->category->id;
-            }
+            $data->{'category'} = $el_row->category->id;
         }
         else
         {
@@ -1013,16 +1005,10 @@ sub save_form
         }
         elsif($column eq 'category')
         {
-            my $category;
-            if($form->param_value('subcategory'))
+            if($form->param_value('category'))
             {
-                $category = $form->param_value('subcategory');
+                $el_data->{'category'} = $form->param_value('category');
             }
-            elsif($form->param_value('category'))
-            {
-                $category = $form->param_value('category');
-            }
-            $el_data->{'category'} = $category;
         }
     }
     if($self->publishable() && $self->auto_publish() && ! $id)

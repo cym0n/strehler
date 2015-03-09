@@ -68,7 +68,6 @@ test_psgi $app, sub {
     $r = $cb->(POST "/admin/article/add",
                     [ 'image' => undef,
                       'category' => $cat_conf->get_attr('id'),
-                      'subcategory' => undef,
                       'tags' => 'tag1',
                       'display_order' => 14,
                       'publish_date' => '12/03/2014',
@@ -87,7 +86,6 @@ test_psgi $app, sub {
     $r = $cb->(POST "/admin/article/add",
                 [ 'image' => undef,
                   'category' => $cat_open->get_attr('id'),
-                  'subcategory' => undef,
                   'tags' => 'foo',
                   'display_order' => 14,
                   'publish_date' => '12/03/2014',
@@ -117,7 +115,6 @@ test_psgi $app, sub {
                  'Content_Type' => 'form-data',
                  'Content' =>  [
                      'category' => $cat_conf->get_attr('id'),
-                     'subcategory' => undef,
                      'tags' => 'tag1',
                      'title_it' => 'Image - Configured tags',
                      'description_it' => 'Body - IT',
@@ -137,7 +134,6 @@ test_psgi $app, sub {
                 'Content_Type' => 'form-data',
                 'Content' =>  [
                     'category' => $cat_open->get_attr('id'),
-                    'subcategory' => undef,
                     'tags' => 'foo',
                     'title_it' => 'Image - Open tags',
                     'description_it' => 'Body - IT',
@@ -168,7 +164,6 @@ test_psgi $app, sub {
     #DUMMY - CONFIGURED - ADD
     $r = $cb->(POST '/admin/dummy/add',
                 [ 'category' => $cat_conf->get_attr('id'),
-                  'subcategory' => undef,
                   'tags' => 'tag1',
                   'text' => 'dummy configured tags'
                 ]);
@@ -181,7 +176,6 @@ test_psgi $app, sub {
     #DUMMY - OPEN - ADD
     $r = $cb->(POST '/admin/dummy/add',
                 [ 'category' => $cat_open->get_attr('id'),
-                  'subcategory' => undef,
                   'tags' => 'foo',
                   'text' => 'dummy open tags'
                 ]);

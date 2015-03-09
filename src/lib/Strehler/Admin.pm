@@ -680,15 +680,7 @@ any '/:entity/add' => sub
             $wanted_cat = Strehler::Meta::Category->explode_name(params->{'strehl-catname'});
             if($wanted_cat->exists())
             {
-                my $parent = $wanted_cat->get_attr('parent');
-                if($parent)
-                {
-                    $form->default_values({ category => $parent, subcategory => $wanted_cat->get_attr('id')});
-                }
-                else
-                {
-                    $form->default_values({ category => $wanted_cat->get_attr('id')});
-                }
+                $form->default_values({ category => $wanted_cat->get_attr('id')});
             }    
         }
         if(exists params->{'strehl-today'})

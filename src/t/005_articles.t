@@ -33,7 +33,6 @@ test_psgi $app, sub {
     $r = $cb->(POST "/admin/article/add",
                 [ 'image' => undef,
                   'category' => $cat_id,
-                  'subcategory' => undef,
                   'tags' => 'tag1',
                   'display_order' => 14,
                   'publish_date' => '12/03/2014',
@@ -60,7 +59,6 @@ test_psgi $app, sub {
    $r = $cb->(POST "/admin/article/edit/$article_id",
                 [ 'image' => undef,
                   'category' => $cat_id,
-                  'subcategory' => undef,
                   'tags' => 'tag1',
                   'display_order' => 14,
                   'publish_date' => '12/03/2014',
@@ -90,8 +88,8 @@ test_psgi $app, sub {
 
    #LIST FILTERED BY LANGUAGE
    #Three contents for it, just one for en
-   TestSupport::create_article($cb, '1', $cat_id, undef, { publish_date => '10/10/2014', title_en => undef, text_en => undef });
-   TestSupport::create_article($cb, '2', $cat_id, undef, { publish_date => '10/10/2014', title_en => undef, text_en => undef });
+   TestSupport::create_article($cb, '1', $cat_id, { publish_date => '10/10/2014', title_en => undef, text_en => undef });
+   TestSupport::create_article($cb, '2', $cat_id, { publish_date => '10/10/2014', title_en => undef, text_en => undef });
    TestSupport::create_article($cb, '3', $cat_id);
 
    $r = $cb->(GET '/admin/article/list?language=it');

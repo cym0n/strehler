@@ -77,7 +77,7 @@ test_psgi $app, sub {
     ok($cat3->exists(), "Child category inserted and retrieved");
     my $cat3_id = $cat3->get_attr('id');
 
-    TestSupport::create_article($cb, undef, $cat3_id, undef);
+    TestSupport::create_article($cb, undef, $cat3_id);
 
     #SELECT
     my $select_string = '<option value="' . $cat->get_attr('id') . '">prova</option>';

@@ -31,8 +31,8 @@ test_psgi $app, sub {
 
     #Listed page: three contents, two online, just one english (not online)
 
-    TestSupport::create_article($cb, 'listed1', $listed_cat_id, undef, { title_en => undef, text_en => undef });
-    TestSupport::create_article($cb, 'listed2', $listed_cat_id, undef, { title_en => undef, text_en => undef });
+    TestSupport::create_article($cb, 'listed1', $listed_cat_id, { title_en => undef, text_en => undef });
+    TestSupport::create_article($cb, 'listed2', $listed_cat_id, { title_en => undef, text_en => undef });
     TestSupport::create_article($cb, 'listed3', $listed_cat_id);
 
     #Custom page: two contents online for italian, just one online for english
@@ -41,10 +41,10 @@ test_psgi $app, sub {
     # upper EN: unpub [page2]
     # lower EN: nothing
     
-    TestSupport::create_article($cb, 'page1', $upper_cat_id, undef, { publish_date => '10/10/2014', title_en => undef, text_en => undef });
-    TestSupport::create_article($cb, 'page2', $upper_cat_id, undef, { publish_date => '12/11/2015' });
-    TestSupport::create_article($cb, 'page3', $lower_cat_id, undef, { display_order => 100, title_en => undef, text_en => undef });
-    TestSupport::create_article($cb, 'page4', $lower_cat_id, undef, { display_order => 1 , title_en => undef, text_en => undef });
+    TestSupport::create_article($cb, 'page1', $upper_cat_id, { publish_date => '10/10/2014', title_en => undef, text_en => undef });
+    TestSupport::create_article($cb, 'page2', $upper_cat_id, { publish_date => '12/11/2015' });
+    TestSupport::create_article($cb, 'page3', $lower_cat_id, { display_order => 100, title_en => undef, text_en => undef });
+    TestSupport::create_article($cb, 'page4', $lower_cat_id, { display_order => 1 , title_en => undef, text_en => undef });
 
     #Online: listed1, listed2, page1, page3
 

@@ -40,7 +40,6 @@ test_psgi $app, sub {
                     'Content_Type' => 'form-data',
                     'Content' =>  [
                             'category' => $cat_id,
-                            'subcategory' => undef,
                             'tags' => 'tag1',
                             'title_it' => 'Automatic test - title - IT',
                             'description_it' => 'Automatic test - body - IT',
@@ -60,7 +59,6 @@ test_psgi $app, sub {
                     'Content_Type' => 'form-data',
                     'Content' =>  [
                             'category' => $cat_id,
-                            'subcategory' => undef,
                             'tags' => 'tag1',
                             'title_it' => 'Automatic test - title - IT',
                             'description_it' => 'Automatic test - body changed - IT',

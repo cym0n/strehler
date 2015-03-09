@@ -31,12 +31,11 @@ test_psgi $admin_app, sub {
     #Dummy categories created for test purpose
     my $ancestor_cat_id = TestSupport::create_category($cb, 'prova');
     my $child_cat_id = TestSupport::create_category($cb, 'foo', $ancestor_cat_id);
-    TestSupport::create_article($cb, '1', $ancestor_cat_id, undef, { 'display_order' => 1, 'publish_date' => '' });
-    TestSupport::create_article($cb, '2', $ancestor_cat_id, $child_cat_id, { 'display_order' => 2, 'publish_date' => '13/11/2009' });
-    TestSupport::create_article($cb, '3', $ancestor_cat_id, $child_cat_id, { 'display_order' => 3, 'publish_date' => '' });
+    TestSupport::create_article($cb, '1', $ancestor_cat_id, { 'display_order' => 1, 'publish_date' => '' });
+    TestSupport::create_article($cb, '2', $child_cat_id, { 'display_order' => 2, 'publish_date' => '13/11/2009' });
+    TestSupport::create_article($cb, '3', $child_cat_id, { 'display_order' => 3, 'publish_date' => '' });
     my $r = $cb->(POST $site . "/admin/dummy/add",
                          { 'category' => $ancestor_cat_id,
-                           'subcategory' => undef,
                            'tags' => 'tag1',
                            'text' => 'A dumb text',
                          });

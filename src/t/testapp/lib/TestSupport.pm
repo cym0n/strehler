@@ -63,12 +63,10 @@ sub create_article
     my $cb = shift;
     my $counter = shift || '';
     my $category = shift || '';
-    my $subcategory = shift || '';
     my $custom_params = shift || {};
     my $r = $cb->( POST '/admin/article/add', 
                     [ 'image' => undef,
                       'category' => $category,
-                      'subcategory' => $subcategory,
                       'tags' => exists $custom_params->{'tags'} ? $custom_params->{'tags'} : 'tag1',
                       'display_order' => exists $custom_params->{'display_order'} ? $custom_params->{'display_order'} : 14,
                       'publish_date' => exists $custom_params->{'publish_date'} ? $custom_params->{'publish_date'} : '12/03/2014',

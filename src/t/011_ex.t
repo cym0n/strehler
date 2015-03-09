@@ -48,9 +48,9 @@ test_psgi $admin_app, sub {
     my $cat1_id = TestSupport::create_category($cb, 'dummy');
     my $cat2_id = TestSupport::create_category($cb, 'upper');
     my $cat3_id = TestSupport::create_category($cb, 'lower');
-    TestSupport::create_article($cb, '1', $cat1_id, undef);
-    TestSupport::create_article($cb, '2', $cat2_id, undef);
-    TestSupport::create_article($cb, '3', $cat3_id, undef);
+    TestSupport::create_article($cb, '1', $cat1_id);
+    TestSupport::create_article($cb, '2', $cat2_id);
+    TestSupport::create_article($cb, '3', $cat3_id);
     my $articles = Strehler::Element::Article->get_list({ext => 1, category => 'dummy'});
     $slug = $articles->{'to_view'}->[0]->{'slug'};
 };

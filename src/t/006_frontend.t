@@ -29,11 +29,11 @@ test_psgi $admin_app, sub {
     my $cb = shift;
     my $site = "http://localhost";
     my $cat_id = TestSupport::create_category($cb, 'prova');
-    TestSupport::create_article($cb, 'one', $cat_id, undef, { display_order => 14, 'publish_date' => '12/03/2014'});
+    TestSupport::create_article($cb, 'one', $cat_id, { display_order => 14, 'publish_date' => '12/03/2014'});
     my $art = Strehler::Element::Article->get_last_by_order('prova', 'it');
     $test_slug = $art->get_attr_multilang('slug', 'it');
-    TestSupport::create_article($cb, 'two', $cat_id, undef, { display_order => 5, 'publish_date' => '12/05/2014'});
-    TestSupport::create_article($cb, 'three', $cat_id, undef, { display_order => 20, 'publish_date' => '12/01/2014'});
+    TestSupport::create_article($cb, 'two', $cat_id, { display_order => 5, 'publish_date' => '12/05/2014'});
+    TestSupport::create_article($cb, 'three', $cat_id, { display_order => 20, 'publish_date' => '12/01/2014'});
 };
 
 ######## Tests

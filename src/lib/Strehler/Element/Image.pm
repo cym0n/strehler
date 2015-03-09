@@ -110,11 +110,7 @@ sub save_form
     }
     
     my $category;
-    if($form->param_value('subcategory'))
-    {
-        $category = $form->param_value('subcategory');
-    }
-    elsif($form->param_value('category'))
+    if($form->param_value('category'))
     {
         $category = $form->param_value('category');
     }
