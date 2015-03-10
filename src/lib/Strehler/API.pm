@@ -96,7 +96,16 @@ get '/:entity/:id' => sub {
 
 get '/**/' => sub {
     my ($attributes) = splat;
-    my ($entities, $category, $subcategory) = @{$attributes};
+    my $entities = shift @{$attributes};
+    my $category;
+    if(@{$attributes})
+    {
+        $category = join('/', @{$attributes});
+    }
+    else
+    {
+        $category = undef;
+    }
     my $callback = params->{'callback'} || undef;
     my $lang = params->{'lang'} || config->{'Strehler'}->{'default_language'};
     my $order = params->{'order'};
@@ -112,27 +121,12 @@ get '/**/' => sub {
     my $ancestor = undef;
     if($category)
     {
-        $subcategory ||= "";
-        my $category_obj = Strehler::Meta::Category->explode_name("$category/$subcategory");
+        my $category_obj = Strehler::Meta::Category->explode_name($category);
         if(! $category_obj->exists())
         {
             return error_handler(404, "Category doesn't exists");
         }
-        if($subcategory)
-        {
-            $category_id = $category_obj->get_attr('id');
-            $ancestor = undef;
-        }
-        else
-        {
-            $ancestor = $category_obj->get_attr('id');
-            $category_id = undef;
-        }
-    }
-    else
-    {
-        $category_id = undef;
-        $ancestor = undef;
+        $category_id = $category_obj->get_attr('id');
     }
     my $parameters = {
             order => $order,
@@ -142,8 +136,8 @@ get '/**/' => sub {
             page => $page,
             json => 1,
             published => 1,
-            category_id => $category_id,
-            ancestor => $ancestor
+            category_id => undef, 
+            ancestor => $category_id
         };
 
     my $data = $class->get_list($parameters);    

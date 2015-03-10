@@ -44,8 +44,8 @@
         </tbody>
         </table>
 </div>
+[% INCLUDE categoryinit %]
 <script>
-    [% INCLUDE categoryinit %]
     $(document).ready(function() {
         $(".asparent").on("click", function()
             {
