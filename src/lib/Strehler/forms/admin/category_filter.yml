@@ -7,7 +7,7 @@ elements:
       elements:
         - type: "+Strehler::FormFu::Element::Category"
           label: Filter
-          name: category-filter
+          name: category-input
       attributes:
         class: row
     - type: Block

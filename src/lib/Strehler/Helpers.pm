@@ -138,6 +138,20 @@ sub check_statics
     return $data eq $Strehler::STATICS_VERSION ? 1: 0;
 }
 
+sub list_parameters_names
+{
+    my $type = shift;
+    if($type eq 'session')
+    {
+        return ('page', 'category-input', 'order', 'order-by', 'search', 'language'); 
+    }
+    elsif($type eq 'extra')
+    {
+        return ('strehl-from', 'reset-filter', 'reset-search', 'strehl-catname'); 
+    }
+}
+
+
 sub list_parameters_init
 {
     my $entity = shift; 
@@ -147,12 +161,11 @@ sub list_parameters_init
     my %output;
 
     # Params init
-    $output{'page'} = exists $params->{'page'} ? $params->{'page'} : $session->read($entity . '-page');
-    $output{'category-input'} = exists $params->{'category-filter'} ? $params->{'category-filter'} : $session->read($entity . '-cat-input');
-    $output{'order'} = exists $params->{'order'} ? $params->{'order'} : $session->read($entity . '-order');
-    $output{'order_by'} = exists $params->{'order-by'} ? $params->{'order-by'} : $session->read($entity . '-order-by');
-    $output{'search'} = exists $params->{'search'} ? $params->{'search'} : $session->read($entity . '-search');
-    $output{'language'} = exists $params->{'language'} ? $params->{'language'} : $session->read($entity . '-language');
+    foreach my $p (list_parameters_names('session'))
+    {
+        $output{$p} = exists $params->{$p} ? $params->{$p} : $session->{$p};
+    }
+    #Used by template but not managed by session
     $output{'backlink'} = $params->{'strehl-from'};
 
     #reset management
@@ -170,28 +183,29 @@ sub list_parameters_init
         return %output;
     }
 
-    #strehl-catname converted to category id (override category-filter)
+    #strehl-catname converted to category id (override category-input)
     if(exists $params->{'strehl-catname'})
     {
-        my $wanted_cat = Strehler::Meta::Category->explode_name(params->{'strehl-catname'});
+        my $wanted_cat = Strehler::Meta::Category->explode_name($params->{'strehl-catname'});
         if(! $wanted_cat->exists())
         {
             $output{'error'} = "1";
             return %output;
         }
-        $output{'category-input'} = $wanted_cat->get_attr('id');
-    }
-
-    #Ancestor-mode management
-    if($output{'category-input'} && $output{'category-input'} =~ m/anc:([0-9]+)/)
-    {
-        $output{'category'} = undef;
-        $output{'ancestor'} = $1;
+        $output{'category'} = $wanted_cat->get_attr('id');
     }
     else
     {
-        $output{'category'} = $output{'category-input'};
-        $output{'ancestor'} = undef;
+        if($output{'category-input'} && $output{'category-input'} =~ m/anc:([0-9]+)/)
+        {
+            $output{'category'} = undef;
+            $output{'ancestor'} = $1;
+        }
+        else
+        {
+            $output{'category'} = $output{'category-input'};
+            $output{'ancestor'} = undef;
+        }
     }
     
     #Some default values
@@ -206,6 +220,11 @@ sub list_parameters_init
         $output{'filtered'} = 0;
     }
 
+    #Some parameters have different names in different contexts. 
+    #I'll do some duplication here, dirty but easy.
+    $output{'order_by'} = $output{'order-by'};
+    $output{'category_id'} = $output{'category'};
+    $output{'cat_filter'} = $output{'category'};
     return %output;
 }
 

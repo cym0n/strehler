@@ -95,7 +95,7 @@
     <script>
     $(document).ready(function() {
         $(".category-widget").attr('rel', 'ancestor');
-        $("#category-filter").val('[% cat_filter %]');
+        $("#category-input").val('[% cat_filter %]');
     });
     </script>
     [% INCLUDE categoryinit %]

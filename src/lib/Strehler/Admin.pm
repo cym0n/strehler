@@ -436,16 +436,26 @@ any '/:entity/list' => sub
     send_error("Access denied", 403) && return if ( ! $class->check_role(session->read('role')));
 
     #Parameters collection
-    my $custom_list_template = $class->custom_list_template();
-    my $list_view = $custom_list_template ? 'admin/custom_list' : 'admin/generic_list';
-
     my $input_params;
-    foreach my $p (( 'page', 'category-filter', 'order', 'order-by', 'search', 'language', 'strehl-from'))
+    my $session;
+    foreach my $p (Strehler::Helpers::list_parameters_names('session'))
     {
-        $input_params->{$p} = params->{$p};
+        if(exists params->{$p})
+        {
+            $input_params->{$p} = params->{$p};
+        }
+        my $session_value = session->read($entity . "-" . $p);
+        $session->{$p} = $session_value if($session_value);
     }
-    my %parameters = Strehler::Helpers::list_parameters_init($entity, session, $input_params);
-   
+    foreach my $p (Strehler::Helpers::list_parameters_names('extra'))
+    {
+        if(exists params->{$p})
+        {
+            $input_params->{$p} = params->{$p};
+        }
+    }
+    #TODO: manage backlink
+    my %parameters = Strehler::Helpers::list_parameters_init($entity, $session, $input_params);
     if(exists $parameters{'error'} && $parameters{'error'} == 1)
     {
        my $backlink = params->{'strehl-from'} || "/admin/$entity/list";
@@ -453,47 +463,35 @@ any '/:entity/list' => sub
     }
 
     #Search
-    my $search_parameters = { page => $parameters{'page'}, 
-                              entries_per_page => 20, 
-                              category_id => $parameters{'category'},
-                              ancestor => $parameters{'ancestor'}, 
-                              order => $parameters{'order'}, 
-                              order_by => $parameters{'order_by'}, 
-                              language => $parameters{'language'}};
     my $elements;
+    my %search_params = %parameters;
     if($parameters{'search'})
     {
-        $elements = $class->search_box($parameters{'search'}, $search_parameters);
+        $elements = $class->search_box($parameters{'search'}, \%search_params);
     }
     else
     {
-        $elements = $class->get_list($search_parameters);
+        $elements = $class->get_list(\%search_params);
     }
     my $filter_form = Strehler::Forms::form_filter($forms_path . '/admin/category_filter.yml', $class->multilang(), $parameters{'language'}, \@languages);
 
     #Session saving management
-    session $entity . '-page' => $parameters{'page'};
-    session $entity . '-category-filter' => $parameters{'category-input'};
-    session $entity . '-order' => $parameters{'order'};
-    session $entity . '-order-by' => $parameters{'order_by'};
-    session $entity . '-search' => $parameters{'search'};
-    session $entity . '-language' => $parameters{'language'};
+    foreach my $p_save (Strehler::Helpers::list_parameters_names('session'))
+    {
+        session $entity . '-' . $p_save => $parameters{$p_save};
+    }
 
+    #Rendering
+    my $custom_list_template = $class->custom_list_template();
+    my $list_view = $custom_list_template ? 'admin/custom_list' : 'admin/generic_list';
     template $list_view, { entity => $entity, 
                            elements => $elements->{'to_view'}, 
                            last_page => $elements->{'last_page'}, 
-                           page => $parameters{'page'}, 
-                           cat_filter => $parameters{'category-input'}, 
-                           language => $parameters{'language'}, 
-                           search => $parameters{'search'}, 
-                           order => $parameters{'order'}, 
-                           order_by => $parameters{'order_by'}, 
-                           filtered => $parameters{'filtered'},
-                           backlink => $parameters{'backlink'}, 
                            filter_form => $filter_form, 
                            fields => $class->fields_list(), 
                            custom_list_template => $custom_list_template, 
                            languages => \@languages, 
+                           %parameters,
                            $class->entity_data()
                           }; 
 };
