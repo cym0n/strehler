@@ -77,6 +77,19 @@ test_psgi $app, sub {
     ok($cat3->exists(), "Child category inserted and retrieved");
     my $cat3_id = $cat3->get_attr('id');
 
+    $r = $cb->( POST '/admin/category/add', 
+                    [ 'category' => 'subchild',
+                      'parent' => $cat3_id,
+                      'tags-all' => '',
+                      'default-all' => '',
+                      'tags-article' => 'tagart1,tagart2,tagart3',
+                      'default-article' => '',
+                      'tags-image' => '',
+                      'default-image' => '' ]);
+    my $cat4 = Strehler::Meta::Category->explode_name("prova/child/subchild");
+    ok($cat4->exists(), "Third level category inserted and retrieved");
+    my $cat4_id = $cat3->get_attr('id');
+
     TestSupport::create_article($cb, undef, $cat3_id);
 
     #SELECT
