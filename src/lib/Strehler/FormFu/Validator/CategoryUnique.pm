@@ -22,7 +22,7 @@ sub validate_value {
     if($parent)
     {
         my $parent_element = Strehler::Meta::Category->new($parent);
-        $category_name = $parent_element->get_attr('category') . '/' . $category;
+        $category_name = $parent_element->ext_name() . '/' . $category;
     }
     else
     {

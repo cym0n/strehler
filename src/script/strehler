@@ -117,7 +117,7 @@ elsif($command eq 'categories')
     open( my $file, "< $filename" ) or die ("Impossible to open $filename");
     my @to_create;
     my %post_data;
-    say "Processing file...\n";
+    say "Processing file: $filename\n";
     foreach my $line (<$file>)
     {
         #Tags management
@@ -132,7 +132,7 @@ elsif($command eq 'categories')
             {
                 say "Tags line with no category. File malformed?";
             }
-            say "Processing tags line for category " . $post_data{'category'};
+            say "Processing tags line for category " . $post_data{'line'};
             my @tags_data = split ';', $line;
             $post_data{'tags-' . $tags_data[0]} = $tags_data[1];
             $post_data{'default-' . $tags_data[0]} = $tags_data[2];
@@ -153,47 +153,84 @@ elsif($command eq 'categories')
             say "\n=== Processing $line ===";
             $post_data{'line'} = $line;
             my @elements = split '/', $line;
-            if($#elements > 1 || $#elements == -1)
+            my $examined_category = "";
+            my $parent_id = undef;
+            my $previous_category = "";
+            while(@elements)
             {
-                say "Bad category name";
-                %post_data = ();
-                next;
-            }
-            elsif($#elements == 1)
-            {
-                #Category with parent
-                my $parent = Strehler::Meta::Category->explode_name($elements[0]);
-                if($parent->exists())
+                my $examined_category_name = shift @elements;
+                $examined_category .= '/' if($examined_category ne "");
+                $examined_category .= $examined_category_name;
+                my $cat = Strehler::Meta::Category->explode_name($examined_category);
+                if($cat->exists())
                 {
-                    $post_data{'parent'} = $parent->get_attr('id');
+                    #Category is the one written in the file and exists. We manage it considering existence of tag lines.
+                    if(! @elements)
+                    {
+                        $post_data{'post_id'} = $cat->get_attr('id');
+                        $post_data{'prev-name'} = $examined_category_name;
+                        $post_data{'category'} = $examined_category_name;
+                        $post_data{'prev-parent'} = $parent_id;
+                        $post_data{'parent'} = $parent_id;
+                        say "Category $examined_category_name already exists";
+                        say "---";
+                    }
+                    #It just a parent of the category in the file
+                    else
+                    {
+                        say "Existing parent $examined_category_name";
+                        $parent_id = $cat->get_attr('id');
+                    }
                 }
                 else
                 {
-                        say "Creating parent submission...";
-                        $post_data{'created_parent'} = 1;
-                        $post_data{'parent'} = undef;
-                        $post_data{'parent_name'} = $elements[0];
-                        my %parent_data = ( 'line' => $elements[0], 'category' => $elements[0], 'prev-name' => $elements[0], 'im_parent' => 1 );
+                    #Let's create the new category as asked by the file
+                    if(! @elements)
+                    {
+                        $post_data{'post_id'} = undef;
+                        $post_data{'category'} = $examined_category_name;
+                        if($parent_id)
+                        {
+                            $post_data{'parent'} = $parent_id;
+                        }
+                        else
+                        {   
+                            if($previous_category)
+                            {
+                                $post_data{'created_parent'} = 1;
+                                $post_data{'parent_name'} = $previous_category if($previous_category);
+                            }
+                        }
+                        say "New category: $examined_category_name";
+                        say "---";
+                    }
+                    #Parent creation (could be necessary to create more parents)
+                    else
+                    {
+                        my %parent_data = ( 'line' => $examined_category, 
+                                            'category' => $examined_category_name, 
+                                            'im_parent' => 1 ); 
+                        #Previous category existed
+                        if($parent_id)
+                        {
+                            say "There's a parent: $parent_id";
+                            $parent_data{'parent'} = $parent_id;
+                        }                       
+                        else
+                        {
+                            if($previous_category)
+                            {
+                                say "There's a previous: $previous_category";
+                                $parent_data{'created_parent'} = 1;
+                                $parent_data{'parent_name'} = $previous_category if($previous_category);
+                            }
+                        }
+                        say "Parent category to be created: " . $examined_category_name;
                         push @to_create, \%parent_data;
+                        $parent_id = undef;
+                    }
                 }
-                $post_data{'category'} = $elements[1];
-            }
-            else
-            {
-                $post_data{'category'} = $line;
-            }
-            my $cat = Strehler::Meta::Category->explode_name($line);
-            if($cat->exists())
-            {
-                $post_data{'post_id'} = $cat->get_attr('id');
-                $post_data{'prev-name'} = $post_data{'category'};
-                $post_data{'prev-parent'} = $post_data{'parent'};
-                say "Category already exists";
-            }
-            else
-            {
-                $post_data{'post_id'} = undef;
-                say "New category";
+                $previous_category = $examined_category;
             }
         }
     }
@@ -212,10 +249,10 @@ elsif($command eq 'categories')
         {
             if($c->{'im_parent'})
             {
-                say "Just a parent creation, no need to proceed";
+                say "Parent submit already executed, no action";
                 next;
             }
-            say "Category already created";
+            say "Submit already executed, refreshing";
             $c->{'post_id'} = $created_categories{$c->{'line'}};
             $c->{'prev-name'} = $c->{'category'};
         }

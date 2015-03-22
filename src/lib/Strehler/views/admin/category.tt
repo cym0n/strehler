@@ -5,8 +5,6 @@
 <div class="content span12">
        [% form %]
 </div>
-<script>
-    [% INCLUDE categoryinit %]
-</script>
+[% INCLUDE categoryinit %]
 
 
