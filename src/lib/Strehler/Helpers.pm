@@ -258,6 +258,60 @@ return value $class
 
 Return the $class related to the given entity
 
+=item get_categorized_entities
+
+return value @entities
+
+Return all the entities using categories
+
+=item standard_entities
+
+return value @entities
+
+Return standard entities defined in Strehler core.
+
+=item entities_list
+
+return value @entities
+
+Return all the entities managed by the system
+
+=item top_bars
+
+return value \@editor_menu, \@admin_menu
+
+Used to build the structure of the top bar, considering access level
+
+=item class_from_plural
+
+argument: $class_plural
+
+return value $class
+
+Return a class from its plural name.
+
+=item public_directory
+
+return value $dir
+
+Return public directory as configured by Dancer2, using Dancer2 explicit configuration, but with a fallback calculated on configuration directory.
+
+=item check_statics
+
+return value $checked
+
+Return true is static version configured in VERSION file under public directory is the same configured in Strehler module.
+
+=item list_parameters_init
+
+arguments: $entity, $session, $params
+
+return value @parametes
+
+Take entity, session values and parameters from request and calculate all the parameters that will be used for list page.
+
+Parameters considered are listed by the function list_parameters_names
+
 =back
 
 =cut
