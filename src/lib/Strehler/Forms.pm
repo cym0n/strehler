@@ -221,6 +221,8 @@ Functions that generate forms:
 
 =item form_generic
 
+=item form_filter
+
 =back
 
 tags_for_form is used to manage tags field because it has two different behaviours: as text field and as list of checkboxes.

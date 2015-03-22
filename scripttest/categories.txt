@@ -9,3 +9,17 @@ spaceships
 planets/bases
 planets/cities
 robots/androids
+robots/mech/space
+robots/mech/ground
+robots/mech
+    image;human,alien;human
+robots/androids/asimov/fundation
+robots/androids/asimov/naked sun
+    all;good,bad;good
+monsters
+    article;green,red,blue
+monsters/water
+    article;sea,lake,ocean;sea
+monsters/water/deep
+    article;little,large;large
+

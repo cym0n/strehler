@@ -76,31 +76,34 @@ No parameters, no labels.
 
 =head1 GENERATED HTML
 
-    <div>
+    <fieldset class="category-widget">
+        <div class="sel-category-input">
+            <div>
+                <label>Category</label>
+                <input name="category-name" type="text" class="sel-category-name">
+            </div>
+            <button class="btn btn-warning sel-category-back" type="button">
+                &lt;
+            </button>
+            <img class="sel-category-loader" src="/strehler/images/ajax-loader.gif" style="display: none;">
+        </div>
         <div>
-            <label for="category_selector">Category</label>
-            <select id="category_selector" name="category">
-                <option value="">-- select --</option>
+            <select name="category-combo" class="sel-category-combo">
                 <option value="1">cat1</option>
                 <option value="2">cat2</option>
             </select>
         </div>
-        <div style="display: none;">
-            <label for="subcat">Sub-category</label>
-            <select id="subcat" name "subcategory">
-                <option value="">-- select --</option>
-                <option value="10">subcat1</option>
-                <option value="11">subcat2</option>
-            </select>
-        </div>
-    </div>
+        <input name="category" type="hidden" value="22" class="sel-category-id" id="category">
+        <input name="category-parent" type="hidden" class="sel-category-parent" value="">
+    </fieldset>
+
 
 Options are inserted dinamically during form generation.
 Sub-category display attributed is managed by javascript.
 
 =head1 YAML CONFIGURATION
 
-For the complete configuration see in the package: forms/admin/elements/category.yml
+For the complete configuration see in the package: forms/admin/elements/category_multi.yml
 
 =cut
 

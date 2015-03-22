@@ -454,7 +454,6 @@ any '/:entity/list' => sub
             $input_params->{$p} = params->{$p};
         }
     }
-    #TODO: manage backlink
     my %parameters = Strehler::Helpers::list_parameters_init($entity, $session, $input_params);
     if(exists $parameters{'error'} && $parameters{'error'} == 1)
     {
