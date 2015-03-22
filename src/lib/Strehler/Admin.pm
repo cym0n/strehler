@@ -5,6 +5,7 @@ use Cwd 'abs_path';
 use Dancer2 0.154000;
 use Dancer2::Plugin::DBIC;
 use Dancer2::Plugin::Ajax;
+use Dancer2::Serializer::JSON;
 use Strehler::Dancer2::Plugin::Admin;
 use HTML::FormFu 1.00;
 use HTML::FormFu::Element::Block;
