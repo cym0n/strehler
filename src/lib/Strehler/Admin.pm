@@ -552,7 +552,11 @@ post '/:entity/delete/:id' => sub
     send_error("Access denied", 403) && return if ( ! $class->check_role(session->read('role')));
     my $id = params->{id};
     my $obj = $class->new($id);
-    $obj->delete();
+    my $code = $obj->delete();
+    if($code != 0)
+    {
+       return template "admin/message", { message => $obj->error_message("delete", $code), backlink => dancer_app->prefix . '/' . $entity }; 
+    }
     Strehler::Element::Log->write(session->read('user'), 'delete', $entity, $id);
     redirect dancer_app->prefix . '/' . $entity . '/list';
 };

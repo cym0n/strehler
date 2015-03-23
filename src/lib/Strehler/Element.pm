@@ -1122,6 +1122,21 @@ sub check_role
     }
 }
 
+sub error_message
+{
+    my $self = shift;
+    my $action = shift;
+    my $code = shift;
+    if($code == '0')
+    {
+        return "OK";
+    }
+    else
+    {
+        return "An error has occurred";
+    }
+}
+
 
 
 1;

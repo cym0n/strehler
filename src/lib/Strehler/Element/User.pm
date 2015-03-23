@@ -161,6 +161,32 @@ sub install
     return "Standard entity. No installation is needed.";
 }
 
+sub delete
+{
+    my $self = shift;
+    if($self->get_attr("user") eq "admin")
+    {
+        return 2;
+    }
+    return SUPER->delete();
+}
+
+sub error_message
+{
+    my $self = shift;
+    my $action = shift;
+    my $code = shift;
+    if($action eq 'delete' && $code == 2)
+    {
+        return "Admin user cannot be deleted";
+    }
+    else
+    {
+        return SUPER->error_message($action, $code);
+    }
+}
+
+
 
 =encoding utf8
 
