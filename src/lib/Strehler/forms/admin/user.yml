@@ -5,6 +5,9 @@ elements:
       label: Username
       attributes: 
         class: span8
+      validators:
+        - type: '+Strehler::FormFu::Validator::UserUnique'
+          message: 'Username already exists'
 #      constraints:
 #        type: Required
 #        message: 'Username needed'

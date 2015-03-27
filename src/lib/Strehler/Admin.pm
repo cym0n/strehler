@@ -115,11 +115,7 @@ any '/user/add' => sub
     if($form->submitted_and_valid)
     {
         my $id = Strehler::Element::User->save_form(undef, $form);
-        if($id == -1)
-        {
-            $message = "Username already in use";
-        }
-        else
+        if($id != -1)
         {
             Strehler::Element::Log->write(session->read('user'), 'add', 'user', $id);
             redirect dancer_app->prefix . '/user/list';

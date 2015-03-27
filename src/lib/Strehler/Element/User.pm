@@ -84,10 +84,14 @@ sub save_form
     my $user_data = $self->generate_crypted_password($clean_password);
     $user_data->{ user } = $form->param_value('user');
     $user_data->{ role } = $form->param_value('role');
-    my $already_user = $self->get_schema()->resultset($self->ORMObj())->find({user => $form->param_value('user')});
-    return -1 if($already_user && ! $id);
+    if($user_data->{ user } != undef)
+    {
+        my $already_user = $self->get_schema()->resultset($self->ORMObj())->find({user => $form->param_value('user')});
+        return -1 if($already_user && ! $id);
+    }
     if($id)
     {
+        delete $user_data->{ user };
         $user_row = $self->get_schema()->resultset($self->ORMObj())->find($id);
         $user_row->update($user_data);
     }

@@ -55,7 +55,9 @@ sub form_user
     }
     elsif($action eq 'edit')
     {
-        $form->constraint({ name => 'user', type => 'Required' }); 
+        my $user = $form->get_element({ name => 'user' });
+        $user->attributes->{readonly} = 'readonly';
+        $user->attributes->{disabled} = 'disabled';
     }
     elsif($action eq 'password')
     {
