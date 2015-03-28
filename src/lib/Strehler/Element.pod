@@ -241,6 +241,20 @@ Return Value: ($element, $element)
 This method is used by dashboard. It retrieves a couple of elements, the most recent unpublished one and the most recent published one. 
 Refer to L<Strehler::Dancer2::EX::Plugin> latest keyword to understand the logic.
 
+=item error_message
+
+Arguments: $action, $code
+
+Return Value: $message
+
+This method is used to customized error messages that can appear after an action that went wrong. Considered actions in the standard backend are add, edit, delete, publish, unpublish.
+
+We expect that the entity method related to add/edit (save_form) return the id of the submitted entity. Any value returned that is minus to zero is considered an error and error_message is used to find the message to display.
+
+We expect that publish/unpublish and delete return 0 as OK or any othe number as error. Again, error_message is called to retrieve the message.
+
+Designing new entities you can reimplement error_message to display custom message on errors you like to manage.
+
 =back
 
 =head1 SEE ALSO
