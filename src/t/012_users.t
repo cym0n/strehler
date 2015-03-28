@@ -34,6 +34,12 @@ test_psgi $app, sub {
                                               'role' => 'editor' ]);
     ($r, $jar) = TestSupport::keep_logged($cb, $jar, GET $site . "/admin/user/list");
     like($r->decoded_content, qr/<td>dummy<\/td>/, "Dummy in users list");
+    ($r, $jar) = TestSupport::keep_logged($cb, $jar, POST $site . "/admin/user/add",
+                                            [ 'user' => 'dummy',
+                                              'password' => 're-entered',
+                                              'password-confirm' => 're-entered',
+                                              'role' => 'editor' ]);
+    like($r->decoded_content, qr/Username already exists/, "User duplication avoided");
 
     #User deletion
     ($r, $jar) = TestSupport::keep_logged($cb, $jar, POST $site . "/admin/user/add",
