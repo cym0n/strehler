@@ -100,9 +100,9 @@ test_psgi $app, sub {
     like($r->content, qr/$select_string/, "Categories select combo correctly generated");
 
     #DELETE
-    $r = $cb->(GET "/admin/category/delete/$cat_id");
+    $r = $cb->(POST "/admin/category/delete/$cat_id");
     like($r->content, qr/has subcategories/, "Deletion forbidden for subcategory");
-    $r = $cb->(GET "/admin/category/delete/$cat3_id");
+    $r = $cb->(POST "/admin/category/delete/$cat3_id");
     like($r->content, qr/is not empty/, "Deletion forbidden for contents");
     $r = $cb->(GET "/admin/category/delete/$cat2_id");
     is($r->code, 200, "Category deletion answers (GET) OK");

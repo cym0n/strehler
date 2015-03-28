@@ -418,6 +418,7 @@ sub publish
     return if ! $self->publishable();
     $self->row->published(1);
     $self->row->update();
+    return 0;
 }
 sub unpublish
 {
@@ -425,6 +426,7 @@ sub unpublish
     return if ! $self->publishable();
     $self->row->published(0);
     $self->row->update();
+    return 0;
 }
 sub next_in_category_by_order
 {

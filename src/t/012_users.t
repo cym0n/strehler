@@ -12,6 +12,7 @@ use HTTP::Cookies;
 
 $ENV{DANCER_CONFDIR} = 't/testapp';
 require Strehler::Admin;
+require Strehler::Element::User;
 require t::testapp::lib::TestSupport;
 
 TestSupport::reset_database();
@@ -33,6 +34,22 @@ test_psgi $app, sub {
                                               'role' => 'editor' ]);
     ($r, $jar) = TestSupport::keep_logged($cb, $jar, GET $site . "/admin/user/list");
     like($r->decoded_content, qr/<td>dummy<\/td>/, "Dummy in users list");
+
+    #User deletion
+    ($r, $jar) = TestSupport::keep_logged($cb, $jar, POST $site . "/admin/user/add",
+                                            [ 'user' => 'unlucky',
+                                              'password' => 'unlucky',
+                                              'password-confirm' => 'unlucky',
+                                              'role' => 'editor' ]);
+    my $unlucky = Strehler::Element::User->get_from_username("unlucky");
+    my $unlucky_id = $unlucky->get_attr('id');
+    ($r, $jar) = TestSupport::keep_logged($cb, $jar, POST $site . "/admin/user/delete/$unlucky_id"); 
+    $unlucky = Strehler::Element::User->get_from_username("unlucky");
+    is($unlucky, undef, "User with id $unlucky_id deleted");
+    my $admin = Strehler::Element::User->get_from_username("admin");
+    my $admin_id = $admin->get_attr('id');
+    ($r, $jar) = TestSupport::keep_logged($cb, $jar, POST $site . "/admin/user/delete/$admin_id"); 
+    like($r->decoded_content, qr/Admin user cannot be deleted/, "Admin user cannot be deleted");
 
     #User access
     $jar = HTTP::Cookies->new;
