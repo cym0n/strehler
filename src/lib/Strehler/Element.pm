@@ -418,6 +418,7 @@ sub publish
     return if ! $self->publishable();
     $self->row->published(1);
     $self->row->update();
+    return 0;
 }
 sub unpublish
 {
@@ -425,6 +426,7 @@ sub unpublish
     return if ! $self->publishable();
     $self->row->published(0);
     $self->row->update();
+    return 0;
 }
 sub next_in_category_by_order
 {
@@ -1119,6 +1121,21 @@ sub check_role
     else
     {
         return 1;
+    }
+}
+
+sub error_message
+{
+    my $self = shift;
+    my $action = shift;
+    my $code = shift;
+    if($code == '0')
+    {
+        return "OK";
+    }
+    else
+    {
+        return "An error has occurred";
     }
 }
 

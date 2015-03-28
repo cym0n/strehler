@@ -84,10 +84,14 @@ sub save_form
     my $user_data = $self->generate_crypted_password($clean_password);
     $user_data->{ user } = $form->param_value('user');
     $user_data->{ role } = $form->param_value('role');
-    my $already_user = $self->get_schema()->resultset($self->ORMObj())->find({user => $form->param_value('user')});
-    return -1 if($already_user && ! $id);
+    if($user_data->{ user })
+    {
+        my $already_user = $self->get_schema()->resultset($self->ORMObj())->find({user => $form->param_value('user')});
+        return -1 if($already_user && ! $id);
+    }
     if($id)
     {
+        delete $user_data->{ user };
         $user_row = $self->get_schema()->resultset($self->ORMObj())->find($id);
         $user_row->update($user_data);
     }
@@ -160,6 +164,36 @@ sub install
 {
     return "Standard entity. No installation is needed.";
 }
+
+sub delete
+{
+    my $self = shift;
+    if($self->get_attr("user") eq "admin")
+    {
+        return -2;
+    }
+    return $self->SUPER::delete();
+}
+
+sub error_message
+{
+    my $self = shift;
+    my $action = shift;
+    my $code = shift;
+    if($action eq 'delete' && $code == -2)
+    {
+        return "Admin user cannot be deleted";
+    }
+    elsif(($action eq 'add' || $action eq 'edit') && $code == -1) 
+    {
+        return "User already exists";
+    }
+    else
+    {
+        return $self->SUPER::error_message($action, $code);
+    }
+}
+
 
 
 =encoding utf8

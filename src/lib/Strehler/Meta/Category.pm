@@ -131,8 +131,11 @@ sub max_article_order
 sub delete
 {
     my $self = shift;
+    return -1 if($self->has_elements());
+    return -2 if($self->is_parent());
     $self->row->configured_tags->delete_all();
     $self->row->delete();
+    return 0;
 }
 
 sub get_attr
@@ -380,6 +383,32 @@ sub check_role
         return 1;
     }
     return ($role eq 'admin');
+}
+
+sub error_message
+{
+    my $self = shift;
+    my $action = shift;
+    my $code = shift;
+    if($code == '0')
+    {
+        return "OK";
+    }
+    else
+    {
+        if($action eq 'delete')
+        {
+            if($code == -1)
+            {
+                return "Category " . $self->get_attr('category') . " is not empty! Deletion is impossible.";    
+            }
+            elsif($code == -2)
+            {
+                return "Category " . $self->get_attr('category') . " has subcategories! Deletion is impossible.";    
+            }
+        }
+        return "An error has occurred";
+    }
 }
 
 

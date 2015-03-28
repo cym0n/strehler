@@ -115,14 +115,15 @@ any '/user/add' => sub
     if($form->submitted_and_valid)
     {
         my $id = Strehler::Element::User->save_form(undef, $form);
-        if($id == -1)
-        {
-            $message = "Username already in use";
-        }
-        else
+        if($id >= 0)
         {
             Strehler::Element::Log->write(session->read('user'), 'add', 'user', $id);
             redirect dancer_app->prefix . '/user/list';
+        
+        }
+        else
+        {
+            return template "admin/message", { message => Strehler::Element::User->error_message("add", $id), backlink => dancer_app->prefix . '/user' }; 
         }
     }
     template "admin/user", { form => $form->render(), message => $message }
@@ -149,14 +150,14 @@ post '/user/edit/:id' => sub
     if($form->submitted_and_valid)
     {
         my $return_id = Strehler::Element::User->save_form($id, $form);
-        if($return_id == -1)
-        {
-            $message = "Username already in use";
-        }
-        else
+        if($id >= 0)
         {
             Strehler::Element::Log->write(session->read('user'), 'edit', 'user', $id);
             redirect dancer_app->prefix . '/user/list';
+        }
+        else
+        {
+            return template "admin/message", { message => Strehler::Element::User->error_message("edit", $id), backlink => dancer_app->prefix . '/user' }; 
         }
     }
     template "admin/user", { form => $form->render(), message => $message }
@@ -181,9 +182,9 @@ post '/user/password' => sub
     if($form->submitted_and_valid)
     {
         my $return_id = Strehler::Element::User->save_password($id, $form);
-        if($return_id == -1)
+        if($return_id < 0)
         {
-            $message = "Username already in use";
+            return template "admin/message", { message => Strehler::Element::User->error_message("change password", $id), backlink => dancer_app->prefix . '/user' }; 
         }
         else
         {
@@ -274,30 +275,19 @@ get '/category/delete/:id' => sub
     send_error("Access denied", 403) && return if ( ! Strehler::Meta::Category->check_role(session->read('role')));
     my $id = params->{id};
     my $category = Strehler::Meta::Category->new($id);
-    if($category->has_elements())
-    {
-        my $message = "Category " . $category->get_attr('category') . " is not empty! Deletion is impossible.";    
-        my $return = dancer_app->prefix . "/category/list";
-        template "admin/message", { message => $message, backlink => $return };
-    }
-    elsif($category->is_parent())
-    {
-        my $message = "Category " . $category->get_attr('category') . " has subcategories! Deletion is impossible.";    
-        my $return = dancer_app->prefix . "/category/list";
-        template "admin/message", { message => $message, backlink => $return };
-    }
-    else
-    {
-        my %data = $category->get_basic_data();
-        template "admin/delete", { what => "category", el => \%data, backlink => dancer_app->prefix . '/category' };
-    }
+    my %data = $category->get_basic_data();
+    template "admin/delete", { what => "category", el => \%data, backlink => dancer_app->prefix . '/category' };
 };
 post '/category/delete/:id' => sub
 {
     send_error("Access denied", 403) && return if ( ! Strehler::Meta::Category->check_role(session->read('role')));
     my $id = params->{id};
     my $category = Strehler::Meta::Category->new($id);
-    $category->delete();
+    my $code = $category->delete();
+    if($code != 0)
+    {
+        return template "admin/message", { message => $category->error_message("delete", $code), backlink => dancer_app->prefix . '/category' }; 
+    }
     Strehler::Element::Log->write(session->read('user'), 'delete', 'category', $id);
     redirect dancer_app->prefix . '/category/list';
 };
@@ -330,7 +320,7 @@ ajax '/category/select' => sub
         return 0;
     }
 };
-get '/category/info' => sub
+ajax '/category/info' => sub
 {
     content_type('application/json');
     my $category;
@@ -507,7 +497,11 @@ get '/:entity/turnon/:id' => sub
     send_error("Access denied", 403) && return if ( ! $class->check_role(session->read('role')));
     my $id = params->{id};
     my $obj = $class->new($id);
-    $obj->publish();
+    my $code = $obj->publish();
+    if($code != 0)
+    {
+       return template "admin/message", { message => $obj->error_message("publish", $code), backlink => dancer_app->prefix . '/' . $entity }; 
+    }
     Strehler::Element::Log->write(session->read('user'), 'publish', $entity, $id);
     redirect $redirect;
 };
@@ -523,7 +517,11 @@ get '/:entity/turnoff/:id' => sub
     send_error("Access denied", 403) && return if ( ! $class->check_role(session->read('role')));
     my $id = params->{id};
     my $obj = $class->new($id);
-    $obj->unpublish();
+    my $code = $obj->unpublish();
+    if($code != 0)
+    {
+       return template "admin/message", { message => $obj->error_message("unpublish", $code), backlink => dancer_app->prefix . '/' . $entity }; 
+    }
     Strehler::Element::Log->write(session->read('user'), 'unpublish', $entity, $id);
     redirect $redirect;
 };
@@ -552,7 +550,11 @@ post '/:entity/delete/:id' => sub
     send_error("Access denied", 403) && return if ( ! $class->check_role(session->read('role')));
     my $id = params->{id};
     my $obj = $class->new($id);
-    $obj->delete();
+    my $code = $obj->delete();
+    if($code != 0)
+    {
+       return template "admin/message", { message => $obj->error_message("delete", $code), backlink => dancer_app->prefix . '/' . $entity }; 
+    }
     Strehler::Element::Log->write(session->read('user'), 'delete', $entity, $id);
     redirect dancer_app->prefix . '/' . $entity . '/list';
 };
@@ -638,6 +640,10 @@ any '/:entity/add' => sub
     if($form->submitted_and_valid)
     {
         my $id = $class->save_form(undef, $form, request->uploads());
+        if($id < 0)
+        {
+            return template "admin/message", { message => $class->error_message("delete", $id), backlink => dancer_app->prefix . '/' . $entity }; 
+        }
         Strehler::Element::Log->write(session->read('user'), 'add', $entity, $id);
         my $action = params->{'strehl-action'};
         if(! $action)
@@ -769,7 +775,12 @@ post '/:entity/edit/:id' => sub
     my $message = 'quiet';
     if($form->submitted_and_valid)
     {
-        $class->save_form($id, $form, request->uploads());
+        my $id = $class->save_form($id, $form, request->uploads());
+        if($id < 0)
+        {
+            return template "admin/message", { message => $class->error_message("edit", $id), backlink => dancer_app->prefix . '/' . $entity }; 
+        }
+
         Strehler::Element::Log->write(session->read('user'), 'edit', $entity, $id);
         my $action = params->{'strehl-action'};
         if(! $action)
