@@ -6,6 +6,7 @@ __???__
 * Categories with more than two levels
 * Error management
 * Different behaviour for user form.
+* Deletion for category tree implemented
 
 1.5.5
 ===
