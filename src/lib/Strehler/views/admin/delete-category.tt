@@ -1,0 +1,22 @@
+<div class="well">
+    [% IF subs == 1 %]
+    <form method="post" action="/admin/category/delete-tree/[% el.id %]">
+    [% ELSE %]
+    <form method="post">
+    [% END %]
+        <div class="row">
+            <p class="span6 offset3">
+                Delete [% el.id %] of [% what %]: [% el.title %]?    
+            </p>
+            [% IF subs == 1 %]
+            <p class="span6 offset3">
+                Warning: category [% el.title %] has subcategories that will be deleted too.<br /><br />
+            </p>
+            [% END %]
+        </div>
+        <div class="row">
+            <button class="span3 offset3 btn btn-primary" type="submit">Yes</button>
+            <a class="span3 btn" href="[% backlink %]">No</a>
+        </div>
+    </form>
+</div>

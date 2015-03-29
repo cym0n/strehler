@@ -67,6 +67,7 @@ sub get_schema
 sub subcategories
 {
     my $self = shift;
+    my $deep = shift;
     my $already_collected = shift;
     my @subs;
     if($already_collected)
@@ -79,7 +80,14 @@ sub subcategories
     {
         my $category = Strehler::Meta::Category->new('row', $_);
         push @subs, $category;
-        @subs = $category->subcategories(\@subs);
+        if($deep)
+        {
+            @subs = $category->subcategories(1, \@subs);
+        }
+        else
+        {
+            return @subs;
+        }
     }
     return @subs;
 }

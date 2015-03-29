@@ -276,7 +276,7 @@ get '/category/delete/:id' => sub
     my $id = params->{id};
     my $category = Strehler::Meta::Category->new($id);
     my %data = $category->get_basic_data();
-    template "admin/delete", { what => "category", el => \%data, backlink => dancer_app->prefix . '/category' };
+    template "admin/delete-category", { what => "category", subs => $category->is_parent(), el => \%data, backlink => dancer_app->prefix . '/category' };
 };
 post '/category/delete/:id' => sub
 {
@@ -289,6 +289,31 @@ post '/category/delete/:id' => sub
         return template "admin/message", { message => $category->error_message("delete", $code), backlink => dancer_app->prefix . '/category' }; 
     }
     Strehler::Element::Log->write(session->read('user'), 'delete', 'category', $id);
+    redirect dancer_app->prefix . '/category/list';
+};
+post '/category/delete-tree/:id' => sub
+{
+    send_error("Access denied", 403) && return if ( ! Strehler::Meta::Category->check_role(session->read('role')));
+    my $id = params->{id};
+    my $category = Strehler::Meta::Category->new($id);
+    my @categories_to_delete = ( $category );
+    while(@categories_to_delete)
+    {
+        my $cat = shift @categories_to_delete;
+        if($cat->is_parent())
+        {
+            @categories_to_delete = ( $cat->subcategories(0), $cat, @categories_to_delete );
+        }
+        else
+        {
+            my $code = $cat->delete();
+            if($code != 0)
+            {
+                return template "admin/message", { message => $category->error_message("delete", $code), backlink => dancer_app->prefix . '/category' }; 
+            }
+            Strehler::Element::Log->write(session->read('user'), 'delete', 'category', $cat->get_attr('id'));
+        }
+    }
     redirect dancer_app->prefix . '/category/list';
 };
 

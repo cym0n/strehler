@@ -817,7 +817,7 @@ sub get_list
         my $category_obj = Strehler::Meta::Category->new($args{'ancestor'});
         my @category_ids;
         push @category_ids, $args{'ancestor'};
-        my @subcategories = $category_obj->subcategories;
+        my @subcategories = $category_obj->subcategories(1);
         for(@subcategories)
         {
             push @category_ids, $_->get_attr('id');
