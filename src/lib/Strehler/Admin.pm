@@ -309,7 +309,7 @@ post '/category/delete-tree/:id' => sub
             my $code = $cat->delete();
             if($code != 0)
             {
-                return template "admin/message", { message => $category->error_message("delete", $code), backlink => dancer_app->prefix . '/category' }; 
+                return template "admin/message", { message => $cat->error_message("delete", $code), backlink => dancer_app->prefix . '/category' }; 
             }
             Strehler::Element::Log->write(session->read('user'), 'delete', 'category', $cat->get_attr('id'));
         }
