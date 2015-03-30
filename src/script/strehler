@@ -352,7 +352,8 @@ elsif($command eq 'testelement')
         }
         if($form)
         {
-            if(! $form->get_element({ name => 'categoryblock'}))
+            my @els = @{$form->get_all_elements({ name => 'category'})};
+            if($#els < 0 )
             {
                 $all_ok = 0;
                 say " WARNING: No category block configured in form (or category configured in a non-standard way)!";
