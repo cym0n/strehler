@@ -38,6 +38,12 @@ Welcome to Strehler! Here you can write contents. Study the documentation about 
 
 Strehler is shipped with a script to make easy initialization and configuration of the system. You can use it on an existing Dancer2 app to add Strehler powers to it.
 
+Before using any strehler command go in the directory where your Dancer2 app is and type
+
+    export DANCER_CONFDIR=.
+
+Then do anything you want staying in the root dir of the Dancer app.
+
 =head2 Available commands
 
 Strehler script commands are

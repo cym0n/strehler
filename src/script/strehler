@@ -28,7 +28,7 @@ BEGIN
 my $strehler_root = $INC{'Strehler.pm'};
 $strehler_root =~ s/\.pm$//;
 
-my $configured_schema_name = config->{'Strehler'}->{'schema'};
+my $configured_schema_name = app->config->{'Strehler'}->{'schema'};
 my $configured_public_directory = Strehler::Helpers::public_directory();
 my $configured_views_directory = app->config->{views} || path( app->config_location, 'views' );
 
