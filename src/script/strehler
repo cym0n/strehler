@@ -73,8 +73,14 @@ elsif($command eq 'demo')
 {
     my $app  = shift @parameters || 'StrehlerDemo';
     say "STEP 1: Creating Dancer App... $app";
-    system("dancer2 -a $app");
+    my $exit_code = system("dancer2 -a $app");
     print "\n\n";
+    if($exit_code != 0)
+    {
+        say "dancer2 command failed!\n";
+        exit(1); 
+    }
+
     chdir $app;
     demo_components();
     statics(getcwd() . "/public");
@@ -88,9 +94,13 @@ elsif($command eq 'pwdchange')
     my $schema = $configured_schema_name;
     say "Getting database info...";
     my ($schema_name, $dsn, $user, $password) = get_database($schema);
-    exit() if(! $schema_name);
+    if(! $schema_name)
+    {
+        say "No schema in site configuration\n";
+        exit(1);
+    }
     say "Checking connection info...";
-    exit() if(! check_database_connection($dsn, $user, $password));
+    exit(1) if(! check_database_connection($dsn, $user, $password));
     say "Connected to database...";
     my $conn = Strehler::Schema->connect($dsn, $user, $password);
     my $user_password = choose_admin_password();
@@ -282,7 +292,7 @@ elsif($command eq 'testelement')
     if(! $class)
     {
         say "No entity package provided";
-        exit(0);
+        exit(1);
     }
     else
     {
@@ -293,7 +303,7 @@ elsif($command eq 'testelement')
     {
         say $@;
         say "Bad entity package provided";
-        exit();
+        exit(1);
     }
     my $rs;
     eval
@@ -470,7 +480,7 @@ elsif($command eq 'initentity')
     if(! $class)
     {
         say "No entity package provided";
-        exit(0);
+        exit(1);
     }
     else
     {
@@ -482,7 +492,7 @@ elsif($command eq 'initentity')
         say $@;
         say "Bad entity package provided";
         print "\n\n";
-        exit();
+        exit(1);
     }
     my ($schema_name, $dsn, $user, $password, $schema_class) = get_database($configured_schema_name);
     
@@ -496,7 +506,7 @@ elsif($command eq 'initentity')
     {
         say "$class hasn't install method. Not an entity or entity created without following guidelines\n";
         print "\n\n";
-        exit();
+        exit(1);
     }
     my $output_message = $class->install($dbh, $configured_public_directory);
     say "$class installation reported:\n";
@@ -535,7 +545,7 @@ sub statics
             print "\"public\" directory used as standard dancer static files directory. Different from yours? Pass your directory as second parameter to the script\n";
         }
         print "\n\n";
-        exit();
+        exit(1);
     }
 
     my $nocopy = 0;
@@ -600,7 +610,11 @@ sub initdb
     if(! $demo)
     {
         ($schema_name, $dsn, $user, $password, $schema_class) = get_database($wanted_schema);
-        exit() if(! $schema_name);
+        if(! $schema_name)
+        {
+            say "No schema in site configuration\n";
+            exit(1);
+        }
         print "Schema: $schema_name\n\n";
         say "DSN: $dsn" if $dsn;
         say "User: $user" if $user;
@@ -618,7 +632,7 @@ sub initdb
         if($continue eq 'N')
         {
             print "NO DEPLOY. Exiting...\n\n";
-            exit();
+            exit(0);
         }
     }
     else
@@ -628,7 +642,7 @@ sub initdb
         $user = undef;
         $password = undef;
     }
-    exit() if(! check_database_connection($dsn, $user, $password));
+    exit(1) if(! check_database_connection($dsn, $user, $password));
 
     my $schema = Strehler::Schema->connect($dsn, $user, $password);
     $schema->deploy( { add_drop_table => 1 } );
@@ -664,7 +678,7 @@ sub layout
             print "\"views\" directory used as standard dancer views files directory. Different from yours? Pass your directory as second parameter to the script\n";
         }
         print "\n\n";
-        exit();
+        exit(1);
     }
 
     say "Copying layout from $origin to $destination...";
@@ -830,14 +844,15 @@ sub schemadump
     my ($schema_name, $dsn, $user, $password, $schema_class) = get_database($schema);
     if(! $schema_name)
     {
+        say "No schema in site configuration!";
         print "\n\n";
-        exit(0);
+        exit(1);
     }
     if($schema_class eq 'Strehler::Schema')
     {
         say "You can't use Strehler::Schema as schema package name!";
         print "\n\n";
-        exit(0);
+        exit(1);
     }
     say "DBIx::Class packages will be created now under lib directory using DBIx::Class:Schema::Loader...";
     say "Target schema: $schema_class";
