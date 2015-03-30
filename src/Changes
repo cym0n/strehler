@@ -1,12 +1,13 @@
 1.6.0
 ===
 
-__???__
+__Tue Mar 31 2015__
 
 * Categories with more than two levels
 * Error management
 * Different behaviour for user form.
 * Deletion for category tree implemented
+* Better error management in strehler script
 
 1.5.5
 ===
