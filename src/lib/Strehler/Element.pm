@@ -782,7 +782,7 @@ sub get_list
     if(exists $args{'tag'} && $args{'tag'})
     {
         my $ids = $self->get_schema()->resultset('Tag')->search({tag => $args{'tag'}, item_type => $self->item_type()})->get_column('item_id');
-        $search_criteria->{'id'} = { -in => $ids->as_query };
+        $search_criteria->{'me.id'} = { -in => $ids->as_query };
     }
     my $search_rules = { order_by => { '-' . $args{'order'} => $args{'order_by'} } , page => $default_page, rows => $args{'entries_per_page'}, join => $args{'join'}, distinct => 1 };
 

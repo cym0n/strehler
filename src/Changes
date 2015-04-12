@@ -1,3 +1,10 @@
+1.6.1
+===
+
+__Sun Apr 12 2015__
+
+* Bugfix for a fatal error getting elements using tags
+
 1.6.0
 ===
 
