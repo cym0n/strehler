@@ -86,6 +86,10 @@ sub form_generic
     my $form = HTML::FormFu->new;
     $form->auto_error_class('error-msg');
     $form->load_config_file( $conf );
+    my $action_block_conf;
+    $action_block_conf->{'type'} = "Hidden";
+    $action_block_conf->{'name'} = "strehl-action";
+    $form->element($action_block_conf);
     if($multilang_conf)
     {
         $form = add_multilang_fields($form, $languages, $multilang_conf); 

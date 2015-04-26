@@ -1017,6 +1017,10 @@ sub save_form
     {
         $el_data->{'published'} = 1;
     }
+    if($form->param_value('strehl-action') eq 'submit-publish')
+    {
+        $el_data->{'published'} = 1;
+    }
     if($id)
     {
         $el_row = $self->get_schema()->resultset($self->ORMObj())->find($id);
