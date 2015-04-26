@@ -12,7 +12,11 @@ elements:
     - type: "+Strehler::FormFu::Element::Tags"
     - type: "+Strehler::FormFu::Element::DisplayOrder"
     - type: "+Strehler::FormFu::Element::PublishDate"
-    - type: "+Strehler::FormFu::Element::SubmitBlock"
+    - type: "+Strehler::FormFu::Element::SubmitBlockMulti"
+      actions:
+        - submit-go
+        - submit-continue
+        - submit-publish 
 
 
    
