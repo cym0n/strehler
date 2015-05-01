@@ -17,6 +17,13 @@ has _label => (
     lazy => 1,
 );
 
+has _not_required => (
+    is => 'rw',
+    default => sub { [] },
+    lazy => 1,
+);
+
+
 
 
 after BUILD => sub {
@@ -33,6 +40,7 @@ sub label {
     return $self->_label if @_ == 1;
 
     if ( defined $arg ) {
+        $self->_label($arg);
         $self->get_all_element({ name => 'category-name' })->label($arg);
     }
     return $self;
@@ -43,6 +51,7 @@ sub name {
     return $self->_name if @_ == 1;
 
     if ( defined $arg ) {
+        $self->_name($arg);
         my $name_element = $self->get_element({ name => 'category' });
         if($name_element)
         {
@@ -52,6 +61,17 @@ sub name {
     }
     return $self;
 }
+sub not_required {
+    my ( $self, $arg ) = @_;
+    return $self->_not_required if @_ == 1;
+    if ( defined $arg ) {
+        $self->_not_required($arg);
+        if($arg == 1)
+        {
+            $self->get_all_element({ name => 'category-name' })->_constraints([]);
+        }
+    }
+} 
 
 =encoding utf8
 
@@ -72,7 +92,23 @@ In article form:
 
     - type: "+Strehler::FormFu::Element::Category"
 
-No parameters, no labels.
+=head1 PARAMETERS
+
+=over 4
+
+=item label
+
+The label displayed for the field. "Category" is the default value.
+
+=item name
+
+The name of the field containing information about the category (the ID). "category" is the default value.
+
+=item not_required
+
+Category is usually mandatory on categorized entities. If you want a category field NOT required set this parameter to 1.
+
+=back
 
 =head1 GENERATED HTML
 
@@ -85,7 +121,9 @@ No parameters, no labels.
             <button class="btn btn-warning sel-category-back" type="button">
                 &lt;
             </button>
-            <img class="sel-category-loader" src="/strehler/images/ajax-loader.gif" style="display: none;">
+            <img class="sel-category-loader" 
+                 src="/strehler/images/ajax-loader.gif" 
+                 style="display: none;">
         </div>
         <div>
             <select name="category-combo" class="sel-category-combo">

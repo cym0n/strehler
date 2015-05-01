@@ -7,6 +7,9 @@ elements:
           label: Category
           attributes:
             class: sel-category-name
+          constraints:
+            type: Required
+            message: 'Category needed'
         - type: Block
           tag: button
           content: "<"
