@@ -9,6 +9,9 @@ elements:
       validators:
         - type: '+Strehler::FormFu::Validator::FilenameTooLong'
           message: 'Filename is too long'
+      constraints:
+        - type: Required
+          message: "Image required"
     - type: "+Strehler::FormFu::Element::Category"
     - type: "+Strehler::FormFu::Element::Tags"
     - type: "+Strehler::FormFu::Element::SubmitBlockMulti"

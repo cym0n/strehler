@@ -144,6 +144,12 @@ sub multilang_form
     my $self = shift;
     return $self->_property('multilang_form', undef);
 }
+sub only_default_required
+{
+    my $self = shift;
+    return $self->_property('only_default_required', 1);
+}
+
 sub allowed_role
 {
     my $self = shift;
@@ -201,6 +207,7 @@ sub entity_data
                       'auto_publish',
                       'form',
                       'multilang_form',
+                      'only_default_required',
                       'allowed_role',
                       'custom_list_template',
                       'visible',

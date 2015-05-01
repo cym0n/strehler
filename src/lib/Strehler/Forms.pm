@@ -2,6 +2,7 @@ package Strehler::Forms;
 
 use Cwd 'abs_path';
 use HTML::FormFu;
+use Data::Dumper;
 
 my $module_file_path = __FILE__;
 my $root_path = abs_path($module_file_path);
@@ -73,26 +74,29 @@ sub form_user
 
 sub form_generic
 {
-    my $conf = shift;
+    my $form_conf = shift;
     my $multilang_conf = shift;
-    my $action = shift;
-    my $has_sub = shift;
-    my $languages = shift;
-    if(! $conf)
+    my $dancer_conf = shift;
+
+    my $languages = $dancer_conf->{'languages'};
+    my $default_language = $dancer_conf->{'default_language'};
+    my $only_default_required = $dancer_conf->{'only_default_required'};
+
+    if(! $form_conf)
     {
         return undef;
     }
 
     my $form = HTML::FormFu->new;
     $form->auto_error_class('error-msg');
-    $form->load_config_file( $conf );
+    $form->load_config_file( $form_conf );
     my $action_block_conf;
     $action_block_conf->{'type'} = "Hidden";
     $action_block_conf->{'name'} = "strehl-action";
     $form->element($action_block_conf);
     if($multilang_conf)
     {
-        $form = add_multilang_fields($form, $languages, $multilang_conf); 
+        $form = add_multilang_fields($form, $languages, $multilang_conf, $default_language, $only_default_required); 
     }
     return $form;
 }
@@ -151,6 +155,8 @@ sub add_multilang_fields
     my $form = shift;
     my $lan_ref = shift;
     my $config = shift;
+    my $default_language = shift;
+    my $only_default_required = shift;
     my $position = $form->get_element({ name => 'save' });
     for(@{$lan_ref})
     {
@@ -160,6 +166,22 @@ sub add_multilang_fields
         for(@{$form_multilan->get_elements()})
         {
             my $el = $_;
+            my @el_constraints = ();
+            foreach my $const (@{$el->_constraints()})
+            {
+                if($const->type() eq 'Required')
+                {
+                    if($lan eq $default_language || ! $only_default_required)
+                    {
+                        push @el_constraints, $const;
+                    }
+                }
+                else
+                {
+                    push @el_constraints, $const;
+                }
+            }
+            $el->_constraints(\@el_constraints);
             $el->name($el->name() . '_' . $lan);
             $el->label($el->label . " (" . $lan . ")");
             $form->insert_before($_->clone(), $position);

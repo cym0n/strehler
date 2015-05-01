@@ -19,6 +19,7 @@ use Strehler::Element::Article;
 use Strehler::Element::User;
 use Strehler::Element::Log;
 use Strehler::Meta::Category;
+use Data::Dumper;
 
 my @languages;
 
@@ -653,7 +654,7 @@ any '/:entity/add' => sub
     }
 
     send_error("Access denied", 403) && return if ( ! $class->check_role(session->read('role')));
-    my $form = Strehler::Forms::form_generic($class->form(), $class->multilang_form(), 'add', undef, \@languages); 
+    my $form = Strehler::Forms::form_generic($class->form(), $class->multilang_form(), {languages => \@languages, default_language => config->{'Strehler'}->{'default_language'}, only_default_required => $class->only_default_required() } ); 
     my $params_hashref = params;
     $form = Strehler::Forms::tags_for_form($form, $params_hashref);
     if(! $form)
@@ -670,7 +671,7 @@ any '/:entity/add' => sub
             return template "admin/message", { message => $class->error_message("delete", $id), backlink => dancer_app->prefix . '/' . $entity }; 
         }
         Strehler::Element::Log->write(session->read('user'), 'add', $entity, $id);
-        my $action = params->{'strehl-action'};
+        my $action = params->{'strehl-action'}->[0];
         if(! $action)
         {
             if(session->read('backlink'))
@@ -682,7 +683,11 @@ any '/:entity/add' => sub
                 redirect dancer_app->prefix . '/' . $entity . '/list';
             }
         }
-        elsif($action eq 'submit-go')
+        if($action eq 'submit-continue')
+        {
+            redirect dancer_app->prefix . '/' . $entity . '/edit/' . $id . '?from_add=1';
+        }
+        else
         {
             if(session->read('backlink'))
             {
@@ -692,10 +697,6 @@ any '/:entity/add' => sub
             {
                 redirect dancer_app->prefix . '/' . $entity . '/list';
             }
-        }
-        elsif($action eq 'submit-continue')
-        {
-            redirect dancer_app->prefix . '/' . $entity . '/edit/' . $id . '?from_add=1';
         }
     }
     my $fake_tags = $form->get_element({ name => 'tags'});
@@ -768,7 +769,7 @@ get '/:entity/edit/:id' => sub {
     send_error("Access denied", 403) && return if ( ! $class->check_role(session->read('role')));
     my $el = $class->new($id);
     my $form_data = $el->get_form_data();
-    my $form = Strehler::Forms::form_generic($class->form(), $class->multilang_form(), 'edit', $form_data->{'category'}, \@languages); 
+    my $form = Strehler::Forms::form_generic($class->form(), $class->multilang_form(), {languages => \@languages, default_language => config->{'Strehler'}->{'default_language'}, only_default_required => $class->only_default_required() } ); 
     if(! $form)
     {
         return pass;
@@ -789,7 +790,7 @@ post '/:entity/edit/:id' => sub
         return pass;
     }
     send_error("Access denied", 403) && return if ( ! $class->check_role(session->read('role')));
-    my $form = Strehler::Forms::form_generic($class->form(), $class->multilang_form(), 'edit', undef, \@languages); 
+    my $form = Strehler::Forms::form_generic($class->form(), $class->multilang_form(), {languages => \@languages, default_language => config->{'Strehler'}->{'default_language'}, only_default_required => $class->only_default_required() } ); 
     if(! $form)
     {
         return pass;
