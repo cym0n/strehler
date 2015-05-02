@@ -868,6 +868,14 @@ sub get_list
     return {'to_view' => \@to_view, 'last_page' => $last_page};
 }
 
+sub has_tag
+{
+    my $self = shift;
+    my $tag = shift;
+    return 0 if(! $self->categorized());
+    return Strehler::Meta::Tag->exists_tag($self->get_attr('id'), $self->item_type(), $tag);
+}
+
 sub search_box
 {
     my $self = shift;

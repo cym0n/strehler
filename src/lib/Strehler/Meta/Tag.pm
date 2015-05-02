@@ -168,6 +168,15 @@ sub clean_configured_tags
     my $category = shift;
     $self->get_schema()->resultset('ConfiguredTag')->search({ category_id => $category })->delete_all();
 }
+sub exists_tag
+{
+    my $self = shift;
+    my $id = shift;
+    my $entity = shift;
+    my $tag = shift;
+    my $many = $self->get_schema()->resultset('Tag')->search({tag => $tag, item_id => $id, item_type => $entity})->count();
+    return $many > 0;
+}
 
 =encoding utf8
 
