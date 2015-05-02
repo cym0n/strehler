@@ -32,6 +32,7 @@ test_psgi $app, sub {
 
     $r = $cb->(POST "/admin/article/add",
                 [ 'image' => undef,
+                  'category-name' => 'prova',
                   'category' => $cat_id,
                   'tags' => 'tag1',
                   'display_order' => 14,
@@ -58,6 +59,7 @@ test_psgi $app, sub {
    is($article_object->get_attr_multilang('slug', 'it'), $article_id . '-automatic-test-title-it', "Slug correctly created"); 
    $r = $cb->(POST "/admin/article/edit/$article_id",
                 [ 'image' => undef,
+                  'category-name' => 'prova',
                   'category' => $cat_id,
                   'tags' => 'tag1',
                   'display_order' => 14,

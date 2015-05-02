@@ -671,7 +671,7 @@ any '/:entity/add' => sub
             return template "admin/message", { message => $class->error_message("delete", $id), backlink => dancer_app->prefix . '/' . $entity }; 
         }
         Strehler::Element::Log->write(session->read('user'), 'add', $entity, $id);
-        my $action = params->{'strehl-action'}->[0];
+        my $action = $form->param_value('strehl-action');
         if(! $action)
         {
             if(session->read('backlink'))
@@ -808,7 +808,7 @@ post '/:entity/edit/:id' => sub
         }
 
         Strehler::Element::Log->write(session->read('user'), 'edit', $entity, $id);
-        my $action = params->{'strehl-action'};
+        my $action = $form->param_value('strehl-action');
         if(! $action)
         {
             if(session->read('backlink'))

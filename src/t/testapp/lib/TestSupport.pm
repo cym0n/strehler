@@ -66,6 +66,7 @@ sub create_article
     my $custom_params = shift || {};
     my $r = $cb->( POST '/admin/article/add', 
                     [ 'image' => undef,
+                      'category-name' => "XXX",
                       'category' => $category,
                       'tags' => exists $custom_params->{'tags'} ? $custom_params->{'tags'} : 'tag1',
                       'display_order' => exists $custom_params->{'display_order'} ? $custom_params->{'display_order'} : 14,
@@ -73,7 +74,8 @@ sub create_article
                       'title_it' => exists $custom_params->{'title_it'} ? $custom_params->{'title_it'} : 'Automatic test ' . $counter . ' - title - IT',
                       'text_it' => exists $custom_params->{'text_it'} ? $custom_params->{'text_it'} : 'Automatic test ' . $counter . ' - body - IT',
                       'title_en' => exists $custom_params->{'title_en'} ? $custom_params->{'title_en'} : 'Automatic test ' . $counter . ' - title - EN',
-                      'text_en' => exists $custom_params->{'text_en'} ? $custom_params->{'text_en'} : 'Automatic test ' . $counter . ' - body - EN' 
+                      'text_en' => exists $custom_params->{'text_en'} ? $custom_params->{'text_en'} : 'Automatic test ' . $counter . ' - body - EN', 
+                      'strehl-action' => 'submit-go'
                      ]);
 }
 sub list_reader

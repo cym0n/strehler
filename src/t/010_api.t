@@ -35,9 +35,11 @@ test_psgi $admin_app, sub {
     TestSupport::create_article($cb, '2', $child_cat_id, { 'display_order' => 2, 'publish_date' => '13/11/2009' });
     TestSupport::create_article($cb, '3', $child_cat_id, { 'display_order' => 3, 'publish_date' => '' });
     my $r = $cb->(POST $site . "/admin/dummy/add",
-                         { 'category' => $ancestor_cat_id,
+                         { 'category-name' => 'prova',
+                           'category' => $ancestor_cat_id,
                            'tags' => 'tag1',
                            'text' => 'A dumb text',
+                           'strehl-action' => 'submit-go',
                          });
 
     #Dummy articles published

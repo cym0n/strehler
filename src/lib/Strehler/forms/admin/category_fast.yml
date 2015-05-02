@@ -15,6 +15,7 @@ elements:
     - type: "+Strehler::FormFu::Element::Category"
       label: Parent
       name: parent
+      not_required: 1
       attributes:
         class: "category-widget span4"
     - type: Block

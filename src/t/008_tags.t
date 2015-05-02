@@ -67,6 +67,7 @@ test_psgi $app, sub {
     #ARTICLE - CONFIGURED - ADD
     $r = $cb->(POST "/admin/article/add",
                     [ 'image' => undef,
+                      'category-name' => 'prova-configure',
                       'category' => $cat_conf->get_attr('id'),
                       'tags' => 'tag1',
                       'display_order' => 14,
@@ -74,7 +75,8 @@ test_psgi $app, sub {
                       'title_it' => 'Article with configured tags',
                       'text_it' => 'Body - it',
                       'title_en' => 'Article with configured tags',
-                      'text_en' => 'Body - en'
+                      'text_en' => 'Body - en',
+                      'strehl-action' => 'submit-go'
                     ]);
     my $articles = Strehler::Element::Article->get_list();
     my $article_configured = $articles->{'to_view'}->[0];
@@ -85,6 +87,7 @@ test_psgi $app, sub {
     #ARTICLE - OPEN - ADD
     $r = $cb->(POST "/admin/article/add",
                 [ 'image' => undef,
+                  'category-name' => 'prova-open',
                   'category' => $cat_open->get_attr('id'),
                   'tags' => 'foo',
                   'display_order' => 14,
@@ -92,7 +95,8 @@ test_psgi $app, sub {
                   'title_it' => 'Article with open tags',
                   'text_it' => 'Body - IT',
                   'title_en' => 'Article with open tags',
-                  'text_en' => 'Body - EN'
+                  'text_en' => 'Body - EN',
+                  'strehl-action' => 'submit-go'
                 ]);
     $articles = Strehler::Element::Article->get_list();
     my $article_open = $articles->{'to_view'}->[0];
@@ -114,13 +118,15 @@ test_psgi $app, sub {
     $r = $cb->(POST "/admin/image/add",
                  'Content_Type' => 'form-data',
                  'Content' =>  [
+                     'category-name' => 'prova-configure',
                      'category' => $cat_conf->get_attr('id'),
                      'tags' => 'tag1',
                      'title_it' => 'Image - Configured tags',
                      'description_it' => 'Body - IT',
                      'title_en' => 'Image - Configured tags',
                      'description_en' => 'Body - EN',
-			         'photo' => ['t/res/strehler.jpg', 'strehler.jpg', 'Content-Type' => 'image/jpg']
+			         'photo' => ['t/res/strehler.jpg', 'strehler.jpg', 'Content-Type' => 'image/jpg'],
+                     'strehl-action' => 'submit-go'
                   ] );
         
     my $images = Strehler::Element::Image->get_list();
@@ -133,13 +139,15 @@ test_psgi $app, sub {
     $r = $cb->(POST "/admin/image/add",
                 'Content_Type' => 'form-data',
                 'Content' =>  [
+                    'category-name' => 'prova-open',
                     'category' => $cat_open->get_attr('id'),
                     'tags' => 'foo',
                     'title_it' => 'Image - Open tags',
                     'description_it' => 'Body - IT',
                     'title_en' => 'Image - Open tags',
                     'description_en' => 'Body - EN',
-			        'photo' => ['t/res/strehler.jpg', 'strehler.jpg', 'Content-Type' => 'image/jpg']
+			        'photo' => ['t/res/strehler.jpg', 'strehler.jpg', 'Content-Type' => 'image/jpg'],
+                    'strehl-action' => 'submit-go'
                 ]);
         
     $images = Strehler::Element::Image->get_list();
@@ -164,8 +172,10 @@ test_psgi $app, sub {
     #DUMMY - CONFIGURED - ADD
     $r = $cb->(POST '/admin/dummy/add',
                 [ 'category' => $cat_conf->get_attr('id'),
+                  'category-name' => 'prova-configured',
                   'tags' => 'tag1',
-                  'text' => 'dummy configured tags'
+                  'text' => 'dummy configured tags',
+                  'strehl-action' => 'submit-go'
                 ]);
     my $dummies = Site::Dummy->get_list();
     my $dummy_configured = $dummies->{'to_view'}->[0];
@@ -176,8 +186,10 @@ test_psgi $app, sub {
     #DUMMY - OPEN - ADD
     $r = $cb->(POST '/admin/dummy/add',
                 [ 'category' => $cat_open->get_attr('id'),
+                  'category-name' => 'prova-open',
                   'tags' => 'foo',
-                  'text' => 'dummy open tags'
+                  'text' => 'dummy open tags',
+                  'strehl-action' => 'submit-go'
                 ]);
     $dummies = Site::Dummy->get_list();
     my $dummy_open = $dummies->{'to_view'}->[0];

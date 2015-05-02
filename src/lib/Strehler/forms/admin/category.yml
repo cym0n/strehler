@@ -13,6 +13,7 @@ elements:
     - type: "+Strehler::FormFu::Element::Category"
       label: Parent category
       name: parent
+      not_required: 1
     - type: Block
       tag: h3
       content: 'Tags management'

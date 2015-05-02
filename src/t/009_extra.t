@@ -42,9 +42,11 @@ test_psgi $admin_app, sub {
 
     #ADD
     $r = $cb->(POST '/admin/dummy/add',
-                         { 'category' => $cat_id,
+                         { 'category-name' => 'prova',
+                           'category' => $cat_id,
                            'tags' => 'tag1',
                            'text' => 'A dumb text',
+                           'strehl-action' => 'submit-go'
                           });
     my $dummies = Site::Dummy->get_list();
     my $dummy = $dummies->{'to_view'}->[0];

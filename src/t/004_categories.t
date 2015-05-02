@@ -9,6 +9,7 @@ use Plack::Builder;
 use Plack::Test;
 use HTTP::Request;
 use HTTP::Request::Common;
+use Data::Dumper;
 
 $ENV{DANCER_CONFDIR} = 't/testapp';
 $ENV{DANCER_ENVIRONMENT} = 'no_login';
@@ -85,9 +86,8 @@ test_psgi $app, sub {
                       'default-article' => '',
                       'tags-image' => '',
                       'default-image' => '' ]);
-    my $cat3bis = Strehler::Meta::Category->explode_name("prova/child");
+    my $cat3bis = Strehler::Meta::Category->explode_name("childbis");
     my $cat3bis_id = $cat3bis->get_attr('id');
-
 
     $r = $cb->( POST '/admin/category/add', 
                     [ 'category' => 'subchild',

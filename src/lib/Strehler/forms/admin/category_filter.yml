@@ -8,6 +8,7 @@ elements:
         - type: "+Strehler::FormFu::Element::Category"
           label: Filter
           name: category-input
+          not_required: 1
       attributes:
         class: row
     - type: Block
