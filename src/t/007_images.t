@@ -42,6 +42,21 @@ test_psgi $app, sub {
                             'category' => $cat_id,
                             'category-name' => 'prova',
                             'tags' => 'tag1',
+                            'title_it' => 'Automatic test - body - IT',
+                            'description_it' => 'Automatic test - body - IT',
+                            'title_en' => 'Automatic test - title - EN',
+                            'description_en' => 'Automatic test - body - EN',
+                            'strehl-action' => 'submit-go' 
+                            ]
+                 );
+    like($r->content, qr/Image required/, "Image without image can't be submitted");
+
+    $r = $cb->(POST "/admin/image/add",
+                    'Content_Type' => 'form-data',
+                    'Content' =>  [
+                            'category' => $cat_id,
+                            'category-name' => 'prova',
+                            'tags' => 'tag1',
                             'title_it' => 'Automatic test - title - IT',
                             'description_it' => 'Automatic test - body - IT',
                             'title_en' => 'Automatic test - title - EN',

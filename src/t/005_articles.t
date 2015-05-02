@@ -37,6 +37,20 @@ test_psgi $app, sub {
                   'tags' => 'tag1',
                   'display_order' => 14,
                   'publish_date' => '12/03/2014',
+                  'text_it' => 'Automatic test - body - IT',
+                  'title_en' => 'Automatic test - title - EN',
+                  'text_en' => 'Automatic test - body - EN',
+                  'strehl-action' => 'submit-go' 
+                ]);
+    like($r->content, qr/Title required/, "Article without title (default language only) can't be submitted");
+
+    $r = $cb->(POST "/admin/article/add",
+                [ 'image' => undef,
+                  'category-name' => 'prova',
+                  'category' => $cat_id,
+                  'tags' => 'tag1',
+                  'display_order' => 14,
+                  'publish_date' => '12/03/2014',
                   'title_it' => 'Automatic test - title - IT',
                   'text_it' => 'Automatic test - body - IT',
                   'title_en' => 'Automatic test - title - EN',
@@ -87,6 +101,27 @@ test_psgi $app, sub {
    $r = $cb->(POST $site . "/admin/article/delete/$article_id");
    $article_object = Strehler::Element::Article->new($article_id);
    ok(! $article_object->exists(), "Article correctly deleted");
+
+   #SUBMIT AND PUBLISH
+   $r = $cb->(POST "/admin/article/add",
+                [ 'image' => undef,
+                  'category-name' => 'prova',
+                  'category' => $cat_id,
+                  'tags' => 'tag1',
+                  'display_order' => 14,
+                  'publish_date' => '12/03/2014',
+                  'title_it' => 'Automatic test2 - title - IT',
+                  'text_it' => 'Automatic test2 - body - IT',
+                  'title_en' => 'Automatic test2 - title - EN',
+                  'text_en' => 'Automatic test2 - body - EN',
+                  'strehl-action' => 'submit-publish' 
+                ]);
+   $r = $cb->(GET '/admin/article/list');
+   my @ids_b = TestSupport::list_reader($r->content);
+   my $article_id_b = $ids_b[0];
+   my $article_object_b = Strehler::Element::Article->new($article_id_b);
+   ok($article_object_b->get_attr('published'), "Article correctly published on submit");
+   $r = $cb->(POST $site . "/admin/article/delete/$article_id_b");
 
    #LIST FILTERED BY LANGUAGE
    #Three contents for it, just one for en
