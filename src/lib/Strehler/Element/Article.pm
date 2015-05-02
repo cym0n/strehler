@@ -3,7 +3,7 @@ package Strehler::Element::Article;
 use strict;
 use Cwd 'abs_path';
 use Moo;
-use Dancer2 0.154000;
+use Dancer2 0.160000;
 use Dancer2::Plugin::DBIC;
 
 extends 'Strehler::Element';

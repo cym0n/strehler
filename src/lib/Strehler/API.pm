@@ -1,7 +1,7 @@
 package Strehler::API;
 
 use strict;
-use Dancer2 0.154000;
+use Dancer2 0.160000;
 use Dancer2::Serializer::JSON;
 use Strehler::Helpers;
 use Strehler::Meta::Category;

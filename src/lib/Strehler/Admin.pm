@@ -2,7 +2,7 @@ package Strehler::Admin;
 
 use strict;
 use Cwd 'abs_path';
-use Dancer2 0.154000;
+use Dancer2 0.160000;
 use Dancer2::Plugin::DBIC;
 use Dancer2::Plugin::Ajax;
 use Dancer2::Serializer::JSON;
@@ -42,7 +42,7 @@ set views => $root_path . 'views';
 
 ##### Homepage #####
 
-get '/' => sub {
+get '' => sub {
     if(config->{'Strehler'}->{'dashboard_active'} && config->{'Strehler'}->{'dashboard_active'} == 1)
     {
         redirect dancer_app->prefix . '/dashboard/' . config->{'Strehler'}->{'default_language'};
