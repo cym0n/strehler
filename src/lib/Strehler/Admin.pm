@@ -801,7 +801,7 @@ post '/:entity/edit/:id' => sub
     my $message = 'quiet';
     if($form->submitted_and_valid)
     {
-        my $id = $class->save_form($id, $form, request->uploads());
+        my $id = $class->save_form($id, $form, request->uploads()); ## no critic qw(Variables::ProhibitReusedNames)
         if($id < 0)
         {
             return template "admin/message", { message => $class->error_message("edit", $id), backlink => dancer_app->prefix . '/' . $entity }; 

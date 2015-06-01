@@ -1,5 +1,6 @@
 package Strehler::Forms;
 
+use strict;
 use Cwd 'abs_path';
 use HTML::FormFu;
 use Data::Dumper;

@@ -28,7 +28,7 @@ register 'slug' => sub {
             $category  = $item_data;
         }
             
-        my $template = $template || 'slug';
+        my $template = $template || 'slug'; ## no critic qw(Variables::ProhibitReusedNames)
         my $class = Strehler::Helpers::class_from_entity($item_type);
         $extra_data ||= {};
 
@@ -82,7 +82,7 @@ register 'list' => sub {
 
     my $list_route = sub {
         my $page = $dsl->params->{'page'} || 1;
-        my $template = $template || 'list';
+        my $template = $template || 'list'; ## no critic qw(Variables::ProhibitReusedNames)
         $extra_data ||= {};
 
         my $item_type =  $dsl->config->{'Strehler'}->{'default_entity'} ||  'article';

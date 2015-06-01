@@ -5,6 +5,7 @@ use Dancer2 0.160000;
 use Strehler;
 use Unicode::Normalize;
 use Text::Unidecode;
+use Module::Load;
 
 #Barely copied from http://stackoverflow.com/questions/4009281/how-can-i-generate-url-slugs-in-perl
 sub slugify
@@ -95,7 +96,7 @@ sub class_from_entity
     }
     if($class)
     {
-        eval("require $class");
+        load $class;
         return $class;
     }
 }
@@ -105,7 +106,7 @@ sub class_from_plural
     my $plural = shift;
     foreach my $class ('Strehler::Element::Article', 'Strehler::Element::Image', 'Strehler::Element::User', 'Strehler::Element::Log')
     {
-        eval("require $class");
+        load $class;
         if($class->plural() eq $plural)
         {
             return $class;
@@ -114,7 +115,7 @@ sub class_from_plural
     foreach my $entity (keys %{config->{'Strehler'}->{'extra_menu'}})
     {
         my $entity_class = config->{'Strehler'}->{'extra_menu'}->{$entity}->{'class'};
-        eval("require $entity_class");
+        load $entity_class;
         if($entity_class->plural() eq $plural)
         {
             return $entity_class;
@@ -132,7 +133,8 @@ sub public_directory
 sub check_statics
 {
     my $public_directory = public_directory();
-    open(my $version_file, "< $public_directory/strehler/VERSION") || return 0;
+    my $version_file;
+    open($version_file, '<', "$public_directory/strehler/VERSION") or return 0;
     my $data = <$version_file>;
     chomp $data;
     return $data eq $Strehler::STATICS_VERSION ? 1: 0;

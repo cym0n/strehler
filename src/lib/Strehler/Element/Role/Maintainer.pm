@@ -4,6 +4,7 @@ use strict;
 use Moo::Role;
 use SQL::Translator;
 use SQL::Translator::Parser::DBIx::Class;
+use Module::Load;
 
 requires 'install';
 
@@ -32,7 +33,7 @@ sub deploy_entity_on_db
     {
         print "Working on $table...\n";
         my $added = $table;
-        eval("use $added");
+        load $added;
         my $table_name = $table;
         $table_name =~ s/^.*:://;
         $schema->register_class($table_name, $added);
@@ -53,6 +54,8 @@ sub deploy_entity_on_db
         }
         @already_done_queries = $new_trans->translate();
     }
+
+    return;
 }
 
 =encoding utf8

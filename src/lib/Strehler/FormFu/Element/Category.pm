@@ -34,7 +34,7 @@ after BUILD => sub {
     return;
 };
 
-sub label {
+sub label { ## no critic qw(Subroutines::RequireArgUnpacking)
     my ( $self, $arg ) = @_;
 
     return $self->_label if @_ == 1;
@@ -45,7 +45,7 @@ sub label {
     }
     return $self;
 }
-sub name {
+sub name { ## no critic qw(Subroutines::RequireArgUnpacking)
     my ( $self, $arg ) = @_;
 
     return $self->_name if @_ == 1;
@@ -61,7 +61,7 @@ sub name {
     }
     return $self;
 }
-sub not_required {
+sub not_required { ## no critic qw(Subroutines::RequireArgUnpacking)
     my ( $self, $arg ) = @_;
     return $self->_not_required if @_ == 1;
     if ( defined $arg ) {
@@ -71,6 +71,8 @@ sub not_required {
             $self->get_all_element({ name => 'category-name' })->_constraints([]);
         }
     }
+
+    return;
 } 
 
 =encoding utf8

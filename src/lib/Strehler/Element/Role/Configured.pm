@@ -55,7 +55,7 @@ sub get_schema
 sub multilang
 {
     my $self = shift;
-    return 1 if $self->multilang_children() ne '';
+    return $self->multilang_children() ne '';
 }
 sub _property
 {

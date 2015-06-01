@@ -44,7 +44,13 @@ sub get_by_slug
     if($self->multilang_slug())
     {
         my $children = $self->multilang_children();
-        my @chapters = $self->get_schema()->resultset($self->ORMObj())->search({ $children . '.slug' => $slug, $children . '.language' => $language }, { join => $children });
+        my @chapters = $self->get_schema()->resultset($self->ORMObj())->search(
+            {
+                "$children.slug"     => $slug,
+                "$children.language" => $language,
+            },
+            { join => $children }
+        );
         $chapter = $chapters[0];
     }
     else

@@ -70,6 +70,8 @@ sub write
     my $entity_type = shift;
     my $entity_id = shift;
     my $log_row = $self->get_schema()->resultset($self->ORMObj())->create({ user => $user, action => $action, entity_type => $entity_type, entity_id => $entity_id, timestamp => DateTime->now() });
+
+    return $log_row;
 }
 
 sub main_title

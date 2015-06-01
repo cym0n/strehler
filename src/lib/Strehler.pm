@@ -1,6 +1,7 @@
+package Strehler;
+
 use strict;
 use warnings;
-package Strehler;
 
 # ABSTRACT: A light-weight, nerdy, smart CMS in perl based on Perl Dancer2 framework.
 

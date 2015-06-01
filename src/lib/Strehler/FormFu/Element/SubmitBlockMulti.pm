@@ -17,7 +17,7 @@ after BUILD => sub {
     return;
 };
 
-sub actions {
+sub actions { ## no critic qw(Subroutines::RequireArgUnpacking)
     my ( $self, $arg ) = @_;
 
     return $self->_label if @_ == 1;

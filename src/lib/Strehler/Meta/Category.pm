@@ -398,7 +398,7 @@ sub error_message
     my $self = shift;
     my $action = shift;
     my $code = shift;
-    if($code == '0')
+    if($code == 0)
     {
         return "OK";
     }

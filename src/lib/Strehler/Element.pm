@@ -59,6 +59,8 @@ sub delete
     my $children = $self->row->can($self->multilang_children());
     $self->row->$children->delete_all() if($children);
     $self->row->delete();
+
+    return;
 }
 
 sub get_attr
@@ -1141,7 +1143,7 @@ sub error_message
     my $self = shift;
     my $action = shift;
     my $code = shift;
-    if($code == '0')
+    if($code == 0)
     {
         return "OK";
     }

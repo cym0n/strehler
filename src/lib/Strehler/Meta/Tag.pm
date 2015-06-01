@@ -78,6 +78,8 @@ sub save_tags
             my $new_tag = $self->get_schema()->resultset('Tag')->create({tag => $_, item_id => $item, item_type => $item_type});
         }
     }
+
+    return;
 }
 
 sub get_configured_tags
@@ -160,6 +162,8 @@ sub save_configured_tags
             $self->get_schema()->resultset('ConfiguredTag')->create({tag => $t, category_id => $category, item_type => $type, default_tag => $default});
         }
     }
+
+    return;
 }
 
 sub clean_configured_tags
@@ -167,6 +171,8 @@ sub clean_configured_tags
     my $self = shift;
     my $category = shift;
     $self->get_schema()->resultset('ConfiguredTag')->search({ category_id => $category })->delete_all();
+
+    return;
 }
 sub exists_tag
 {

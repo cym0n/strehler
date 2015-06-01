@@ -2,6 +2,7 @@ package Strehler::FormFu::Element::EntitySelect;
 
 use strict;
 use Moose;
+use Module::Load;
 
 extends 'HTML::FormFu::Element::Select';
 
@@ -23,17 +24,16 @@ after BUILD => sub {
     return;
 };
 
-sub element {
+sub element { ## no critic qw(Subroutines::RequireArgUnpacking)
     my ( $self, $arg ) = @_;
 
     return $self->_element if @_ == 1;
-
 
     if ( defined $arg ) {
 
 
         $self->_element( $arg);
-        eval "require $arg";
+        load $arg;
         $self->options($arg->make_select());
     }
     return $self;
