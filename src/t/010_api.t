@@ -10,8 +10,8 @@ use Plack::Test;
 use HTTP::Request;
 use HTTP::Request::Common;
 
-$ENV{DANCER_CONFDIR} = 't/testapp';
-$ENV{DANCER_ENVIRONMENT} = 'no_login';
+local $ENV{DANCER_CONFDIR} = 't/testapp';
+local $ENV{DANCER_ENVIRONMENT} = 'no_login';
 require t::testapp::lib::TestSupport;
 require Strehler::Admin;
 require Strehler::API;
@@ -140,3 +140,5 @@ test_psgi $site_app, sub {
     is($content->{'text'}, 'A dumb text', "Dummy - Correct element retrieved using slug");            
 };
 done_testing;
+
+1;

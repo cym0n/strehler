@@ -10,8 +10,8 @@ use Plack::Test;
 use HTTP::Request;
 use HTTP::Request::Common;
 
-$ENV{DANCER_CONFDIR} = 't/testapp';
-$ENV{DANCER_ENVIRONMENT} = 'dashboard';
+local $ENV{DANCER_CONFDIR} = 't/testapp';
+local $ENV{DANCER_ENVIRONMENT} = 'dashboard';
 require t::testapp::lib::TestSupport;
 require Strehler::Admin;
 
@@ -166,3 +166,4 @@ sub page_section_box
                  '</div>';
     return qr/$match/s;
 }
+1;

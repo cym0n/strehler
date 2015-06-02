@@ -23,6 +23,8 @@ sub reset_database
     $schema->resultset('Tag')->delete_all();
     $schema->resultset('Dummy')->delete_all();
     $schema->resultset('User')->search({ user => { 'not in' => ['admin', 'editor']}})->delete_all();
+
+    return;
 }
 
 sub keep_logged
@@ -77,6 +79,8 @@ sub create_article
                       'text_en' => exists $custom_params->{'text_en'} ? $custom_params->{'text_en'} : 'Automatic test ' . $counter . ' - body - EN', 
                       'strehl-action' => 'submit-go'
                      ]);
+
+    return;
 }
 sub list_reader
 {

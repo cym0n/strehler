@@ -11,8 +11,8 @@ use HTTP::Request;
 use HTTP::Request::Common;
 use Data::Dumper;
 
-$ENV{DANCER_CONFDIR} = 't/testapp';
-$ENV{DANCER_ENVIRONMENT} = 'no_login';
+local $ENV{DANCER_CONFDIR} = 't/testapp';
+local $ENV{DANCER_ENVIRONMENT} = 'no_login';
 require Strehler::Admin;
 require t::testapp::lib::TestSupport;
 
@@ -34,7 +34,7 @@ test_psgi $app, sub {
     like($r->content, qr/$entity_string/s, "All present in category add page for tags");
     foreach my $t ('article', 'image', 'dummy', 'foo')
     {
-        my $entity_string = '<div class="alert alert-info">.*Per ' . $t . '.*</div>';
+        $entity_string = '<div class="alert alert-info">.*Per ' . $t . '.*</div>';
         like($r->content, qr/$entity_string/s, "$t present in category add page for tags");
     }
     $entity_string = '<div class="alert alert-info">.*Per puppet.*</div>';
@@ -160,3 +160,5 @@ test_psgi $app, sub {
     ok(! $cat5_again->exists(), "Category deleted with all its tree");
 };
 done_testing;
+
+1;

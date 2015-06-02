@@ -11,8 +11,8 @@ use HTTP::Request;
 use HTTP::Request::Common;
 use Data::Dumper;
 
-$ENV{DANCER_CONFDIR} = 't/testapp';
-$ENV{DANCER_ENVIRONMENT} = 'auto_online';
+local $ENV{DANCER_CONFDIR} = 't/testapp';
+local $ENV{DANCER_ENVIRONMENT} = 'auto_online';
 require Strehler::Admin;
 require t::testapp::lib::Site;
 require t::testapp::lib::TestSupport;
@@ -70,3 +70,5 @@ test_psgi $site_app, sub {
 
 
 done_testing;
+
+1;

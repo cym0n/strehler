@@ -11,7 +11,7 @@ use HTTP::Request;
 use HTTP::Request::Common;
 use HTTP::Cookies;
 
-$ENV{DANCER_CONFDIR} = 't/testapp';
+local $ENV{DANCER_CONFDIR} = 't/testapp';
 require Strehler::Admin;
 require t::testapp::lib::TestSupport;
 
@@ -32,3 +32,5 @@ test_psgi $app, sub {
 };
 
 done_testing;
+
+1;

@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-use v5.10;
+use v5.10; ## no critic qw(ValuesAndExpressions::ProhibitVersionStrings)
 use Cwd;
 use File::Copy;
 use File::Copy::Recursive 'dircopy';
@@ -18,11 +18,15 @@ use Authen::Passphrase::BlowfishCrypt;
 use DBI;
 use DBIx::Class::Schema::Loader qw/ make_schema_at /;
 use Data::Dumper;
+use Module::Load;
+use Carp;
 use lib getcwd() . "/lib";
+use IO::Prompt;
+use Try::Tiny;
 
 BEGIN
 {
-    $ENV{DANCER_CONFDIR} = getcwd();
+    local $ENV{DANCER_CONFDIR} = getcwd();
 }
 
 my $strehler_root = $INC{'Strehler.pm'};
@@ -124,11 +128,11 @@ elsif($command eq 'batch')
 elsif($command eq 'categories')
 {
     my $filename = shift || 'categories.txt';
-    open( my $file, "< $filename" ) or die ("Impossible to open $filename");
+    open( my $file, "<", $filename ) or croak "Impossible to open $filename";
     my @to_create;
     my %post_data;
     say "Processing file: $filename\n";
-    foreach my $line (<$file>)
+    while ( my $line = <$file> )
     {
         #Tags management
         if($line =~ /^ /)
@@ -298,7 +302,7 @@ elsif($command eq 'testelement')
     {
         say "Checking $class...\n";
     }
-    eval("require $class");
+    load $class;
     if($@)
     {
         say $@;
@@ -306,14 +310,12 @@ elsif($command eq 'testelement')
         exit(1);
     }
     my $rs;
-    eval
+    try
     {
         $rs = $class->get_schema()->resultset($class->ORMObj());
-    };
-    if(! $rs)
-    {
+    } catch {
         say "WARNING: Wrong ORM object linked to the entity";
-    }
+    };
 
     if($class->multilang_children ne '' && ! $class->multilang_form())
     {
@@ -326,9 +328,14 @@ elsif($command eq 'testelement')
 
     my $form;
     say "Form:";
-    eval
+    try
     {
         $form = Strehler::Forms::form_generic($class->form(), $class->multilang_form(), 'add', undef, ['en', 'it']); 
+    }
+    catch{
+        say " WARNING: Form generation KO!";
+        print $@;
+        print "\n";
     };
     if($form)
     {
@@ -336,9 +343,7 @@ elsif($command eq 'testelement')
     }
     else
     {
-        say " WARNING: Form generation KO!";
-        print $@;
-        print "\n";
+        say "No errors returned but form is null";
     }
 
     if($class->categorized())
@@ -487,7 +492,7 @@ elsif($command eq 'initentity')
     {
         say "Installing $class...\n";
     }
-    eval("require $class");
+    load $class;
     if($@)
     {
         say $@;
@@ -550,7 +555,7 @@ sub statics
     }
 
     my $nocopy = 0;
-    if(-d $destination . '/strehler')
+    if(-d $destination . '/strehler') ## no critic qw(ValuesAndExpressions::ProhibitMismatchedOperators)
     {
         say "Deleting old $destination" . '/strehler';
         my $deleted = remove_tree($destination . '/strehler');
@@ -566,7 +571,7 @@ sub statics
     }
     if(! $nocopy)
     {
-        $File::Copy::Recursive::CPRFComp = 1;
+        $File::Copy::Recursive::CPRFComp = 1; ## no critic qw(Variables::ProhibitPackageVars)
         say "Copying statics from $origin to $destination...";
         my $done = dircopy($origin, $destination);
         if(! $done)
@@ -578,7 +583,7 @@ sub statics
             print "SUCCESS! Files copied in your Dancer2 App!\n\n";
         }
     }
-    if(-d $destination . '/upload')
+    if(-d $destination . '/upload') ## no critic qw(ValuesAndExpressions::ProhibitMismatchedOperators)
     {
         print "Upload directory already present\n\n" 
     }
@@ -595,6 +600,8 @@ sub statics
             print "SUCCESS! Upload directory created!\n\n";
         }
     }
+
+    return;
 }
 
 sub initdb
@@ -623,14 +630,9 @@ sub initdb
         my $continue = "";
         while($continue ne 'Y' && $continue ne 'N')
         {
-            ReadMode(1, *STDIN);
-            say "\nWARNING: this script will ERASE (DROP TABLE) all the tables with a name used by Strehler tables. Are you sure you want to continue? (y/n)";
-            $continue = <STDIN>;
-            ReadMode(0);
-            chomp $continue;
-            $continue = uc($continue);
+            $continue = prompt("\nWARNING: this script will ERASE (DROP TABLE) all the tables with a name used by Strehler tables. Are you sure you want to continue? (y/n)", "-y");
         }
-        if($continue eq 'N')
+        if(! $continue)
         {
             print "NO DEPLOY. Exiting...\n\n";
             exit(0);
@@ -661,6 +663,8 @@ sub initdb
                               ['admin', $hash, $salt, 'admin']]);
 
     print "Database deploy COMPLETED!\n\n";
+
+    return;
 }
 
 sub layout
@@ -692,6 +696,8 @@ sub layout
     {
         print "\nSUCCESS! Files copied in your Dancer2 App!\n\n";
     }
+
+    return;
 }
 
 sub demo_components
@@ -723,6 +729,8 @@ sub demo_components
             print "\nCOPY FAILED! A problem occured: $!\n\n";
         }
     }
+
+    return;
 }
 
 sub get_database
@@ -776,16 +784,12 @@ sub check_database_connection
 
 sub choose_admin_password
 {
-    my $password_chosen;
+    my $password_chosen = 0;
     my $user_password;
     while(! $password_chosen)
     {
-        ReadMode(2, *STDIN);
-        say "Enter password for admin:";
-        $user_password = <STDIN>;
-        say "Re-type password:";
-        my $user_password_confirm = <STDIN>;
-        ReadMode(0);
+        $user_password = prompt( "Enter password for admin:", "-echo *");
+        my $user_password_confirm = prompt( "Re-type password:", "-echo *");
         if($user_password eq $user_password_confirm)
         {
             $password_chosen = 1;
@@ -863,4 +867,6 @@ sub schemadump
           components => ["InflateColumn::DateTime"] },
         [ $dsn, $user, $password]
     );
+
+    return;
 }

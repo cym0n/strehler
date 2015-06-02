@@ -10,8 +10,8 @@ use Plack::Test;
 use HTTP::Request;
 use HTTP::Request::Common;
 
-$ENV{DANCER_CONFDIR} = 't/testapp';
-$ENV{DANCER_ENVIRONMENT} = 'auto_online';
+local $ENV{DANCER_CONFDIR} = 't/testapp';
+local $ENV{DANCER_ENVIRONMENT} = 'auto_online';
 require t::testapp::lib::Site;
 require t::testapp::lib::TestSupport;
 require Strehler::Admin;
@@ -72,3 +72,5 @@ test_psgi $site_app, sub {
 };
 
 done_testing;
+
+1;

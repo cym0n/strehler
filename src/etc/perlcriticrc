@@ -1,4 +1,4 @@
 severity = 3
 verbose = %f: [%p] %m at line %l, near '%r'\n
 
-exclude = Modules::ProhibitExcessMainComplexity RegularExpressions::RequireExtendedFormatting Subroutines::ProhibitExplicitReturnUndef Subroutines::ProhibitBuiltinHomonyms Subroutines::ProhibitExcessComplexity ControlStructures::ProhibitDeepNests ControlStructures::ProhibitCascadingIfElse InputOutput::RequireBriefOpen TestingAndDebugging::RequireUseWarnings Modules::RequireExplicitPackage
+exclude = Modules::ProhibitExcessMainComplexity RegularExpressions::RequireExtendedFormatting Subroutines::ProhibitExplicitReturnUndef Subroutines::ProhibitBuiltinHomonyms Subroutines::ProhibitExcessComplexity ControlStructures::ProhibitDeepNests ControlStructures::ProhibitCascadingIfElse InputOutput::RequireBriefOpen TestingAndDebugging::RequireUseWarnings Modules::RequireExplicitPackage TestingAndDebugging::RequireUseStrict

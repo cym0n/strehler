@@ -10,8 +10,8 @@ use Plack::Test;
 use HTTP::Request;
 use HTTP::Request::Common;
 
-$ENV{DANCER_CONFDIR} = 't/testapp';
-$ENV{DANCER_ENVIRONMENT} = 'no_login';
+local $ENV{DANCER_CONFDIR} = 't/testapp';
+local $ENV{DANCER_ENVIRONMENT} = 'no_login';
 require Strehler::Admin;
 require t::testapp::lib::Site;
 require t::testapp::lib::TestSupport;
@@ -246,3 +246,5 @@ test_psgi $app, sub {
     like($response_content, qr/$tags_configured_string_default/, "Dummy - Configured Tags - Box generated on category select OK");
 };
 done_testing();
+
+1;

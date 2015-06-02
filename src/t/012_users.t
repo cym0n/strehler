@@ -10,7 +10,7 @@ use Plack::Test;
 use HTTP::Request::Common;
 use HTTP::Cookies;
 
-$ENV{DANCER_CONFDIR} = 't/testapp';
+local $ENV{DANCER_CONFDIR} = 't/testapp';
 require Strehler::Admin;
 require Strehler::Element::User;
 require t::testapp::lib::TestSupport;
@@ -75,3 +75,5 @@ test_psgi $app, sub {
     like($r->decoded_content, qr/<b class="icon-user"><\/b>.*dummy/, "Logged as dummy with the new password");
 };
 done_testing;
+
+1;
