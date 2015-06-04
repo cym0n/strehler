@@ -330,7 +330,7 @@ elsif($command eq 'testelement')
     say "Form:";
     try
     {
-        $form = Strehler::Forms::form_generic($class->form(), $class->multilang_form(), 'add', undef, ['en', 'it']); 
+        $form = Strehler::Forms::form_generic($class->form(), $class->multilang_form(), {languages => ['en', 'it'], default_language => 'en', only_default_required => $class->only_default_required()}); 
     }
     catch{
         say " WARNING: Form generation KO!";
@@ -628,11 +628,8 @@ sub initdb
         say "User: $user" if $user;
         say "Password: $password" if $password;
         my $continue = "";
-        while($continue ne 'Y' && $continue ne 'N')
-        {
-            $continue = prompt("\nWARNING: this script will ERASE (DROP TABLE) all the tables with a name used by Strehler tables. Are you sure you want to continue? (y/n)", "-y");
-        }
-        if(! $continue)
+        $continue = prompt("\nWARNING: this script will ERASE (DROP TABLE) all the tables with a name used by Strehler tables. Are you sure you want to continue? (y/n)\n", "-yn");
+        if(uc($continue) eq 'N')
         {
             print "NO DEPLOY. Exiting...\n\n";
             exit(0);
@@ -788,8 +785,8 @@ sub choose_admin_password
     my $user_password;
     while(! $password_chosen)
     {
-        $user_password = prompt( "Enter password for admin:", "-echo *");
-        my $user_password_confirm = prompt( "Re-type password:", "-echo *");
+        $user_password = prompt( "Enter password for admin: ", -echo => '*');
+        my $user_password_confirm = prompt( "Re-type password: ", -echo => '*');
         if($user_password eq $user_password_confirm)
         {
             $password_chosen = 1;

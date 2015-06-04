@@ -6,7 +6,7 @@ Copy config file from support directory
 
     cp config.yml StrehlerTest
 
-Under StrehlerTest run 
+Under StrehlerTest (remeber: export DANCER_CONFDIR=.) run 
 
     strehler batch
 
