@@ -4,6 +4,7 @@
 __???__
 
 * EntityType Select FormFu element
+* API to see entity schema
 * Perlcritic added [Thanks to VadimPushtaev]
 * Some bugfix
 
