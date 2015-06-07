@@ -42,6 +42,10 @@ set views => $root_path . 'views';
 
 ##### Homepage #####
 
+get '/' => sub {
+    my $redir = redirect(dancer_app->prefix);
+    return $redir;
+};
 get '' => sub {
     if(config->{'Strehler'}->{'dashboard_active'} && config->{'Strehler'}->{'dashboard_active'} == 1)
     {
@@ -76,7 +80,7 @@ any '/login' => sub {
             }
             else
             {
-                my $redir = redirect(dancer_app->prefix . '/');
+                my $redir = redirect(dancer_app->prefix);
                 return $redir;
             }
         }
@@ -92,7 +96,7 @@ get '/logout' => sub
 {
     session 'user' => undef;
     session 'role' => undef;
-    my $redir = redirect(dancer_app->prefix . '/');
+    my $redir = redirect(dancer_app->prefix);
     return $redir;
 };
 
