@@ -138,6 +138,10 @@ test_psgi $site_app, sub {
     is($r->code, 200, "Single dummy API by slug correctly called");
     $content = $serializer->deserialize($r->content);
     is($content->{'text'}, 'A dumb text', "Dummy - Correct element retrieved using slug");            
+ 
+    $r = $cb->(GET "/api/v1/article/schema");
+    is($r->content, '{"basic":["id","image","category","display_order","publish_date"],"multilanguage":["title","slug","text"]}', "Schema API")
+
 };
 done_testing;
 

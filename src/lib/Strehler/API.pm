@@ -63,6 +63,27 @@ get '/:entity/slug/:slug' => sub {
     return serialize(\%data, $callback);
 };
 
+get '/:entity/schema' => sub {
+    my $entity = params->{entity};
+    my $callback = params->{'callback'} || undef;
+    my $class = Strehler::Helpers::class_from_entity($entity);
+    return pass if ! $class;
+    my @basic = $class->get_data_fields();
+    @basic = grep { $_ ne 'published' } @basic;
+    my @multilanguage = $class->get_multilang_data_fields();
+    my %data = ( 'basic' => \@basic,
+                 'multilanguage' => \@multilanguage );
+    if($callback)
+    {
+        content_type('application/javascript');
+    }
+    else
+    {
+        content_type('application/json');
+    }
+    return serialize(\%data, $callback);
+};
+
 get '/:entity/:id' => sub {
     my $entity = params->{entity};
     my $id = params->{'id'};
