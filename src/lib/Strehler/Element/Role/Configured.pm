@@ -12,6 +12,7 @@ sub category_accessor
 {
     my $self = shift;
     my $category = shift;
+    return undef if ! $category;
     return $category->can($self->metaclass_data('category_accessor'));
 }
 
