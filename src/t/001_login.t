@@ -43,6 +43,17 @@ test_psgi $app, sub {
     ($r, $jar) = TestSupport::keep_logged($cb, $jar, POST $site . "/admin/login", [ user => 'admin', password => 'admin']); 
     ($r, $jar) = TestSupport::keep_logged($cb, $jar, GET $site . '/admin'); 
     like($r->decoded_content, qr/<b class="icon-user"><\/b>.*admin/, "Inserting correct credentials at login leads to Strehler homepage");
+    ($r, $jar) = TestSupport::keep_logged($cb, $jar, GET $site . '/admin/'); 
+    is(
+        $r->code,
+        302,
+        'Redirect on /admin/'
+    );
+    is(
+        $r->headers->header('Location'),
+        $site . '/admin',
+        'Redirect on /admin/ lead to the correct /admin page',
+    );
 };
 
 done_testing;
