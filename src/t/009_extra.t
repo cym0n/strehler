@@ -15,7 +15,6 @@ local $ENV{DANCER_ENVIRONMENT} = 'no_login';
 require Strehler::Admin;
 require t::testapp::lib::Site;
 require t::testapp::lib::TestSupport;
-require t::testapp::lib::Site::Dummy;
 
 TestSupport::reset_database();
 

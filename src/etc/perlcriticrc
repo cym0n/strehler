@@ -1,3 +1,5 @@
+#To launch perlcritic => from /src: perlcritic -p etc/perlcriticrc .
+
 severity = 3
 verbose = %f: [%p] %m at line %l, near '%r'\n
 
