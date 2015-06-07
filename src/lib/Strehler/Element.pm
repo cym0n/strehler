@@ -246,18 +246,28 @@ sub max_category_order
 {
     my $self = shift;
     my $category_id = shift;
-    my $max;
+    my $max = 0;
+    my $max_found = 0;
     if($category_id)
     {
         my $category = Strehler::Meta::Category->new($category_id);
-        my $category_accessor = $self->category_accessor($category->row);
-        $max = $category->row->$category_accessor->search()->get_column('display_order')->max();
+        my $category_accessor = undef;
+        if($category)
+        {
+            $category_accessor = $self->category_accessor($category->row);
+            if($category_accessor)
+            {
+                $max = $category->row->$category_accessor->search()->get_column('display_order')->max();
+                $max_found = 1;
+            }
+         }
+        
     }
-    else
+    if(! $max_found)
     {
         $max = $self->get_schema()->resultset($self->ORMObj())->search()->get_column('display_order')->max();
     }
-    return $max || 0;
+    return $max;
 }
 
 sub get_data_fields
