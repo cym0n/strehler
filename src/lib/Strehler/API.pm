@@ -68,9 +68,9 @@ get '/:entity/schema' => sub {
     my $callback = params->{'callback'} || undef;
     my $class = Strehler::Helpers::class_from_entity($entity);
     return pass if ! $class;
-    my @basic = $class->get_data_fields();
+    my @basic = $class->data_fields();
     @basic = grep { $_ ne 'published' } @basic;
-    my @multilanguage = $class->get_multilang_data_fields();
+    my @multilanguage = $class->multilang_data_fields();
     my %data = ( 'basic' => \@basic,
                  'multilanguage' => \@multilanguage );
     if($callback)

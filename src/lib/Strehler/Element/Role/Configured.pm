@@ -225,12 +225,30 @@ sub entity_data
 
 sub data_fields
 {
-    return undef;
+    my $self = shift;
+    return $self->get_schema()->resultset($self->ORMObj())->result_source->columns;
 }
 
 sub multilang_data_fields
 {
-    return undef;
+    my $self = shift;
+    if($self->multilang())
+    {
+        my @fields = $self->get_schema()->resultset($self->ORMObj())->related_resultset($self->multilang_children())->result_source->columns;
+        my @out;
+        foreach my $f (@fields)
+        {
+            if($f ne 'id' && $f ne $self->item_type() && $f ne 'language')
+            {
+                push @out, $f;
+            }
+        }
+        return @out;
+     }
+     else
+     {
+        return ();
+     }
 }
 sub custom_add_snippet
 {

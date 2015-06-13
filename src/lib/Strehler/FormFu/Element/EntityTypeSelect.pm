@@ -21,14 +21,7 @@ after BUILD => sub {
     $self->filename('input');
     $self->field_filename('select_tag');
     $self->multi_value(1);
-    my @entities = Strehler::Helpers::entities_list();
-    my @elements_of_select;
-    foreach my $e (@entities)
-    {
-        my $c = Strehler::Helpers::class_from_entity($e);
-        push @elements_of_select, { value => $e, label => $c->label() }
-    }
-    $self->options(\@elements_of_select);
+    $self->generate_options(undef);
     return;
 };
 
@@ -39,20 +32,31 @@ sub excluded { ## no critic qw(Subroutines::RequireArgUnpacking)
 
  
     if ( defined $arg ) {
-       my %blacklist = map { $_ => 1 } @{$arg};
-       my @entities = Strehler::Helpers::entities_list();
-        my @elements_of_select;
-        foreach my $e (@entities)
-        {
-            if(! exists $blacklist{$e})
-            {
-                my $c = Strehler::Helpers::class_from_entity($e);
-                push @elements_of_select, { value => $e, label => $c->label() }
-            }
-        }
-        $self->options(\@elements_of_select);
+        $self->generate_options($arg);
     }
     return $self;
+}
+
+sub generate_options
+{
+    my $self = shift;
+    my $excluded = shift;
+    my %blacklist = ();
+    %blacklist = map { $_ => 1 } @{$excluded} if $excluded;
+    my @entities = Strehler::Helpers::entities_list();
+    my @elements_of_select;
+    push @elements_of_select, { value => undef, label => "-- select --"};
+    foreach my $e (@entities)
+    {
+        if(! exists $blacklist{$e})
+        {
+            my $c = Strehler::Helpers::class_from_entity($e);
+            push @elements_of_select, { value => $e, label => $c->label() }
+        }
+    }
+    $self->options(\@elements_of_select);
+
+    return;
 }
 
 =encoding utf8

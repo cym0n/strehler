@@ -137,7 +137,7 @@ sub get_attr_multilang
     my $self = shift;
     my $attribute = shift;
     my $lang = shift;
-    my $bare = shift;
+    my $bare = shift || 0;
     my $accessor = $self->can($attribute);
     my $children = $self->row->can($self->multilang_children());
     return undef if not $children;
@@ -149,7 +149,14 @@ sub get_attr_multilang
     }
     if($accessor && ! $bare)
     {
-        return $self->$accessor($content_attribute, $lang);
+        if($content_attribute)
+        {
+            return $self->$accessor($content_attribute, $lang);
+        }
+        else
+        {
+            return $self->$accessor($lang);
+        }
     }
     if($content)
     {
@@ -269,56 +276,11 @@ sub max_category_order
     }
     return $max;
 }
-
-sub get_data_fields
-{
-    my $self = shift;
-    if($self->data_fields())
-    {
-        return $self->data_fields();
-    }
-    else
-    {
-        return $self->get_schema()->resultset($self->ORMObj())->result_source->columns;
-    }
-}
-
-sub get_multilang_data_fields
-{
-    my $self = shift;
-    if($self->multilang_data_fields())
-    {
-        return $self->multilang_data_fields();
-    }
-    else
-    {
-        if($self->multilang_children() ne '')
-        {
-            my @fields = $self->get_schema()->resultset($self->ORMObj())->related_resultset($self->multilang_children())->result_source->columns;
-            my @out;
-            foreach my $f (@fields)
-            {
-                if($f ne 'id' && $f ne $self->item_type() && $f ne 'language')
-                {
-                    push @out, $f;
-                }
-            }
-            return @out;
-        }
-        else
-        {
-            return ();
-        }
-    }
-}
-
-
-
 sub get_basic_data
 {
     my $self = shift;
     my %data;
-    foreach my $c ($self->get_data_fields())
+    foreach my $c ($self->data_fields())
     {
         $data{$c} = $self->get_attr($c);
     }
@@ -332,7 +294,7 @@ sub get_ext_data
     my $language = shift;
     my %data;
     %data = $self->get_basic_data();
-    foreach my $c ($self->get_multilang_data_fields())
+    foreach my $c ($self->multilang_data_fields())
     {
         $data{$c} = $self->get_attr_multilang($c, $language);
     }
@@ -909,7 +871,7 @@ sub make_select
     my $self = shift;
     my $list = $self->get_list( { entries_per_page => -1 } );
     my @category_values_for_select;
-    push @category_values_for_select, { value => undef, label => "-- seleziona --" }; 
+    push @category_values_for_select, { value => undef, label => "-- select --" }; 
     my @elements = @{$list->{to_view}};
     @elements = sort { lc($a->{'title'}) cmp lc($b->{'title'}) } @elements;
     for(@elements)
