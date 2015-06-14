@@ -62,6 +62,19 @@ sub delete
     return $self->row->delete();
 }
 
+sub category
+{
+    my $self = shift;
+    if($self->row->category)
+    {
+        return $self->row->category->category;
+    }
+    else
+    {
+        return undef;
+    }
+}
+
 sub get_attr
 {
     my $self = shift;
@@ -78,17 +91,6 @@ sub get_attr
         else
         {
             return $self->$accessor(undef);
-        }
-    }
-    if($attribute eq 'category')
-    {
-        if($self->row->category)
-        {
-            return $self->row->category->category;
-        }
-        else
-        {
-            return undef;
         }
     }
     if($attribute eq 'main-title')

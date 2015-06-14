@@ -102,15 +102,6 @@ sub main_title
 
 }
 
-sub form_modifications
-{
-    my $self = shift;
-    my $form = shift;
-    my $default_language = config->{Strehler}->{default_language};
-    $form->constraint({ name => 'title_' . $default_language, type => 'Required' }); 
-    return $form;    
-}
-
 sub fields_list
 {
     my $self = shift;

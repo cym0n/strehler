@@ -6,7 +6,7 @@ __???__
 * EntityType Select FormFu element
 * API to see entity schema
 * Perlcritic added [Thanks to VadimPushtaev]
-* Some bugfix
+* Some bugfix and refactoring
 
 1.6.2
 ===
@@ -16,7 +16,6 @@ __Sat May 2 2015__
 * New way to define required fields on forms 
 * "Submit and Publish" button
 * has_tag method
-
 
 1.6.1
 ===
