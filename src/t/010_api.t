@@ -4,6 +4,7 @@ use warnings;
 use lib "lib";
 use lib "t/testapp/lib";
 
+use JSON;
 use Test::More;
 use Plack::Builder;
 use Plack::Test;
@@ -140,7 +141,8 @@ test_psgi $site_app, sub {
     is($content->{'text'}, 'A dumb text', "Dummy - Correct element retrieved using slug");            
  
     $r = $cb->(GET "/api/v1/article/schema");
-    is($r->content, '{"basic":["id","image","category","display_order","publish_date"],"multilanguage":["title","slug","text"]}', "Schema API")
+    my $test_schema = JSON::decode_json('{"basic":["id","image","category","display_order","publish_date"],"multilanguage":["title","slug","text"]}');
+    is_deeply(JSON::decode_json($r->content), $test_schema, "Schema API is correct")
 
 };
 done_testing;

@@ -1,3 +1,10 @@
+1.6.5
+===
+
+__Mon Jun 29 2015__
+
+* Test case about API fixed (it failed with high perl version)
+
 1.6.4
 ===
 
