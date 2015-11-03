@@ -84,10 +84,6 @@ sub subcategories
         {
             @subs = $category->subcategories(1, \@subs);
         }
-        else
-        {
-            return @subs;
-        }
     }
     return @subs;
 }
