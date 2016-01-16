@@ -193,7 +193,7 @@ Initelement run the install method of the class, allowing entity initialization 
 
 =head1 HOW TO ADD STREHLER TO AN APP
 
-You already have a Dancer2 app correctly generated using Dancer2 tutorials. You also have Dancrr2::Plugin::DBIC configured.
+You already have a Dancer2 app correctly generated using Dancer2 tutorials. You also have Dancer2::Plugin::DBIC configured.
 
 Now go under root directory on your app and type
 

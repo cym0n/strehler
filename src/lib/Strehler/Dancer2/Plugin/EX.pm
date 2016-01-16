@@ -35,7 +35,11 @@ register 'slug' => sub {
         my $article = $class->get_by_slug($slug, $language);
         if( ! $article || ! $article->exists() || ($category && $article->get_category_name() ne $category))
         {
-            $dsl->send_error("Not found", 404);
+            Dancer2::Core::Error->new(
+                response => $dsl->response(),
+                status   => 404,
+                message  => "Access denied",
+            )->throw
         }
         else
         {

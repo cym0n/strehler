@@ -1,7 +1,7 @@
 package Strehler::API;
 
 use strict;
-use Dancer2 0.160000;
+use Dancer2 0.166000;
 use Dancer2::Serializer::JSON;
 use Strehler::Helpers;
 use Strehler::Meta::Category;
@@ -190,7 +190,11 @@ sub error_handler
     {
         content_type('application/json');
     }
-    send_error($message, $code);
+    Dancer2::Core::Error->new(
+             response => response(),
+             status   => $code,
+             message  => $message,
+         )->throw;
     return $serialized;
 }
 
