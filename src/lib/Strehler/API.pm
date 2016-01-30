@@ -190,11 +190,7 @@ sub error_handler
     {
         content_type('application/json');
     }
-    Dancer2::Core::Error->new(
-             response => response(),
-             status   => $code,
-             message  => $message,
-         )->throw;
+    send_error($message, $code);
     return $serialized;
 }
 
