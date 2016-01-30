@@ -4,6 +4,7 @@
 __Sat Jan 30 2016__
 
 * send_error used again with Dancer2 0.1660001
+* app.psgi (copy of app.pl) added to demo generation
 
 1.6.7
 ===

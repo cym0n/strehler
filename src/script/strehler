@@ -708,6 +708,7 @@ sub demo_components
         'Demo.pm.ex' => 'lib/Demo.pm',
         'Site.pm.ex' => 'lib/Site.pm',
         'app.pl' => 'bin/app.pl',
+        'app.psgi' => 'bin/app.psgi',
         'strehler-home.tt' => 'views/strehler-home.tt',
         'home.tt' => 'views/home.tt',
         'element.tt' => 'views/element.tt',
