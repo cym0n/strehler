@@ -2,7 +2,7 @@ package Strehler::Admin;
 
 use strict;
 use Cwd 'abs_path';
-use Dancer2 0.166000;
+use Dancer2 0.166001;
 use Dancer2::Plugin::DBIC;
 use Dancer2::Plugin::Ajax;
 use Dancer2::Serializer::JSON;

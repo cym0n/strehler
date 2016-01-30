@@ -1,7 +1,7 @@
 package Strehler::Helpers;
 
 use strict;
-use Dancer2 0.166000;
+use Dancer2 0.166001;
 use Strehler;
 use Unicode::Normalize;
 use Text::Unidecode;

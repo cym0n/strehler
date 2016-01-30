@@ -3,7 +3,7 @@ package Strehler::Element;
 use strict;
 use Carp 'carp';
 use Moo;
-use Dancer2 0.166000;
+use Dancer2 0.166001;
 use Dancer2::Plugin::DBIC;
 use Strehler::Meta::Tag;
 use Strehler::Meta::Category;
