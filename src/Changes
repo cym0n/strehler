@@ -1,3 +1,10 @@
+1.6.8
+===
+
+__Sat Jan 30 2016__
+
+* send_error used again with Dancer2 0.1660001
+
 1.6.7
 ===
 
